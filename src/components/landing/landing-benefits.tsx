@@ -62,12 +62,14 @@ const containerVariants = {
   visible: { transition: { staggerChildren: 0.06 } },
 }
 
+const cardEase: [number, number, number, number] = [0.34, 1.56, 0.64, 1]
+
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] },
+    transition: { duration: 0.55, ease: cardEase },
   },
 }
 
