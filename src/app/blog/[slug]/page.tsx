@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import type { CSSProperties } from 'react'
 
 import ReadingProgress from './_components/reading-progress'
 import { getPostBySlug, getAllPublishedPosts } from '@/lib/services/posts.service'
@@ -246,10 +247,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     key={p.id}
                     href={`/blog/${p.slug}`}
                     className="group flex flex-col overflow-hidden bg-white shadow-[8px_8px_0_#111] transition-[transform,box-shadow] duration-300 hover:shadow-[12px_12px_0_#111] [transform:rotate(var(--card-rotate))] hover:[transform:rotate(0deg)_translate(-4px,-4px)]"
-                    style={{
-                      border: '4px solid #111',
-                      ['--card-rotate' as const]: i === 0 ? '-0.8deg' : '0.6deg',
-                    }}
+                    style={
+                      {
+                        border: '4px solid #111',
+                        '--card-rotate': i === 0 ? '-0.8deg' : '0.6deg',
+                      } as CSSProperties & { ['--card-rotate']?: string }
+                    }
                   >
                     <div className="relative aspect-[16/10] overflow-hidden">
                       {p.coverImage ? (
