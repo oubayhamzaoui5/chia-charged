@@ -32,12 +32,14 @@ const flavors = [
   },
 ]
 
+const cardEase: [number, number, number, number] = [0.34, 1.56, 0.64, 1]
+
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.65, delay: i * 0.15, ease: [0.34, 1.56, 0.64, 1] },
+    transition: { duration: 0.65, delay: i * 0.15, ease: cardEase },
   }),
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -44,7 +44,7 @@ const statusLabels: Record<string, string> = {
   cancelled: 'Annulee',
 }
 
-export default function OrderConfirmationPage() {
+function OrderConfirmationContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('id')
 
@@ -427,5 +427,19 @@ export default function OrderConfirmationPage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function OrderConfirmationPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-3 border-black border-t-transparent" />
+        </div>
+      }
+    >
+      <OrderConfirmationContent />
+    </Suspense>
   )
 }

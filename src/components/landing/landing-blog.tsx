@@ -24,7 +24,7 @@ const cardVariants = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.65, delay: i * 0.12, ease: [0.34, 1.56, 0.64, 1] },
+    transition: { duration: 0.65, delay: i * 0.12, ease: [0.34, 1.56, 0.64, 1] as [number, number, number, number] },
   }),
 }
 

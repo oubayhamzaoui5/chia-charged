@@ -54,7 +54,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1], staggerChildren: 0.08 },
+    transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] as [number, number, number, number], staggerChildren: 0.08 },
   },
 }
 
@@ -63,7 +63,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] },
+    transition: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] as [number, number, number, number] },
   },
 }
 
