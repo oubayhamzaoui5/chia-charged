@@ -30,7 +30,9 @@ const loginSchema = z
     identifier: z.string().trim().optional(),
     email: z.string().trim().optional(),
     password: z
-      .string({ required_error: 'Le mot de passe est obligatoire' })
+      .string()
+      .trim()
+      .min(1, 'Le mot de passe est obligatoire')
       .min(6, 'Le mot de passe doit contenir au moins 6 caracteres'),
   })
   .superRefine((data, ctx) => {
@@ -326,7 +328,8 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      const flattened = error.flatten().fieldErrors
+      const flattened =
+        error.flatten().fieldErrors as Record<string, string[] | undefined>
       const fieldErrors: Record<string, string> = {}
       Object.keys(flattened).forEach((key) => {
         const message = flattened[key]?.[0]

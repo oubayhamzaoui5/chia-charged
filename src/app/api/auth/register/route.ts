@@ -17,15 +17,23 @@ const registerSchema = z
     email: z.string().trim().optional(),
     phone: z.string().trim().optional(),
     password: z
-      .string({ required_error: 'Le mot de passe est obligatoire' })
+      .string()
+      .trim()
+      .min(1, 'Le mot de passe est obligatoire')
       .min(8, 'Le mot de passe doit contenir au moins 8 caracteres'),
     passwordConfirm: z
-      .string({ required_error: 'La confirmation du mot de passe est obligatoire' }),
+      .string()
+      .trim()
+      .min(1, 'La confirmation du mot de passe est obligatoire'),
     surname: z
-      .string({ required_error: 'Le prenom est obligatoire' })
+      .string()
+      .trim()
+      .min(1, 'Le prenom est obligatoire')
       .min(2, 'Le prenom doit contenir au moins 2 caracteres'),
     name: z
-      .string({ required_error: 'Le nom est obligatoire' })
+      .string()
+      .trim()
+      .min(1, 'Le nom est obligatoire')
       .min(2, 'Le nom doit contenir au moins 2 caracteres'),
     username: z.string().trim().optional(),
   })
@@ -238,7 +246,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (error instanceof z.ZodError) {
-      const flattened = error.flatten().fieldErrors
+      const flattened =
+        error.flatten().fieldErrors as Record<string, string[] | undefined>
       const fieldErrors: Record<string, string> = {}
       Object.keys(flattened).forEach((key) => {
         const message = flattened[key]?.[0]
