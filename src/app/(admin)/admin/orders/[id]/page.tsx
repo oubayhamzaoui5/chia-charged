@@ -95,7 +95,7 @@ async function getOrderDetail(id: string) {
       items,
     }
   } catch (e: any) {
-    if (ex.status === 404) return null
+    if (e?.status === 404) return null
     throw e
   }
 }
