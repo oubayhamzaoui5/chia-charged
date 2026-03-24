@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import type { CSSProperties } from 'react'
 
 import { getAllPublishedPosts } from '@/lib/services/posts.service'
 import { Navbar } from '@/components/navbar'
@@ -164,10 +165,12 @@ export default async function BlogPage() {
                         key={post.id}
                         href={`/blog/${post.slug}`}
                         className="group flex flex-col overflow-hidden bg-white shadow-[8px_8px_0_#111] transition-[transform,box-shadow] duration-300 hover:shadow-[12px_12px_0_#111] [transform:rotate(var(--card-rotate))] hover:[transform:rotate(0deg)_translate(-4px,-4px)]"
-                        style={{
-                          border: '4px solid #111',
-                          ['--card-rotate' as const]: rotations[i % rotations.length],
-                        }}
+                        style={
+                          {
+                            border: '4px solid #111',
+                            '--card-rotate': rotations[i % rotations.length],
+                          } as CSSProperties & { ['--card-rotate']?: string }
+                        }
                       >
                         <div className="relative aspect-[16/10] overflow-hidden">
                           {post.coverImage ? (
