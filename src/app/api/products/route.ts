@@ -13,33 +13,6 @@ const querySchema = z.object({
   limit: z.coerce.number().int().min(1).max(12).default(8),
 })
 
-const PLACEHOLDER_PRODUCTS = [
-  {
-    id: 'placeholder-api-1',
-    slug: 'modern-minimalist-chandelier',
-    name: 'Lustre Minimaliste',
-    price: 790,
-    promoPrice: 690,
-    currency: 'DT',
-    imageUrl: '/aboutimg.webp',
-    shortDescription: 'Lustre epure pour salon contemporain.',
-    category: 'lighting',
-    inStock: true,
-  },
-  {
-    id: 'placeholder-api-2',
-    slug: 'designer-pendant-light',
-    name: 'Suspension Designer',
-    price: 540,
-    promoPrice: null,
-    currency: 'DT',
-    imageUrl: '/aboutimg.webp',
-    shortDescription: 'Suspension premium pour salle a manger.',
-    category: 'lighting',
-    inStock: true,
-  },
-]
-
 function mapCategoryName(rawCategory: string) {
   if (rawCategory === 'lighting') return 'Lighting'
   if (rawCategory === 'decor') return 'Decor'
@@ -81,11 +54,8 @@ export async function GET(request: NextRequest) {
       inStock: item.inStock,
     }))
 
-    return NextResponse.json(
-      { products: products.length > 0 ? products : PLACEHOLDER_PRODUCTS },
-      { status: 200 }
-    )
+    return NextResponse.json({ products }, { status: 200 })
   } catch {
-    return NextResponse.json({ products: PLACEHOLDER_PRODUCTS }, { status: 200 })
+    return NextResponse.json({ products: [] }, { status: 200 })
   }
 }

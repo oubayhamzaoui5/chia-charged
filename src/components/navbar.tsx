@@ -5,6 +5,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { NavbarCart } from "@/components/navbar-cart"
+import { MegaMenu } from "@/components/mega-menu"
 import {
   ShoppingBag,
   CircleUser,
@@ -76,6 +77,7 @@ export function Navbar(props: NavbarProps) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false)
+  const megaMenuTimeoutRef = useRef<number | null>(null)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
   )
@@ -110,6 +112,7 @@ export function Navbar(props: NavbarProps) {
   const [authEmail, setAuthEmail] = useState("")
   const [authPassword, setAuthPassword] = useState("")
   const [authError, setAuthError] = useState("")
+  const [authFieldErrors, setAuthFieldErrors] = useState<Record<string, string>>({})
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false)
   const [forgotEmail, setForgotEmail] = useState("")
   const [forgotSent, setForgotSent] = useState(false)
@@ -130,6 +133,11 @@ export function Navbar(props: NavbarProps) {
     window.dispatchEvent(new Event("signup-promo:visibility-change"))
   }, [])
 
+  // Close mega menu on route change
+  useEffect(() => {
+    setIsDesktopMenuOpen(false)
+  }, [pathname])
+
   useEffect(() => {
     if (typeof window === "undefined") return
 
@@ -144,6 +152,7 @@ export function Navbar(props: NavbarProps) {
     setIsProfileOpen(false)
     setIsMenuOpen(false)
     setAuthError("")
+    setAuthFieldErrors({})
     setAuthPassword("")
 
     const url = new URL(window.location.href)
@@ -163,6 +172,7 @@ export function Navbar(props: NavbarProps) {
         setIsAuthModalOpen(false)
         setAuthPassword("")
         setAuthError("")
+        setAuthFieldErrors({})
       }
     }
 
@@ -309,6 +319,7 @@ export function Navbar(props: NavbarProps) {
     mode: "login" | "signup" = "login"
   ) => {
     setAuthError("")
+    setAuthFieldErrors({})
     setAuthMode(mode)
     if (mode === "login") {
       setAuthPassword("")
@@ -328,6 +339,7 @@ export function Navbar(props: NavbarProps) {
     setSignupPassword("")
     setSignupPasswordConfirm("")
     setAuthError("")
+    setAuthFieldErrors({})
     setAuthMode("login")
     setForgotSent(false)
     setForgotEmail("")
@@ -337,6 +349,7 @@ export function Navbar(props: NavbarProps) {
     e.preventDefault()
     if (isAuthSubmitting) return
     setAuthError("")
+    setAuthFieldErrors({})
     setIsAuthSubmitting(true)
     try {
       const res = await fetch("/api/auth/forgot-password", {
@@ -360,6 +373,7 @@ export function Navbar(props: NavbarProps) {
   const switchAuthMode = (mode: "login" | "signup" | "forgot") => {
     setAuthMode(mode)
     setAuthError("")
+    setAuthFieldErrors({})
     if (mode === "forgot") {
       setForgotSent(false)
       return
@@ -389,6 +403,7 @@ export function Navbar(props: NavbarProps) {
     if (isAuthSubmitting) return
 
     setAuthError("")
+    setAuthFieldErrors({})
     setIsAuthSubmitting(true)
 
     try {
@@ -404,6 +419,9 @@ export function Navbar(props: NavbarProps) {
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         setAuthError(data?.message ?? "Sign-in failed.")
+        if (data?.fieldErrors && typeof data.fieldErrors === "object") {
+          setAuthFieldErrors(data.fieldErrors)
+        }
         return
       }
 
@@ -432,6 +450,7 @@ export function Navbar(props: NavbarProps) {
     if (isAuthSubmitting) return
 
     setAuthError("")
+    setAuthFieldErrors({})
     setIsAuthSubmitting(true)
 
     try {
@@ -450,6 +469,9 @@ export function Navbar(props: NavbarProps) {
       const registerData = await registerRes.json().catch(() => ({}))
       if (!registerRes.ok) {
         setAuthError(registerData?.message ?? "Sign-up failed.")
+        if (registerData?.fieldErrors && typeof registerData.fieldErrors === "object") {
+          setAuthFieldErrors(registerData.fieldErrors)
+        }
         return
       }
 
@@ -742,18 +764,22 @@ export function Navbar(props: NavbarProps) {
       : "h-[60px] md:h-[72px]"
     : null
 
-  useLayoutEffect(() => {
-    if (typeof document === "undefined") return
-    const root = document.documentElement
-    root.style.setProperty(
-      "--navbar-offset-mobile",
-      shouldShowSignupPromo ? "100px" : "60px"
-    )
-    root.style.setProperty(
-      "--navbar-offset-desktop",
-      shouldShowSignupPromo ? "112px" : "72px"
-    )
-  }, [shouldShowSignupPromo])
+    useLayoutEffect(() => {
+      if (typeof document === "undefined") return
+      const root = document.documentElement
+      root.style.setProperty(
+        "--navbar-offset-mobile",
+        shouldShowSignupPromo ? "100px" : "60px"
+      )
+      root.style.setProperty(
+        "--navbar-offset-desktop",
+        shouldShowSignupPromo ? "112px" : "72px"
+      )
+      root.style.setProperty(
+        "--mega-menu-top-desktop",
+        shouldShowSignupPromo && !hasPassedPromoBanner ? "112px" : "72px"
+      )
+    }, [shouldShowSignupPromo, hasPassedPromoBanner])
 
   return (
     <NavbarCart currentUser={currentUser} onOpenChange={setIsCartPanelOpen}>
@@ -819,15 +845,30 @@ export function Navbar(props: NavbarProps) {
               fontWeight: 900,
             }}
           >
-            <button
-              type="button"
-              onClick={() => setIsDesktopMenuOpen((prev) => !prev)}
-              className="cursor-pointer transition-all hover:tracking-[0.18em]"
-              aria-expanded={isDesktopMenuOpen}
-              aria-controls="desktop-navbar-shop"
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                if (megaMenuTimeoutRef.current) clearTimeout(megaMenuTimeoutRef.current)
+                setIsDesktopMenuOpen(true)
+              }}
+              onMouseLeave={() => {
+                megaMenuTimeoutRef.current = window.setTimeout(() => setIsDesktopMenuOpen(false), 300)
+              }}
             >
-              SHOP
-            </button>
+              <button
+                type="button"
+                onClick={() => setIsDesktopMenuOpen((prev) => !prev)}
+                className="cursor-pointer transition-all hover:tracking-[0.18em]"
+                aria-expanded={isDesktopMenuOpen}
+                aria-controls="desktop-navbar-shop"
+              >
+                SHOP
+              </button>
+              {/* Invisible bridge — extends hit area down to the mega menu */}
+              {isDesktopMenuOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full w-[200vw] h-4" />
+              )}
+            </div>
             <Link href="/#story" className="transition-all hover:tracking-[0.18em]">
               OUR STORY
             </Link>
@@ -962,48 +1003,6 @@ export function Navbar(props: NavbarProps) {
             </div>
           </div>
         </div>
-        <div
-          id="desktop-navbar-shop"
-          className={`hidden md:block overflow-hidden transition-all duration-300 ease-out ${
-            isDesktopMenuOpen ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
-          }`}
-          style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}
-          aria-hidden={!isDesktopMenuOpen}
-        >
-          <div className="mx-auto flex max-w-7xl items-center gap-6 overflow-x-auto whitespace-nowrap px-4 py-3">
-            {rootCategories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/boutique/categorie/${category.slug}`}
-                className="text-sm font-semibold text-white/80 hover:text-white transition-colors"
-              >
-                {category.name}
-              </Link>
-            ))}
-
-            <Link
-              href="/Nouveautes"
-              className="text-sm font-semibold text-white/80 hover:text-white transition-colors"
-            >
-              New arrivals
-            </Link>
-
-            <Link
-              href="/Promotions"
-              className="text-sm font-semibold text-white/90 hover:text-white transition-colors"
-              style={{ textShadow: '0 0 12px rgba(255,255,255,0.5)' }}
-            >
-              🔥 Deals
-            </Link>
-
-            <Link
-              href="/#contact"
-              className="text-sm font-semibold text-white/80 hover:text-white transition-colors"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
         {/* Mobile */}
         <div className="md:hidden relative">
           <div className="flex items-center gap-1.5 px-2 py-2">
@@ -1116,6 +1115,24 @@ export function Navbar(props: NavbarProps) {
         </div>
       </nav>
 
+      {/* Desktop Mega Menu — fixed to viewport, full screen height */}
+      <div
+        className="hidden md:block"
+        onMouseEnter={() => {
+          if (megaMenuTimeoutRef.current) clearTimeout(megaMenuTimeoutRef.current)
+          setIsDesktopMenuOpen(true)
+        }}
+        onMouseLeave={() => {
+          megaMenuTimeoutRef.current = window.setTimeout(() => setIsDesktopMenuOpen(false), 300)
+        }}
+      >
+        <MegaMenu
+          isOpen={isDesktopMenuOpen}
+          categories={internalCategories}
+          onClose={() => setIsDesktopMenuOpen(false)}
+        />
+      </div>
+
       {navSpacerClass ? <div aria-hidden className={navSpacerClass} /> : null}
 
       {isAuthModalOpen && (() => {
@@ -1215,6 +1232,11 @@ export function Navbar(props: NavbarProps) {
                           className={inputCls}
                           placeholder="you@domain.com"
                         />
+                        {authFieldErrors.identifier ? (
+                          <p className="mt-1 text-[10px] font-semibold text-red-600">
+                            {authFieldErrors.identifier}
+                          </p>
+                        ) : null}
                       </div>
 
                       <div>
@@ -1230,6 +1252,11 @@ export function Navbar(props: NavbarProps) {
                           className={inputCls}
                           placeholder="••••••••"
                         />
+                        {authFieldErrors.password ? (
+                          <p className="mt-1 text-[10px] font-semibold text-red-600">
+                            {authFieldErrors.password}
+                          </p>
+                        ) : null}
                       </div>
 
                       <div className="flex justify-end">
@@ -1312,6 +1339,11 @@ export function Navbar(props: NavbarProps) {
                             className={inputCls}
                             placeholder="First name"
                           />
+                          {authFieldErrors.surname ? (
+                            <p className="mt-1 text-[10px] font-semibold text-red-600">
+                              {authFieldErrors.surname}
+                            </p>
+                          ) : null}
                         </div>
                         <div>
                           <label htmlFor="signup-name" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
@@ -1327,6 +1359,11 @@ export function Navbar(props: NavbarProps) {
                             className={inputCls}
                             placeholder="Last name"
                           />
+                          {authFieldErrors.name ? (
+                            <p className="mt-1 text-[10px] font-semibold text-red-600">
+                              {authFieldErrors.name}
+                            </p>
+                          ) : null}
                         </div>
                       </div>
 
@@ -1343,6 +1380,11 @@ export function Navbar(props: NavbarProps) {
                           className={inputCls}
                           placeholder="you@domain.com"
                         />
+                          {authFieldErrors.email ? (
+                            <p className="mt-1 text-[10px] font-semibold text-red-600">
+                              {authFieldErrors.email}
+                            </p>
+                          ) : null}
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
@@ -1360,6 +1402,11 @@ export function Navbar(props: NavbarProps) {
                             className={inputCls}
                             placeholder="••••••••"
                           />
+                          {authFieldErrors.password ? (
+                            <p className="mt-1 text-[10px] font-semibold text-red-600">
+                              {authFieldErrors.password}
+                            </p>
+                          ) : null}
                         </div>
                         <div>
                           <label htmlFor="signup-password-confirm" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
@@ -1375,6 +1422,11 @@ export function Navbar(props: NavbarProps) {
                             className={inputCls}
                             placeholder="••••••••"
                           />
+                          {authFieldErrors.passwordConfirm ? (
+                            <p className="mt-1 text-[10px] font-semibold text-red-600">
+                              {authFieldErrors.passwordConfirm}
+                            </p>
+                          ) : null}
                         </div>
                       </div>
 

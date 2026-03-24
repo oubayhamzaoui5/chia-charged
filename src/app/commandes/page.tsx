@@ -14,7 +14,7 @@ const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
 
 export const metadata: Metadata = {
-  title: 'Chia Charged | Mes commandes',
+  title: 'Chia Charged | My Orders',
 }
 
 export default async function CommandesPage() {
@@ -60,7 +60,7 @@ export default async function CommandesPage() {
                   className="text-[2.4rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.5rem]"
                   style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: '-0.03em', color: '#111' }}
                 >
-                  Mes{' '}
+                  My{' '}
                   <span
                     style={{
                       background: GRADIENT,
@@ -69,14 +69,14 @@ export default async function CommandesPage() {
                       backgroundClip: 'text',
                     }}
                   >
-                    Commandes.
+                    Orders.
                   </span>
                 </h1>
                 <p
                   className="mt-3 text-sm font-black uppercase tracking-[0.15em]"
                   style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                 >
-                  Suivez vos achats en temps reel.
+                  Track your purchases in real time.
                 </p>
               </div>
               <Link
@@ -85,7 +85,7 @@ export default async function CommandesPage() {
                 style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111' }}
               >
                 <ArrowLeft className="h-4 w-4" />
-                Boutique
+                Shop
               </Link>
             </div>
 
@@ -104,13 +104,13 @@ export default async function CommandesPage() {
                   className="mt-6 text-xl font-black uppercase tracking-tight"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  Aucune Commande
+                  No Orders
                 </h2>
                 <p
                   className="mt-2 max-w-xs text-xs font-bold uppercase tracking-wider"
                   style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.4)' }}
                 >
-                  Vos futurs achats apparaitront ici.
+                  Your future purchases will appear here.
                 </p>
                 <Link
                   href="/boutique"
@@ -122,7 +122,7 @@ export default async function CommandesPage() {
                     boxShadow: '4px 4px 0 #111',
                   }}
                 >
-                  Commencer mes achats &#8594;
+                  Start shopping &#8594;
                 </Link>
               </div>
             ) : (
@@ -137,7 +137,7 @@ export default async function CommandesPage() {
                       className="text-[1.8rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[2.5rem]"
                       style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                     >
-                      Vous Pourriez{' '}
+                      You Might{' '}
                       <span
                         style={{
                           background: GRADIENT,
@@ -146,14 +146,14 @@ export default async function CommandesPage() {
                           backgroundClip: 'text',
                         }}
                       >
-                        Aimer.
+                        Like.
                       </span>
                     </h2>
                     <p
                       className="mt-2 text-xs font-black uppercase tracking-[0.12em]"
                       style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                     >
-                      Recommande selon vos commandes.
+                      Recommended based on your orders.
                     </p>
                   </div>
                   <Link
@@ -168,7 +168,7 @@ export default async function CommandesPage() {
                       backgroundClip: 'text',
                     }}
                   >
-                    Voir plus &#8594;
+                    View more &#8594;
                   </Link>
                 </div>
 

@@ -37,11 +37,11 @@ type Order = {
 }
 
 const statusLabels: Record<string, string> = {
-  pending: 'En attente de confirmation',
-  confirmed: 'Confirmee',
-  delevering: 'En cours de livraison',
-  delivered: 'Livree',
-  cancelled: 'Annulee',
+  pending: 'Pending confirmation',
+  confirmed: 'Confirmed',
+  delevering: 'Out for delivery',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
 }
 
 function OrderConfirmationContent() {
@@ -54,7 +54,7 @@ function OrderConfirmationContent() {
 
   useEffect(() => {
     if (!orderId) {
-      setError('Identifiant de commande manquant.')
+      setError('Missing order ID.')
       setLoading(false)
       return
     }
@@ -64,13 +64,13 @@ function OrderConfirmationContent() {
       try {
         const res = await fetch(`/api/shop/orders/${orderId}`, { cache: 'no-store' })
         if (!res.ok) {
-          setError('Commande introuvable.')
+          setError('Order not found.')
           return
         }
         const data = await res.json()
         if (!cancelled) setOrder(data.order)
       } catch {
-        if (!cancelled) setError('Impossible de charger la commande.')
+        if (!cancelled) setError('Unable to load the order.')
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -119,7 +119,7 @@ function OrderConfirmationContent() {
               style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '4px 4px 0 #111' }}
             >
               <ArrowLeft className="h-4 w-4" />
-              Retour a l&apos;accueil
+              Back to home
             </Link>
           </div>
         ) : order ? (
@@ -144,7 +144,7 @@ function OrderConfirmationContent() {
                   className="text-[1.8rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[2.5rem]"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  Commande{' '}
+                  Order{' '}
                   <span
                     style={{
                       background: GRADIENT,
@@ -153,14 +153,14 @@ function OrderConfirmationContent() {
                       backgroundClip: 'text',
                     }}
                   >
-                    Confirmee !
+                    Confirmed!
                   </span>
                 </h1>
                 <p
                   className="mt-3 text-xs font-black uppercase tracking-[0.15em]"
                   style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                 >
-                  Merci pour votre achat. Votre commande a bien ete recue.
+                  Thanks for your purchase. Your order has been received.
                 </p>
                 <div
                   className="mt-4 inline-block border-2 border-black px-3 py-1"
@@ -196,7 +196,7 @@ function OrderConfirmationContent() {
                   className="text-base font-black uppercase tracking-tight"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  Articles Commandes
+                  Order Items
                 </h2>
               </div>
 
@@ -230,7 +230,7 @@ function OrderConfirmationContent() {
                           className="text-[10px] font-bold uppercase tracking-wider"
                           style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}
                         >
-                          Ref: {item.sku}
+                          SKU: {item.sku}
                         </p>
                       )}
                     </div>
@@ -260,38 +260,38 @@ function OrderConfirmationContent() {
               >
                 <div className="flex justify-between">
                   <span
-                    className="text-[10px] font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
-                  >
-                    Sous-total
-                  </span>
-                  <span
-                    className="text-sm font-black"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
+                  className="text-[10px] font-black uppercase tracking-wider"
+                  style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
+                >
+                  Subtotal
+                </span>
+                <span
+                  className="text-sm font-black"
+                  style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
+                >
                     {(order.total - 8).toFixed(2)} {order.currency}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span
-                    className="text-[10px] font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
-                  >
-                    Livraison
-                  </span>
-                  <span
-                    className="text-sm font-black"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}
+                  className="text-[10px] font-black uppercase tracking-wider"
+                  style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
+                >
+                  Shipping
+                </span>
+                <span
+                  className="text-sm font-black"
+                  style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}
                   >
                     +8.00 {order.currency}
                   </span>
                 </div>
                 <div className="flex items-end justify-between border-t-2 border-black/10 pt-3">
                   <span
-                    className="text-sm font-black uppercase"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
-                    Total
+                  className="text-sm font-black uppercase"
+                  style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
+                >
+                  Total
                   </span>
                   <span
                     className="text-xl font-black"
@@ -324,7 +324,7 @@ function OrderConfirmationContent() {
                   className="text-base font-black uppercase tracking-tight"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  Livraison
+                  Delivery
                 </h2>
               </div>
               <div className="space-y-2 p-5">
@@ -361,7 +361,7 @@ function OrderConfirmationContent() {
                     className="text-xs font-bold uppercase tracking-wider"
                     style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.5)' }}
                   >
-                    Paiement a la livraison
+                    Cash on delivery
                   </span>
                 </div>
               </div>
@@ -398,7 +398,7 @@ function OrderConfirmationContent() {
                   backgroundClip: 'text',
                 }}
               >
-                Voir mes commandes <ArrowRight size={12} style={{ color: 'rgb(124,58,237)' }} />
+                View my orders <ArrowRight size={12} style={{ color: 'rgb(124,58,237)' }} />
               </Link>
             </div>
 
@@ -410,14 +410,14 @@ function OrderConfirmationContent() {
                 style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111' }}
               >
                 <ShoppingBag className="h-4 w-4" />
-                Continuer mes achats
+                Continue shopping
               </Link>
               <Link
                 href="/commandes"
                 className="flex flex-1 items-center justify-center gap-2 border-3 border-black px-6 py-3.5 text-xs font-black uppercase tracking-[0.12em] text-white transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
                 style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '4px 4px 0 #111' }}
               >
-                Mes commandes
+                My orders
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

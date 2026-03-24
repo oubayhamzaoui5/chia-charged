@@ -16,6 +16,7 @@ const values = [
 export default function LandingAbout() {
   return (
     <section
+      id="story"
       className="relative overflow-hidden border-y-3 border-black py-20 md:py-28"
       style={{ background: GRADIENT }}
     >
@@ -133,7 +134,6 @@ export default function LandingAbout() {
     </section>
   )
 }
-
 
 
 

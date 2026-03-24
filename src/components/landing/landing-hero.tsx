@@ -87,7 +87,7 @@ export default function LandingHero() {
               }}
             >
               <Link
-                href="/boutique"
+                href="#flavors"
                 className="shimmer-btn inline-flex h-[50px] items-center justify-center px-10 text-sm font-black uppercase tracking-[0.15em] text-white"
                 style={{
                   fontFamily: FONT,
@@ -96,11 +96,11 @@ export default function LandingHero() {
                   borderRadius: "4px",
                 }}
               >
-                Shop Now &#8594;
+                Our Flavors &#8594;
               </Link>
             </span>
             <Link
-              href="#flavors"
+              href="#story"
               className="inline-flex h-[56px] items-center justify-center px-8 text-sm font-black uppercase tracking-[0.12em] text-white transition-all duration-200 ease-out hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0"
               style={{
                 fontFamily: FONT,
@@ -111,7 +111,7 @@ export default function LandingHero() {
                 boxShadow: "4px 4px 0 rgba(0,0,0,0.2)",
               }}
             >
-              Our Flavors
+              Our Story
             </Link>
           </motion.div>
 

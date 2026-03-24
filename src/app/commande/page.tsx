@@ -6,7 +6,7 @@ import Footer from "@/components/footer"
 import { CheckoutContent } from "@/components/checkout-content"
 
 export const metadata: Metadata = {
-  title: "Chia Charged | Paiement",
+  title: "Chia Charged | Checkout",
 }
 
 export default function CommandePage() {
@@ -31,7 +31,7 @@ export default function CommandePage() {
                 backgroundSize: '280px 280px',
               }}
             >
-              Chargement...
+              Loading...
             </div>
           }
         >

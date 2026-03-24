@@ -29,7 +29,9 @@ const loginSchema = z
   .object({
     identifier: z.string().trim().optional(),
     email: z.string().trim().optional(),
-    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caracteres'),
+    password: z
+      .string({ required_error: 'Le mot de passe est obligatoire' })
+      .min(6, 'Le mot de passe doit contenir au moins 6 caracteres'),
   })
   .superRefine((data, ctx) => {
     const identifier = (data.identifier ?? data.email ?? '').trim()
@@ -324,8 +326,17 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     if (error instanceof z.ZodError) {
+      const flattened = error.flatten().fieldErrors
+      const fieldErrors: Record<string, string> = {}
+      Object.keys(flattened).forEach((key) => {
+        const message = flattened[key]?.[0]
+        if (message) fieldErrors[key] = message
+      })
       return NextResponse.json(
-        { message: error.issues[0]?.message ?? 'Requete invalide' },
+        {
+          message: error.issues[0]?.message ?? 'Requete invalide',
+          fieldErrors,
+        },
         { status: 400 }
       )
     }
