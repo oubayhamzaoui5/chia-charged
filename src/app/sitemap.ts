@@ -14,25 +14,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${baseUrl}/boutique`,
+      url: `${baseUrl}/shop`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/Nouveautes`,
+      url: `${baseUrl}/new-arrivals`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/Promotions`,
+      url: `${baseUrl}/promotions`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/Wishlist`,
+      url: `${baseUrl}/wishlist`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.6,
@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categoryRoutes: MetadataRoute.Sitemap = categories
     .filter((c: any) => Boolean(c.slug))
     .map((c: any) => ({
-      url: `${baseUrl}/boutique/categorie/${c.slug}`,
+      url: `${baseUrl}/shop/category/${c.slug}`,
       lastModified: c.updated ? new Date(c.updated) : new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.8,
@@ -77,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const productRoutes: MetadataRoute.Sitemap = products
     .filter((p: any) => Boolean(p.slug))
     .map((p: any) => ({
-      url: `${baseUrl}/produit/${p.slug}`,
+      url: `${baseUrl}/product/${p.slug}`,
       lastModified: p.updated ? new Date(p.updated) : new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.7,

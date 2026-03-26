@@ -14,7 +14,7 @@ export default function ProductCard({ product }: { product: HomeProduct }) {
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-foreground/10 bg-background transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-      <Link href={`/produit/${product.slug}`} className="block">
+      <Link href={`/product/${product.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-foreground/5">
           <Image
             src={product.imageUrl || '/aboutimg.webp'}
@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: HomeProduct }) {
           </span>
         </div>
 
-        <Link href={`/produit/${product.slug}`} className="block text-base font-semibold leading-snug hover:underline">
+        <Link href={`/product/${product.slug}`} className="block text-base font-semibold leading-snug hover:underline">
           {product.name}
         </Link>
 

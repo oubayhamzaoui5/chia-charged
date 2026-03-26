@@ -67,7 +67,7 @@ export default function HomeMarblePanelSection() {
           </div>
 
           <Link
-            href="/produit/pudding-proteine-aux-graines-de-chia-saveur-fraises-et-creme"
+            href="/product/pudding-proteine-aux-graines-de-chia-saveur-fraises-et-creme"
             className="inline-flex h-12 items-center justify-center rounded-full px-8 text-sm font-bold text-white transition-opacity hover:opacity-85"
             style={{ background: "#E8446A", boxShadow: "0 4px 24px rgba(232,68,106,0.35)" }}
           >

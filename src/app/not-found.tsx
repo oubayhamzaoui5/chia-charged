@@ -17,7 +17,7 @@ export default function NotFound() {
           La page que vous cherchez n&apos;existe pas ou a été déplacée.
         </p>
         <Link
-          href="/boutique"
+          href="/shop"
           className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
         >
           Voir la boutique

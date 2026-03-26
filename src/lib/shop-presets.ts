@@ -4,9 +4,9 @@ export type NormalizedShopSearchParams = Record<string, string>
 export type ShopPreset = 'nouveautes' | 'promotions' | 'wishlist'
 
 const PRESET_PATHS: Record<ShopPreset, string> = {
-  nouveautes: '/Nouveautes',
-  promotions: '/Promotions',
-  wishlist: '/Wishlist',
+  nouveautes: '/new-arrivals',
+  promotions: '/promotions',
+  wishlist: '/wishlist',
 }
 
 const PRESET_QUERY_KEYS: Record<ShopPreset, string[]> = {

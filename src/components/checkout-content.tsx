@@ -46,39 +46,106 @@ type UserAddress = {
   city: string
   postalCode?: string
   notes?: string
+  country?: string
+  state?: string
+  address2?: string
 }
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
-const PHONE_PREFIX = "+216"
 const GUEST_CART_KEY = "guest_cart"
 const SIGNUP_PROMO_DISMISSED_KEY = "signup_promo_dismissed_v1"
-const DEFAULT_CURRENCY = "DT"
-const TUNISIA_CITIES = [
-  "Tunis",
-  "Ariana",
-  "Ben Arous",
-  "Manouba",
-  "Nabeul",
-  "Zaghouan",
-  "Bizerte",
-  "Beja",
-  "Jendouba",
-  "Le Kef",
-  "Siliana",
-  "Sousse",
-  "Monastir",
-  "Mahdia",
-  "Sfax",
-  "Kairouan",
-  "Kasserine",
-  "Sidi Bouzid",
-  "Gabes",
-  "Medenine",
-  "Tataouine",
-  "Gafsa",
-  "Tozeur",
-  "Kebili",
+const DEFAULT_CURRENCY = "USD"
+
+const COUNTRIES = [
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "AU", name: "Australia" },
+  { code: "FR", name: "France" },
+  { code: "DE", name: "Germany" },
+  { code: "ES", name: "Spain" },
+  { code: "IT", name: "Italy" },
+  { code: "NL", name: "Netherlands" },
+  { code: "BE", name: "Belgium" },
+  { code: "CH", name: "Switzerland" },
+  { code: "SE", name: "Sweden" },
+  { code: "NO", name: "Norway" },
+  { code: "DK", name: "Denmark" },
+  { code: "FI", name: "Finland" },
+  { code: "PT", name: "Portugal" },
+  { code: "IE", name: "Ireland" },
+  { code: "AT", name: "Austria" },
+  { code: "PL", name: "Poland" },
+  { code: "CZ", name: "Czech Republic" },
+  { code: "HU", name: "Hungary" },
+  { code: "RO", name: "Romania" },
+  { code: "GR", name: "Greece" },
+  { code: "JP", name: "Japan" },
+  { code: "KR", name: "South Korea" },
+  { code: "CN", name: "China" },
+  { code: "HK", name: "Hong Kong" },
+  { code: "SG", name: "Singapore" },
+  { code: "MY", name: "Malaysia" },
+  { code: "TH", name: "Thailand" },
+  { code: "ID", name: "Indonesia" },
+  { code: "PH", name: "Philippines" },
+  { code: "VN", name: "Vietnam" },
+  { code: "IN", name: "India" },
+  { code: "PK", name: "Pakistan" },
+  { code: "BD", name: "Bangladesh" },
+  { code: "AE", name: "United Arab Emirates" },
+  { code: "SA", name: "Saudi Arabia" },
+  { code: "QA", name: "Qatar" },
+  { code: "KW", name: "Kuwait" },
+  { code: "BH", name: "Bahrain" },
+  { code: "OM", name: "Oman" },
+  { code: "TR", name: "Turkey" },
+  { code: "IL", name: "Israel" },
+  { code: "EG", name: "Egypt" },
+  { code: "MA", name: "Morocco" },
+  { code: "TN", name: "Tunisia" },
+  { code: "DZ", name: "Algeria" },
+  { code: "ZA", name: "South Africa" },
+  { code: "NG", name: "Nigeria" },
+  { code: "KE", name: "Kenya" },
+  { code: "GH", name: "Ghana" },
+  { code: "BR", name: "Brazil" },
+  { code: "MX", name: "Mexico" },
+  { code: "AR", name: "Argentina" },
+  { code: "CL", name: "Chile" },
+  { code: "CO", name: "Colombia" },
+  { code: "PE", name: "Peru" },
+  { code: "NZ", name: "New Zealand" },
+] as const
+
+const US_STATES = [
+  { code: "AL", name: "Alabama" }, { code: "AK", name: "Alaska" },
+  { code: "AZ", name: "Arizona" }, { code: "AR", name: "Arkansas" },
+  { code: "CA", name: "California" }, { code: "CO", name: "Colorado" },
+  { code: "CT", name: "Connecticut" }, { code: "DE", name: "Delaware" },
+  { code: "DC", name: "Washington D.C." }, { code: "FL", name: "Florida" },
+  { code: "GA", name: "Georgia" }, { code: "HI", name: "Hawaii" },
+  { code: "ID", name: "Idaho" }, { code: "IL", name: "Illinois" },
+  { code: "IN", name: "Indiana" }, { code: "IA", name: "Iowa" },
+  { code: "KS", name: "Kansas" }, { code: "KY", name: "Kentucky" },
+  { code: "LA", name: "Louisiana" }, { code: "ME", name: "Maine" },
+  { code: "MD", name: "Maryland" }, { code: "MA", name: "Massachusetts" },
+  { code: "MI", name: "Michigan" }, { code: "MN", name: "Minnesota" },
+  { code: "MS", name: "Mississippi" }, { code: "MO", name: "Missouri" },
+  { code: "MT", name: "Montana" }, { code: "NE", name: "Nebraska" },
+  { code: "NV", name: "Nevada" }, { code: "NH", name: "New Hampshire" },
+  { code: "NJ", name: "New Jersey" }, { code: "NM", name: "New Mexico" },
+  { code: "NY", name: "New York" }, { code: "NC", name: "North Carolina" },
+  { code: "ND", name: "North Dakota" }, { code: "OH", name: "Ohio" },
+  { code: "OK", name: "Oklahoma" }, { code: "OR", name: "Oregon" },
+  { code: "PA", name: "Pennsylvania" }, { code: "RI", name: "Rhode Island" },
+  { code: "SC", name: "South Carolina" }, { code: "SD", name: "South Dakota" },
+  { code: "TN", name: "Tennessee" }, { code: "TX", name: "Texas" },
+  { code: "UT", name: "Utah" }, { code: "VT", name: "Vermont" },
+  { code: "VA", name: "Virginia" }, { code: "WA", name: "Washington" },
+  { code: "WV", name: "West Virginia" }, { code: "WI", name: "Wisconsin" },
+  { code: "WY", name: "Wyoming" },
 ] as const
 
 function getGuestCart(): GuestCartItem[] {
@@ -113,13 +180,6 @@ function pbFileUrl(productId: string, filename: string) {
   return `${base}/api/files/products/${productId}/${encodeURIComponent(filename)}`
 }
 
-function formatPhoneDigits(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 8)
-  if (digits.length <= 2) return digits
-  if (digits.length <= 5) return `${digits.slice(0, 2)} ${digits.slice(2)}`
-  return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5)}`
-}
-
 function normalizeEmail(value: string) {
   return value.trim().toLowerCase()
 }
@@ -147,10 +207,12 @@ export function CheckoutContent() {
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [profileEmail, setProfileEmail] = useState("")
-  const [phone, setPhone] = useState("")
 
+  const [country, setCountry] = useState("")
   const [address, setAddress] = useState("")
+  const [address2, setAddress2] = useState("")
   const [city, setCity] = useState("")
+  const [state, setState] = useState("")
   const [postalCode, setPostalCode] = useState("")
   const [notes, setNotes] = useState("")
 
@@ -165,6 +227,15 @@ export function CheckoutContent() {
   const [orderError, setOrderError] = useState<string | null>(null)
   const [isPromoBannerVisible, setIsPromoBannerVisible] = useState(false)
   const [orderFlowStage, setOrderFlowStage] = useState<"idle" | "loading" | "success">("idle")
+  const [stripeConfigured, setStripeConfigured] = useState(false)
+
+  // Load Stripe config
+  useEffect(() => {
+    fetch('/api/shop/stripe/config')
+      .then(r => r.json())
+      .then(data => setStripeConfigured(!!data?.configured))
+      .catch(() => setStripeConfigured(false))
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -180,10 +251,6 @@ export function CheckoutContent() {
             setEmail((prev) => prev || nextEmail)
           }
         }
-      }
-      if (typeof model.phone === "string") {
-        const rawPhone = model.phone.replace(PHONE_PREFIX, "").trim()
-        setPhone((prev) => prev || formatPhoneDigits(rawPhone))
       }
       if (typeof model.surname === "string" && model.surname.trim()) {
         setFirstName((prev) => prev || model.surname.trim())
@@ -259,7 +326,7 @@ export function CheckoutContent() {
         })
         if (!res.ok) {
           const data = await res.json().catch(() => ({}))
-          throw new Error(data?.message || "Impossible de charger les adresses.")
+          throw new Error(data?.message || "Failed to load addresses.")
         }
         const data = await res.json()
         const rows = Array.isArray(data?.items) ? data.items : []
@@ -270,6 +337,9 @@ export function CheckoutContent() {
           city: String(row.city ?? ""),
           postalCode: typeof row.postalCode === "string" ? row.postalCode : "",
           notes: typeof row.notes === "string" ? row.notes : "",
+          country: typeof row.country === "string" ? row.country : "",
+          state: typeof row.state === "string" ? row.state : "",
+          address2: typeof row.address2 === "string" ? row.address2 : "",
         }))
         setAddresses(mapped)
         if (mapped.length > 0) {
@@ -278,7 +348,7 @@ export function CheckoutContent() {
       } catch (err: any) {
         if (!cancelled) {
           setAddresses([])
-          setOrderError(err?.message || "Impossible de charger les adresses.")
+          setOrderError(err?.message || "Failed to load addresses.")
         }
       }
     }
@@ -295,9 +365,12 @@ export function CheckoutContent() {
     const selected = addresses.find((a) => a.id === selectedAddressId)
     if (!selected) return
     setAddress(selected.address || "")
+    setAddress2(selected.address2 || "")
     setCity(selected.city || "")
     setPostalCode(selected.postalCode || "")
     setNotes(selected.notes || "")
+    setCountry(selected.country || "")
+    setState(selected.state || "")
   }, [addresses, selectedAddressId])
 
   useEffect(() => {
@@ -418,27 +491,32 @@ export function CheckoutContent() {
     () => cartItems.reduce((sum, item) => sum + getUnitPrice(item.product) * item.quantity, 0),
     [cartItems]
   )
-  const cartCurrency =
-    cartItems.find((item) => item.product?.currency)?.product?.currency ?? DEFAULT_CURRENCY
-  const shipping = cartItems.length > 0 ? 8 : 0
+  const cartCurrency = "USD"
+  const shipping = cartItems.length > 0 ? (country === "US" ? 5 : country ? 20 : 0) : 0
   const cartTotal = cartSubtotal + shipping
 
   const canSaveAddress = useMemo(() => {
     if (!isLoggedIn) return false
     return Boolean(address.trim() && city.trim())
   }, [isLoggedIn, address, city])
-  const isPostalCodeValid = /^\d{4}$/.test(postalCode.trim())
+
+  const isPostalCodeValid = useMemo(() => {
+    const pc = postalCode.trim()
+    if (!pc) return false
+    if (country === "US") return /^\d{5}$/.test(pc)
+    return pc.length > 0
+  }, [postalCode, country])
+
   const isRequiredFieldsValid = useMemo(
     () =>
       Boolean(
         firstName.trim() &&
         lastName.trim() &&
-        phone.trim() &&
         address.trim() &&
         city.trim() &&
-        isPostalCodeValid
+        country.trim()
       ),
-    [firstName, lastName, phone, address, city, isPostalCodeValid]
+    [firstName, lastName, address, city, country]
   )
 
   const syncEmailToProfile = async (showError = true) => {
@@ -456,7 +534,7 @@ export function CheckoutContent() {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        throw new Error(data?.message || "Impossible de mettre a jour votre email.")
+        throw new Error(data?.message || "Failed to update your email.")
       }
       const data = await res.json().catch(() => ({}))
       const updatedEmail =
@@ -468,7 +546,7 @@ export function CheckoutContent() {
       return true
     } catch (err: any) {
       if (showError) {
-        setOrderError(err?.message || "Impossible de mettre a jour votre email.")
+        setOrderError(err?.message || "Failed to update your email.")
       }
       return false
     }
@@ -543,15 +621,18 @@ export function CheckoutContent() {
     try {
       setIsSavingAddress(true)
       if (!isLoggedIn || !authUserId) {
-        setOrderError("Veuillez vous reconnecter pour enregistrer l'adresse.")
+        setOrderError("Please log in again to save your address.")
         return
       }
 
       const payload = {
         address: address.trim(),
+        address2: address2.trim(),
         city: city.trim(),
         postalCode: postalCode.trim(),
         notes: notes.trim(),
+        country: country.trim(),
+        state: state.trim(),
       }
 
       if (selectedAddressId !== "new") {
@@ -562,7 +643,7 @@ export function CheckoutContent() {
         })
         if (!res.ok) {
           const data = await res.json().catch(() => ({}))
-          throw new Error(data?.message || "Impossible de mettre a jour l'adresse.")
+          throw new Error(data?.message || "Failed to update address.")
         }
         setAddresses((prev) =>
           prev.map((a) => (a.id === selectedAddressId ? { ...a, ...payload } : a))
@@ -575,22 +656,25 @@ export function CheckoutContent() {
         })
         if (!res.ok) {
           const data = await res.json().catch(() => ({}))
-          throw new Error(data?.message || "Impossible d'enregistrer l'adresse.")
+          throw new Error(data?.message || "Failed to save address.")
         }
         const data = await res.json()
         const created = data?.item
         const mapped: UserAddress = {
           id: String(created.id),
           address: String(created.address ?? payload.address),
+          address2: String(created.address2 ?? payload.address2),
           city: String(created.city ?? payload.city),
           postalCode: String(created.postalCode ?? payload.postalCode),
           notes: String(created.notes ?? payload.notes),
+          country: String(created.country ?? payload.country),
+          state: String(created.state ?? payload.state),
         }
         setAddresses((prev) => [mapped, ...prev])
         setSelectedAddressId(mapped.id)
       }
     } catch (err: any) {
-      setOrderError(err?.message || "Impossible d'enregistrer l'adresse pour le moment.")
+      setOrderError(err?.message || "Failed to save address.")
     } finally {
       setIsSavingAddress(false)
     }
@@ -599,20 +683,20 @@ export function CheckoutContent() {
   const handleConfirmOrder = async () => {
     setOrderError(null)
 
-    if (!firstName.trim() || !lastName.trim() || !phone.trim()) {
-      setOrderError("Veuillez remplir vos informations de contact.")
+    if (!firstName.trim() || !lastName.trim()) {
+      setOrderError("Please fill in your contact information.")
+      return
+    }
+    if (!country.trim()) {
+      setOrderError("Please select your country.")
       return
     }
     if (!address.trim() || !city.trim()) {
-      setOrderError("Veuillez renseigner l'adresse de livraison.")
-      return
-    }
-    if (!/^\d{4}$/.test(postalCode.trim())) {
-      setOrderError("Le code postal doit contenir exactement 4 chiffres.")
+      setOrderError("Please enter your shipping address.")
       return
     }
     if (cartItems.length === 0) {
-      setOrderError("Votre panier est vide.")
+      setOrderError("Your cart is empty.")
       return
     }
 
@@ -624,12 +708,11 @@ export function CheckoutContent() {
         setOrderFlowStage("idle")
         return
       }
-      const fullPhone = `${PHONE_PREFIX} ${phone.trim()}`
 
       const itemsPayload = cartItems.map((item) => ({
         id: item.product?.id,
         productId: item.product?.id,
-        name: item.product?.name ?? "Produit",
+        name: item.product?.name ?? "Product",
         sku: item.product?.sku ?? "",
         unitPrice: getUnitPrice(item.product),
         quantity: Math.max(1, Number(item.quantity || 1)),
@@ -639,27 +722,52 @@ export function CheckoutContent() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
-        phone: fullPhone,
+        country: country.trim(),
         address: address.trim(),
+        address2: address2.trim(),
         city: city.trim(),
+        state: state.trim(),
         postalCode: postalCode.trim(),
         notes: notes.trim(),
-        paymentMode: "cash_on_delivery",
-        status: "pending",
+        shipping,
         items: itemsPayload,
         total: cartTotal,
         currency: cartCurrency,
       }
 
-      const orderRes = await fetch("/api/shop/orders", {
+      const orderRes = await fetch("/api/shop/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderPayload),
       })
       const orderData = await orderRes.json().catch(() => ({}))
       if (!orderRes.ok) {
-        throw new Error(orderData?.message || "La commande a echoue. Veuillez reessayer.")
+        throw new Error(orderData?.message || "Checkout failed. Please try again.")
       }
+
+      // Stripe redirect
+      if (typeof orderData?.url === "string" && orderData.url) {
+        if (!buyNow) {
+          if (isLoggedIn) {
+            await Promise.allSettled(
+              cartItems
+                .filter((it) => it.source === "pb")
+                .map((it) =>
+                  fetch(`/api/shop/cart?itemId=${encodeURIComponent(it.id)}`, { method: "DELETE" })
+                )
+            )
+          } else {
+            setGuestCart([])
+          }
+        }
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("cart:updated"))
+        }
+        window.location.href = orderData.url
+        return
+      }
+
+      // Test mode
       const createdOrderId = typeof orderData?.orderId === "string" ? orderData.orderId : ""
 
       if (!buyNow) {
@@ -683,10 +791,10 @@ export function CheckoutContent() {
       await new Promise((resolve) => window.setTimeout(resolve, 1000))
       setOrderFlowStage("success")
       await new Promise((resolve) => window.setTimeout(resolve, 800))
-      router.push(createdOrderId ? `/commande/confirmation?id=${encodeURIComponent(createdOrderId)}` : "/")
+      router.push(createdOrderId ? `/checkout/confirmation?id=${encodeURIComponent(createdOrderId)}` : "/")
     } catch (err: any) {
       setOrderFlowStage("idle")
-      const message = err?.data?.message || err?.message || "La commande a echoue. Veuillez reessayer."
+      const message = err?.data?.message || err?.message || "Checkout failed. Please try again."
       setOrderError(String(message))
     } finally {
       setIsPlacingOrder(false)
@@ -725,13 +833,13 @@ export function CheckoutContent() {
           className="mb-8 flex items-center gap-2 overflow-x-auto whitespace-nowrap text-[10px] font-black uppercase tracking-[0.15em]"
           style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
         >
-          <span className="transition-colors hover:text-black cursor-pointer">Panier</span>
+          <span className="transition-colors hover:text-black cursor-pointer">Cart</span>
           <ChevronRight className="h-3 w-3" />
-          <span style={{ color: '#111' }}>Informations</span>
+          <span style={{ color: '#111' }}>Information</span>
           <ChevronRight className="h-3 w-3" />
-          <span>Livraison</span>
+          <span>Shipping</span>
           <ChevronRight className="h-3 w-3" />
-          <span>Paiement</span>
+          <span>Payment</span>
         </nav>
 
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1fr_420px]">
@@ -743,7 +851,7 @@ export function CheckoutContent() {
                 className="text-[2.2rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3rem]"
                 style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: '-0.03em', color: '#111' }}
               >
-                Details de la{' '}
+                Order{' '}
                 <span
                   style={{
                     background: GRADIENT,
@@ -752,14 +860,14 @@ export function CheckoutContent() {
                     backgroundClip: 'text',
                   }}
                 >
-                  Commande.
+                  Details.
                 </span>
               </h1>
               <p
                 className="mt-3 text-xs font-black uppercase tracking-[0.15em]"
                 style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
               >
-                Completez vos informations pour finaliser l&apos;achat.
+                Complete your information to finalize the purchase.
               </p>
             </header>
 
@@ -796,12 +904,12 @@ export function CheckoutContent() {
                       className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
                       style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
                     >
-                      Prenom <span style={{ color: '#C62828' }}>*</span>
+                      First Name <span style={{ color: '#C62828' }}>*</span>
                     </label>
                     <input
                       type="text"
                       style={inputStyle}
-                      placeholder="Ahmed"
+                      placeholder="John"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                     />
@@ -811,12 +919,12 @@ export function CheckoutContent() {
                       className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
                       style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
                     >
-                      Nom <span style={{ color: '#C62828' }}>*</span>
+                      Last Name <span style={{ color: '#C62828' }}>*</span>
                     </label>
                     <input
                       type="text"
                       style={inputStyle}
-                      placeholder="Gharbi"
+                      placeholder="Smith"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                     />
@@ -832,40 +940,11 @@ export function CheckoutContent() {
                   <input
                     type="email"
                     style={inputStyle}
-                    placeholder="Ahmed.gharbi@mail.com"
+                    placeholder="john.smith@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onBlur={() => { void syncEmailToProfile(false) }}
                   />
-                </div>
-                <div>
-                  <label
-                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                  >
-                    Telephone <span style={{ color: '#C62828' }}>*</span>
-                  </label>
-                  <div className="relative">
-                    <span
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black"
-                      style={{
-                        fontFamily: FONT,
-                        fontWeight: 900,
-                        color: 'rgba(0,0,0,0.4)',
-                        borderRight: '2px solid #111',
-                        paddingRight: '12px',
-                      }}
-                    >
-                      {PHONE_PREFIX}
-                    </span>
-                    <input
-                      type="tel"
-                      style={{ ...inputStyle, paddingLeft: '72px' }}
-                      placeholder="99 999 999"
-                      value={phone}
-                      onChange={(e) => setPhone(formatPhoneDigits(e.target.value))}
-                    />
-                  </div>
                 </div>
               </div>
             </section>
@@ -891,7 +970,7 @@ export function CheckoutContent() {
                     className="text-base font-black uppercase tracking-tight"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    Expedition
+                    Shipping
                   </h2>
                 </div>
 
@@ -910,25 +989,72 @@ export function CheckoutContent() {
                     {addresses.map((a) => (
                       <option key={a.id} value={a.id}>{a.city} - {a.address.slice(0, 26)}...</option>
                     ))}
-                    <option value="new">+ Nouvelle adresse</option>
+                    <option value="new">+ New address</option>
                   </select>
                 )}
               </div>
 
               <div className="space-y-5 p-5">
+                {/* Country selector FIRST */}
                 <div>
                   <label
                     className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
                     style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
                   >
-                    Adresse complete <span style={{ color: '#C62828' }}>*</span>
+                    Country <span style={{ color: '#C62828' }}>*</span>
+                  </label>
+                  <select
+                    style={inputStyle}
+                    value={country}
+                    onChange={(e) => {
+                      setCountry(e.target.value)
+                      setState("")
+                    }}
+                  >
+                    <option value="">Select country...</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c.code} value={c.code}>{c.name}</option>
+                    ))}
+                  </select>
+                  {country && (
+                    <p
+                      className="mt-1.5 text-[10px] font-black uppercase tracking-wider"
+                      style={{ fontFamily: FONT, fontWeight: 900, color: country === "US" ? '#2E7D32' : 'rgba(0,0,0,0.4)' }}
+                    >
+                      {country === "US" ? "Shipping: $5.00 USD" : "International shipping: $20.00 USD"}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
+                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
+                  >
+                    Address Line 1 <span style={{ color: '#C62828' }}>*</span>
                   </label>
                   <input
                     type="text"
                     style={inputStyle}
-                    placeholder="N, Rue, Appt..."
+                    placeholder="Street, number, apartment..."
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
+                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
+                  >
+                    Address Line 2 <span style={{ color: 'rgba(0,0,0,0.25)' }}>(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    style={inputStyle}
+                    placeholder="Suite, unit, building, floor..."
+                    value={address2}
+                    onChange={(e) => setAddress2(e.target.value)}
                   />
                 </div>
 
@@ -938,35 +1064,69 @@ export function CheckoutContent() {
                       className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
                       style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
                     >
-                      Ville <span style={{ color: '#C62828' }}>*</span>
+                      City <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <select
+                    <input
+                      type="text"
                       style={inputStyle}
+                      placeholder="New York"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                    >
-                      <option value="">Selectionner</option>
-                      {TUNISIA_CITIES.map((cityName) => (
-                        <option key={cityName} value={cityName}>{cityName}</option>
-                      ))}
-                    </select>
+                    />
                   </div>
                   <div>
                     <label
                       className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
                       style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
                     >
-                      Code Postal <span style={{ color: '#C62828' }}>*</span>
+                      {country === "US" ? "ZIP Code" : "Postal Code"} <span style={{ color: '#C62828' }}>*</span>
                     </label>
                     <input
                       type="text"
                       inputMode="numeric"
                       style={inputStyle}
-                      placeholder="1000"
+                      placeholder={country === "US" ? "10001" : "00000"}
                       value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      onChange={(e) => {
+                        if (country === "US") {
+                          setPostalCode(e.target.value.replace(/\D/g, "").slice(0, 5))
+                        } else {
+                          setPostalCode(e.target.value.slice(0, 10))
+                        }
+                      }}
                     />
                   </div>
+                </div>
+
+                {/* State — dropdown for US, text for others */}
+                <div>
+                  <label
+                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
+                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
+                  >
+                    {country === "US" ? "State" : "State / Province / Region"}
+                    {country === "US" && <span style={{ color: '#C62828' }}> *</span>}
+                  </label>
+                  {country === "US" ? (
+                    <select
+                      style={inputStyle}
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                    >
+                      <option value="">Select state...</option>
+                      {US_STATES.map((s) => (
+                        <option key={s.code} value={s.code}>{s.name}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      style={inputStyle}
+                      placeholder="State / Province / Region"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                    />
+                  )}
                 </div>
 
                 <div>
@@ -974,12 +1134,12 @@ export function CheckoutContent() {
                     className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
                     style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
                   >
-                    Instructions speciales
+                    Special instructions
                   </label>
                   <textarea
                     rows={2}
                     style={{ ...inputStyle, resize: 'none' }}
-                    placeholder="Digicode, etage, voisin..."
+                    placeholder="Door code, floor, neighbor..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
@@ -1000,7 +1160,7 @@ export function CheckoutContent() {
                     }}
                   >
                     <Save size={14} style={{ color: 'rgb(124,58,237)' }} />
-                    {isSavingAddress ? "Enregistrement..." : "Memoriser cette adresse"}
+                    {isSavingAddress ? "Saving..." : "Save this address"}
                   </button>
                 )}
               </div>
@@ -1026,38 +1186,53 @@ export function CheckoutContent() {
                   className="text-base font-black uppercase tracking-tight"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  Paiement
+                  Payment
                 </h2>
               </div>
 
               <div className="space-y-3 p-5">
-                <div
-                  className="flex items-center gap-3 border-3 border-black p-4"
-                  style={{ background: '#E8F5E9', boxShadow: '3px 3px 0 #111' }}
-                >
-                  <div className="h-5 w-5 border-4 border-black bg-white" style={{ borderRadius: '50%' }}>
-                    <div className="m-auto mt-[1px] h-2 w-2 bg-black" style={{ borderRadius: '50%' }} />
+                {stripeConfigured ? (
+                  <div
+                    className="flex items-center gap-3 border-3 border-black p-4"
+                    style={{ background: '#EDE7F6', boxShadow: '3px 3px 0 #111' }}
+                  >
+                    <div className="h-5 w-5 border-4 border-black bg-white" style={{ borderRadius: '50%' }}>
+                      <div className="m-auto mt-[1px] h-2 w-2 bg-black" style={{ borderRadius: '50%' }} />
+                    </div>
+                    <span
+                      className="text-xs font-black uppercase tracking-wider"
+                      style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
+                    >
+                      Card Payment (Stripe)
+                    </span>
+                    <CreditCard size={16} className="ml-auto" />
                   </div>
-                  <span
-                    className="text-xs font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
-                    Paiement a la livraison
-                  </span>
-                </div>
-
-                <div
-                  className="flex items-center gap-3 border-2 border-black/20 p-4 opacity-40"
-                >
-                  <div className="h-5 w-5 border-2 border-black/30" style={{ borderRadius: '50%' }} />
-                  <span
-                    className="text-xs font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
-                    Carte Bancaire
-                  </span>
-                  <CreditCard size={16} className="ml-auto" />
-                </div>
+                ) : (
+                  <>
+                    <div
+                      className="flex items-center gap-3 border-3 border-black p-4"
+                      style={{ background: '#FFF8E1', boxShadow: '3px 3px 0 #111' }}
+                    >
+                      <div className="h-5 w-5 border-4 border-black bg-white" style={{ borderRadius: '50%' }}>
+                        <div className="m-auto mt-[1px] h-2 w-2 bg-black" style={{ borderRadius: '50%' }} />
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span
+                          className="text-xs font-black uppercase tracking-wider"
+                          style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
+                        >
+                          Test Mode
+                        </span>
+                        <span
+                          className="text-[10px] font-bold"
+                          style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.45)' }}
+                        >
+                          No payment processor configured. Orders will be placed in test mode.
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </section>
           </div>
@@ -1078,13 +1253,13 @@ export function CheckoutContent() {
                   className="text-base font-black uppercase tracking-tight"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  Recapitulatif
+                  Summary
                 </h3>
                 <span
                   className="border-2 border-black px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white"
                   style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '2px 2px 0 #111' }}
                 >
-                  {cartItems.length} article{cartItems.length > 1 ? 's' : ''}
+                  {cartItems.length} item{cartItems.length > 1 ? 's' : ''}
                 </span>
               </div>
 
@@ -1122,7 +1297,7 @@ export function CheckoutContent() {
                         className="text-[10px] font-bold uppercase tracking-wider"
                         style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}
                       >
-                        Quantite: {item.quantity}
+                        Qty: {item.quantity}
                       </p>
                       <div className="mt-2 flex items-center gap-3">
                         <div
@@ -1159,7 +1334,7 @@ export function CheckoutContent() {
                             backgroundClip: 'text',
                           }}
                         >
-                          {(getUnitPrice(item.product) * item.quantity).toFixed(2)} {item.product?.currency ?? DEFAULT_CURRENCY}
+                          ${(getUnitPrice(item.product) * item.quantity).toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -1174,13 +1349,13 @@ export function CheckoutContent() {
                     className="text-[10px] font-black uppercase tracking-wider"
                     style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                   >
-                    Sous-total
+                    Subtotal
                   </span>
                   <span
                     className="text-sm font-black"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    {cartSubtotal.toFixed(2)} {cartCurrency}
+                    ${cartSubtotal.toFixed(2)} USD
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -1188,13 +1363,13 @@ export function CheckoutContent() {
                     className="text-[10px] font-black uppercase tracking-wider"
                     style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                   >
-                    Livraison
+                    Shipping
                   </span>
                   <span
                     className="text-sm font-black"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}
                   >
-                    +{shipping.toFixed(2)} {cartCurrency}
+                    {country ? `+$${shipping.toFixed(2)} USD` : "Select country"}
                   </span>
                 </div>
                 <div className="flex items-end justify-between border-t-2 border-black/10 pt-3">
@@ -1215,7 +1390,7 @@ export function CheckoutContent() {
                       backgroundClip: 'text',
                     }}
                   >
-                    {cartTotal.toFixed(2)} {cartCurrency}
+                    ${cartTotal.toFixed(2)} USD
                   </span>
                 </div>
               </div>
@@ -1233,7 +1408,11 @@ export function CheckoutContent() {
                     boxShadow: '4px 4px 0 #111',
                   }}
                 >
-                  {isPlacingOrder ? "Traitement..." : "Confirmer la Commande"}
+                  {isPlacingOrder
+                    ? "Processing..."
+                    : stripeConfigured
+                    ? "Pay with Stripe \u2192"
+                    : "Place Test Order \u2192"}
                 </button>
               </div>
             </div>
@@ -1257,7 +1436,7 @@ export function CheckoutContent() {
                       className="text-[10px] font-black uppercase tracking-[0.15em]"
                       style={{ fontFamily: FONT, fontWeight: 900, color: '#C62828' }}
                     >
-                      Verification requise
+                      Attention required
                     </p>
                     <p
                       className="mt-1 text-xs font-bold"
@@ -1296,13 +1475,13 @@ export function CheckoutContent() {
                     className="mt-5 text-lg font-black uppercase tracking-tight"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    Finalisation...
+                    Processing...
                   </h4>
                   <p
                     className="mt-2 text-[10px] font-black uppercase tracking-wider"
                     style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                   >
-                    Patientez quelques secondes
+                    Please wait a moment
                   </p>
                 </>
               ) : (
@@ -1317,13 +1496,13 @@ export function CheckoutContent() {
                     className="mt-5 text-lg font-black uppercase tracking-tight"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    Commande Confirmee
+                    Order Confirmed
                   </h4>
                   <p
                     className="mt-2 text-[10px] font-black uppercase tracking-wider"
                     style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                   >
-                    Redirection en cours...
+                    Redirecting...
                   </p>
                 </>
               )}

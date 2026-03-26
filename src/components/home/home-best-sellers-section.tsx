@@ -23,7 +23,7 @@ export default function HomeBestSellersSection({ products }: HomeBestSellersSect
           <p className="mt-1 text-sm text-slate-400">Loved by thousands of health-conscious customers.</p>
         </div>
         <Link
-          href="/boutique"
+          href="/shop"
           className="hidden shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-600 transition-all hover:border-accent/40 hover:text-accent md:inline-flex"
         >
           View All <span aria-hidden>→</span>
@@ -39,7 +39,7 @@ export default function HomeBestSellersSection({ products }: HomeBestSellersSect
             >
               <ShopProductCard
                 product={product}
-                productHref={`/produit/${product.slug}`}
+                productHref={`/product/${product.slug}`}
                 prioritizeImage={idx < 2}
                 disableAnimations
               />
@@ -53,7 +53,7 @@ export default function HomeBestSellersSection({ products }: HomeBestSellersSect
           <div key={product.id} className="rounded-2xl border border-transparent p-2">
             <ShopProductCard
               product={product}
-              productHref={`/produit/${product.slug}`}
+              productHref={`/product/${product.slug}`}
               prioritizeImage={idx < 2}
               disableAnimations
             />

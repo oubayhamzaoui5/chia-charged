@@ -727,8 +727,8 @@ export default function ProductClient({
     } catch {
       const currentPath = typeof window !== 'undefined'
         ? `${window.location.pathname}${window.location.search}`
-        : `/produit/${product.slug}`
-      router.push(`/connexion?next=${encodeURIComponent(currentPath)}`)
+        : `/product/${product.slug}`
+      router.push(`/login?next=${encodeURIComponent(currentPath)}`)
     } finally { setIsWishLoading(false) }
   }
 
@@ -754,7 +754,7 @@ export default function ProductClient({
 
   const handleShareClick = async () => {
     try {
-      const url = typeof window !== 'undefined' ? window.location.href : `/produit/${product.slug}`
+      const url = typeof window !== 'undefined' ? window.location.href : `/product/${product.slug}`
       if (navigator?.clipboard?.writeText) await navigator.clipboard.writeText(url)
       setShareCopied(true)
       if (typeof window !== 'undefined') window.setTimeout(() => setShareCopied(false), 1500)
@@ -882,7 +882,7 @@ export default function ProductClient({
                             {values.map((value, vi) => {
                               const nextVariant = { ...(selectedVariant?.variantKey ?? {}), [key]: value.value }
                               const keyStr = variantKeyToString(nextVariant)
-                              const variantLink = variantUrlMap[keyStr] ?? `/produit/${product.slug}`
+                              const variantLink = variantUrlMap[keyStr] ?? `/product/${product.slug}`
                               const isSelected = selectedVariant?.variantKey?.[key] === value.value
                               return (
                                 <Link key={value.id} href={variantLink} scroll={false} className="flex-1">
@@ -905,7 +905,7 @@ export default function ProductClient({
                             {values.map((value) => {
                               const nextVariant = { ...(selectedVariant?.variantKey ?? {}), [key]: value.value }
                               const keyStr = variantKeyToString(nextVariant)
-                              const variantLink = variantUrlMap[keyStr] ?? `/produit/${product.slug}`
+                              const variantLink = variantUrlMap[keyStr] ?? `/product/${product.slug}`
                               const isSelected = selectedVariant?.variantKey?.[key] === value.value
                               const imgSrc = value.resolvedValue.type === 'image'
                                 ? (value.resolvedValue.url ?? null)
@@ -944,7 +944,7 @@ export default function ProductClient({
                             {values.map((value) => {
                               const nextVariant = { ...(selectedVariant?.variantKey ?? {}), [key]: value.value }
                               const keyStr = variantKeyToString(nextVariant)
-                              const variantLink = variantUrlMap[keyStr] ?? `/produit/${product.slug}`
+                              const variantLink = variantUrlMap[keyStr] ?? `/product/${product.slug}`
                               const isSelected = selectedVariant?.variantKey?.[key] === value.value
                               if (value.resolvedValue.type === 'color') {
                                 return (

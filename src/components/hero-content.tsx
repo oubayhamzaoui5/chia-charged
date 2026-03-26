@@ -68,7 +68,7 @@ export default function Hero() {
 
   <div className="flex flex-row items-center justify-start gap-3">
     <Link
-      href="/boutique"
+      href="/shop"
       className="relative isolate cursor-pointer overflow-hidden rounded-lg bg-[#c19a2f] px-2 py-2 lg:py-3 text-center text-[10px] font-bold uppercase tracking-wider whitespace-nowrap text-white transition-transform duration-300 before:absolute before:inset-y-0 before:left-[-40%] before:w-[35%] before:skew-x-[-20deg] before:bg-gradient-to-r before:from-transparent before:via-white/50 before:to-transparent before:translate-x-[-180%] before:transition-transform before:duration-700 before:content-[''] hover:before:translate-x-[420%] hover:scale-[1.01] active:scale-95 lg:px-6 lg:text-sm lg:tracking-widest"
     >
       Découvrir nos collections

@@ -80,7 +80,7 @@ export default function LandingCta() {
 
           <div className="flex flex-wrap items-center gap-4">
             <Link
-              href="/boutique"
+              href="/shop"
               className="shimmer-btn relative isolate inline-flex h-14 items-center justify-center overflow-hidden rounded-sm border-3 border-black px-10 text-sm font-black uppercase tracking-[0.15em] text-black transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_rgba(0,0,0,0.6)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0px_rgba(0,0,0,0.6)]"
               style={{
                 fontFamily: FONT,

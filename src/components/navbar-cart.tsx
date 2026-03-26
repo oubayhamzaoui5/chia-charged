@@ -348,7 +348,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
                 </p>
               </div>
               <Link
-                href="/boutique"
+                href="/shop"
                 onClick={() => setIsCartOpen(false)}
                 className="inline-flex items-center gap-2 border-3 border-black px-5 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5"
                 style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '4px 4px 0 #111' }}
@@ -536,7 +536,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
               }}
               onClick={() => {
                 setIsCartOpen(false)
-                router.push("/commande")
+                router.push("/checkout")
               }}
             >
               <span className="flex items-center gap-2">

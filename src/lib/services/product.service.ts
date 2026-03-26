@@ -667,7 +667,7 @@ async function getVariantsAndValues(
   for (const variant of variants) {
     const key = variantKeyToString(variant.variantKey ?? {})
     if (key) {
-      variantUrlMap[key] = `/produit/${variant.slug}`
+      variantUrlMap[key] = `/product/${variant.slug}`
     }
   }
 

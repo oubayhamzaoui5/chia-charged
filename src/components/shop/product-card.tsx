@@ -61,7 +61,7 @@ export default function ProductCard({
   const [liked, setLiked] = useState(initialWishlisted)
   const [isWishLoading, setIsWishLoading] = useState(false)
 
-  const productHref = originQuery ? `/produit/${p.slug}?${originQuery}` : `/produit/${p.slug}`
+  const productHref = originQuery ? `/product/${p.slug}?${originQuery}` : `/product/${p.slug}`
 
   useEffect(() => {
     setLiked(initialWishlisted)
@@ -85,8 +85,8 @@ export default function ProductCard({
       setLiked(inWishlist)
     } catch {
       const currentPath =
-        typeof window !== 'undefined' ? `${window.location.pathname}${window.location.search}` : `/produit/${p.slug}`
-      router.push(`/connexion?next=${encodeURIComponent(currentPath)}`)
+        typeof window !== 'undefined' ? `${window.location.pathname}${window.location.search}` : `/product/${p.slug}`
+      router.push(`/login?next=${encodeURIComponent(currentPath)}`)
     } finally {
       setIsWishLoading(false)
     }

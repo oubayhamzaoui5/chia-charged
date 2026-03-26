@@ -12,6 +12,8 @@ import {
   FileText,
   Star,
   Users,
+  Settings,
+  KeyRound,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -27,7 +29,7 @@ export default function Sidebar() {
     try {
       await fetch("/api/auth/logout", { method: "POST" })
     } finally {
-      router.replace("/connexion")
+      router.replace("/login")
       router.refresh()
     }
   }
@@ -75,7 +77,8 @@ export default function Sidebar() {
         <NavLink href="/admin/inventory" icon={Boxes} label="Inventory" />
         <NavLink href="/admin/users" icon={Users} label="Customers" />
         <NavLink href="/admin/blog" icon={FileText} label="Blog" />
-
+        <NavLink href="/admin/keys" icon={KeyRound} label="API Keys" />
+        <NavLink href="/admin/settings" icon={Settings} label="Settings" />
       </nav>
 
       <div className="px-3 pb-4">

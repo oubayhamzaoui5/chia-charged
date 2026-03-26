@@ -34,8 +34,8 @@ export type StudioMember = {
 }
 
 export const luxeNav: LuxeNavItem[] = [
-  { label: 'Collections', href: '/boutique' },
-  { label: 'A Propos', href: '/a-propos' },
+  { label: 'Collections', href: '/shop' },
+  { label: 'A Propos', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -43,21 +43,21 @@ export const homeCategories: LuxeCategory[] = [
   {
     id: 'suspensions',
     title: 'Suspensions',
-    href: '/boutique?category=suspensions',
+    href: '/shop?category=suspensions',
     image: '/aboutimg.webp',
     description: 'Volumes aeriens et silhouettes architecturales.',
   },
   {
     id: 'lampes-table',
     title: 'Lampes de Table',
-    href: '/boutique?category=lampes-table',
+    href: '/shop?category=lampes-table',
     image: '/aboutimg.webp',
     description: 'Lumiere d ambiance pour salon, bureau et chambre.',
   },
   {
     id: 'appliques-murales',
     title: 'Appliques Murales',
-    href: '/boutique?category=appliques-murales',
+    href: '/shop?category=appliques-murales',
     image: '/aboutimg.webp',
     description: 'Eclairage mural precis pour rythmer les espaces.',
   },

@@ -146,18 +146,13 @@ export function MegaMenu({ isOpen, categories, onClose }: MegaMenuProps) {
             exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Outer gradient + rays */}
+              {/* Outer gradient + subtle doodle lines */}
               <div
                 className="absolute inset-0 -z-10"
                 style={{
-                  backgroundImage: [
-                    "radial-gradient(circle at 50% -25%, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 55%)",
-                    "repeating-conic-gradient(from -8deg, rgba(255,255,255,0.22) 0deg 8deg, rgba(255,255,255,0) 8deg 16deg)",
-                    "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)",
-                  ].join(", "),
+                  background: GRADIENT,
                 }}
               />
-
               {/* Soft vignette */}
               <div
                 className="absolute inset-0 -z-10"
@@ -166,8 +161,10 @@ export function MegaMenu({ isOpen, categories, onClose }: MegaMenuProps) {
                     "radial-gradient(circle at 50% 15%, rgba(255,255,255,0) 0%, rgba(0,0,0,0.08) 70%)",
                 }}
               />
+
+
               <div
-                className="flex"
+                className="relative z-10 flex"
                 style={{
                   backgroundColor: "#f2eadf",
                   backgroundImage: "url('/texture.webp')",
@@ -197,7 +194,7 @@ export function MegaMenu({ isOpen, categories, onClose }: MegaMenuProps) {
                     return (
                       <Link
                         key={cat.id}
-                        href={`/boutique/categorie/${cat.slug}`}
+                        href={`/shop/category/${cat.slug}`}
                         onClick={onClose}
                         onMouseEnter={() => handleCategoryHover(cat.slug)}
                         className="relative block px-4 py-3 transition-colors duration-150"
@@ -275,7 +272,7 @@ function MegaProductCard({
       className="h-full"
     >
       <Link
-        href={`/produit/${product.slug}`}
+        href={`/product/${product.slug}`}
         onClick={onClose}
         className="group/card flex h-full flex-col overflow-hidden transition-all duration-200 hover:-translate-y-1"
         style={{

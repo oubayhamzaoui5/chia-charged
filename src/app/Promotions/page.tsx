@@ -6,9 +6,9 @@ import { getPresetInjectedSearchParams } from '@/lib/shop-presets'
 export const revalidate = 120
 
 export const metadata: Metadata = {
-  title: 'Update Design | Promotions',
-  description: 'Profitez des promotions en cours sur la boutique Update Design.',
-  alternates: { canonical: '/Promotions' },
+  title: 'Chia Charged | Deals & Promotions',
+  description: 'Current deals and promotions on Chia Charged protein chia pudding. Stock up and save on your favorite flavors.',
+  alternates: { canonical: '/promotions' },
 }
 
 type Props = {

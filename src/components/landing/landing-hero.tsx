@@ -156,7 +156,7 @@ export default function LandingHero() {
           animate={loaded ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.9, delay: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
           className="relative flex flex-1 items-center justify-center"
-          style={{ minHeight: 440 }}
+          style={{ minHeight: 520 }}
         >
           {/* White glow behind products */}
           <div
@@ -173,10 +173,10 @@ export default function LandingHero() {
             initial={{ opacity: 0, x: 30, rotate: 5 }}
             animate={loaded ? { opacity: 1, x: 0, rotate: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="absolute right-[-1%] top-[2%] z-10 h-[295px] w-[295px] sm:h-[355px] sm:w-[355px] lg:h-[450px] lg:w-[450px]"
+            className="absolute right-[-6%] top-[2%] z-10 h-[354px] w-[354px] sm:h-[426px] sm:w-[426px] lg:h-[540px] lg:w-[540px]"
           >
             <Image
-              src="/strawberry.png"
+              src="/product1.webp"
               alt="Chia Charged Pudding Fraises et Creme â€” 22g proteine par pot"
               fill
               priority
@@ -190,10 +190,10 @@ export default function LandingHero() {
             initial={{ opacity: 0, x: -30, rotate: -5 }}
             animate={loaded ? { opacity: 1, x: 0, rotate: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.42 }}
-            className="absolute bottom-[0%] left-[-1%] z-0 h-[255px] w-[255px] sm:h-[315px] sm:w-[315px] lg:h-[385px] lg:w-[385px]"
+            className="absolute bottom-[0%] left-[-4%] z-0 h-[306px] w-[306px] sm:h-[378px] sm:w-[378px] lg:h-[462px] lg:w-[462px]"
           >
             <Image
-              src="/chocolate.png"
+              src="/product2.webp"
               alt="Chia Charged Pudding Chocolat â€” riche en proteine et fibre"
               fill
               priority
@@ -250,7 +250,7 @@ export default function LandingHero() {
             Chia Seed
           </div>
           <div
-            className="badge-float-d absolute right-[0%] bottom-[20%] z-20 flex items-center gap-1.5 rounded-sm border-3 border-black px-3 py-1.5"
+            className="badge-float-d absolute right-[8%] bottom-[20%] z-20 flex items-center gap-1.5 rounded-sm border-3 border-black px-3 py-1.5"
             style={{
               fontFamily: FONT,
               fontWeight: 900,

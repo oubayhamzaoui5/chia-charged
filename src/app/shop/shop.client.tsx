@@ -61,7 +61,7 @@ function buildShopHref(
   const nextCategory = next.get('category')
   if (nextCategory) next.delete('category')
 
-  let path = nextCategory ? `/boutique/categorie/${nextCategory}` : '/boutique'
+  let path = nextCategory ? `/shop/category/${nextCategory}` : '/shop'
   let finalQuery = next
 
   if (!nextCategory) {
@@ -570,8 +570,8 @@ export default function ShopClient({
               <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product, idx) => {
                   const productHref = originQuery
-                    ? `/produit/${product.slug}?${originQuery}`
-                    : `/produit/${product.slug}`
+                    ? `/product/${product.slug}?${originQuery}`
+                    : `/product/${product.slug}`
 
                   return (
                     <div

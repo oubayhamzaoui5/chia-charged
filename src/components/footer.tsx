@@ -1,11 +1,22 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
 
 export default function Footer() {
+  const [footerEmail, setFooterEmail] = useState("")
+
+  function handleFooterSignup(e: React.FormEvent) {
+    e.preventDefault()
+    if (!footerEmail.trim()) return
+    const captured = footerEmail.trim()
+    setFooterEmail("")
+    window.dispatchEvent(new CustomEvent("open-signup-modal", { detail: { email: captured } }))
+  }
+
   return (
     <footer aria-label="Site footer">
       <div
@@ -64,9 +75,12 @@ export default function Footer() {
               >
                 Sign up to get 10% off your first order
               </p>
-              <form className="flex" onSubmit={(e) => e.preventDefault()}>
+              <form className="flex" onSubmit={handleFooterSignup}>
                 <input
                   type="email"
+                  required
+                  value={footerEmail}
+                  onChange={e => setFooterEmail(e.target.value)}
                   placeholder="Your email"
                   className="h-13 flex-1 border-3 border-r-0 border-white bg-white/95 px-4 text-sm font-bold text-black outline-none placeholder:text-black/30"
                   style={{ borderRadius: "4px 0 0 4px" }}
@@ -103,10 +117,10 @@ export default function Footer() {
               </p>
               <nav className="flex flex-col gap-3">
                 {[
-                  { label: "All Products", href: "/boutique" },
-                  { label: "Strawberries n' Cream", href: "/boutique" },
-                  { label: "New Flavors", href: "/Nouveautes" },
-                  { label: "Bundles & Deals", href: "/Promotions" },
+                  { label: "All Products", href: "/shop" },
+                  { label: "Strawberries n' Cream", href: "/shop" },
+                  { label: "New Flavors", href: "/new-arrivals" },
+                  { label: "Bundles & Deals", href: "/promotions" },
                 ].map(({ label, href }) => (
                   <Link
                     key={label}
@@ -157,7 +171,7 @@ export default function Footer() {
               </p>
               <nav className="flex flex-col gap-3">
                 {[
-                  { label: "About Us", href: "/a-propos" },
+                  { label: "About Us", href: "/about" },
                   { label: "Blog", href: "/blog" },
                   { label: "Privacy Policy", href: "/#faq" },
                   { label: "Terms", href: "/#faq" },

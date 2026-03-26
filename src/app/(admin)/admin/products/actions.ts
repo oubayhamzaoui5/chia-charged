@@ -126,7 +126,7 @@ async function verifyAdmin() {
   const session = await auth()
   
   if (!session?.user || session.user.role !== 'admin') {
-    redirect('/connexion')
+    redirect('/login')
   }
   
   return session
@@ -182,7 +182,7 @@ export async function revalidateAllProducts() {
 
 function revalidateProductPages(slug: string) {
   if (!slug) return
-  revalidatePath(`/produit/${slug}`)
+  revalidatePath(`/product/${slug}`)
   revalidatePath(`/shop/${slug}`)
 }
 

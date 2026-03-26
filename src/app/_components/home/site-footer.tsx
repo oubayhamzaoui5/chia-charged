@@ -14,13 +14,13 @@ export default function SiteFooter() {
 
         <nav aria-label="Liens boutique" className="space-y-2 text-sm">
           <p className="font-medium">Boutique</p>
-          <Link href="/boutique" className="block text-foreground/70 hover:text-foreground">
+          <Link href="/shop" className="block text-foreground/70 hover:text-foreground">
             Tous les produits
           </Link>
-          <Link href="/boutique?category=lighting" className="block text-foreground/70 hover:text-foreground">
+          <Link href="/shop?category=lighting" className="block text-foreground/70 hover:text-foreground">
             Luminaires
           </Link>
-          <Link href="/Nouveautes" className="block text-foreground/70 hover:text-foreground">
+          <Link href="/new-arrivals" className="block text-foreground/70 hover:text-foreground">
             Nouveautes
           </Link>
         </nav>

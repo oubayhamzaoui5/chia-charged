@@ -47,7 +47,7 @@ export default function CategorySelector() {
           </motion.p>
 
           <motion.div variants={variants} custom={0.4}>
-            <Link href="/boutique/categorie/effet-bois-d-interieur" className="inline-block">
+            <Link href="/shop/category/effet-bois-d-interieur" className="inline-block">
               <button className="mt-8 px-8 py-3 border border-white/70 text-white text-sm font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:bg-white hover:text-black hover:font-bold cursor-pointer">
                 Explorer
               </button>
@@ -85,7 +85,7 @@ export default function CategorySelector() {
           </motion.p>
 
           <motion.div variants={variants} custom={0.4}>
-            <Link href="/boutique/categorie/effet-marbre" className="inline-block">
+            <Link href="/shop/category/effet-marbre" className="inline-block">
               <button className="mt-8 px-8 py-3 border border-white/70 text-white text-sm font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:bg-white hover:text-black hover:font-bold cursor-pointer">
                 Explorer
               </button>

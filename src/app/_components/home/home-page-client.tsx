@@ -19,21 +19,21 @@ const CATEGORY_ITEMS = [
   {
     id: 'lighting',
     name: 'Luminaires',
-    href: '/boutique?category=lighting',
+    href: '/shop?category=lighting',
     image: '/aboutimg.webp',
     description: 'Suspensions, lampadaires et appliques.',
   },
   {
     id: 'decor',
     name: 'Decoration',
-    href: '/boutique?category=decor',
+    href: '/shop?category=decor',
     image: '/aboutimg.webp',
     description: 'Objets design et textures elegantes.',
   },
   {
     id: 'furniture',
     name: 'Mobilier',
-    href: '/boutique?category=furniture',
+    href: '/shop?category=furniture',
     image: '/aboutimg.webp',
     description: 'Pieces signature pour chaque piece.',
   },
@@ -152,7 +152,7 @@ export default function HomePageClient() {
             </p>
           </div>
           <Button asChild variant="outline" className="rounded-full">
-            <Link href="/boutique">Voir tout</Link>
+            <Link href="/shop">Voir tout</Link>
           </Button>
         </div>
 

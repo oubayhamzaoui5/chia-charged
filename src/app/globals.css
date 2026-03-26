@@ -18,7 +18,7 @@
   --muted: oklch(0.88 0 0);
   --muted-foreground: oklch(0.5 0 0);
   /* Chia Charged purple accent */
-  --accent: rgb(124, 58, 237);
+  --accent: #7B4BEA;
   --accent-foreground: oklch(0.15 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);

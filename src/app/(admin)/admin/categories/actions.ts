@@ -84,7 +84,7 @@ export async function createCategoryAction(input: UpsertCategoryInput) {
   const payload = normalizePayload(input)
   const created = await pb.collection('categories').create(payload)
   revalidatePath('/admin/categories')
-  revalidatePath('/boutique')
+  revalidatePath('/shop')
   revalidatePath('/shop')
   revalidateTag('shop-categories', 'max')
   return created
@@ -96,7 +96,7 @@ export async function updateCategoryAction(id: string, input: UpsertCategoryInpu
   const payload = normalizePayload(input)
   const updated = await pb.collection('categories').update(id, payload)
   revalidatePath('/admin/categories')
-  revalidatePath('/boutique')
+  revalidatePath('/shop')
   revalidatePath('/shop')
   revalidateTag('shop-categories', 'max')
   return updated
@@ -107,7 +107,7 @@ export async function deleteCategoryAction(id: string) {
   const { pb } = await getAdminPbForAction()
   await pb.collection('categories').delete(id)
   revalidatePath('/admin/categories')
-  revalidatePath('/boutique')
+  revalidatePath('/shop')
   revalidatePath('/shop')
   revalidateTag('shop-categories', 'max')
   return { ok: true }
@@ -131,7 +131,7 @@ export async function reorderCategoriesAction(
   )
 
   revalidatePath('/admin/categories')
-  revalidatePath('/boutique')
+  revalidatePath('/shop')
   revalidatePath('/shop')
   revalidateTag('shop-categories', 'max')
   return { ok: true }

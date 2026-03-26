@@ -9,6 +9,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 const manrope = Manrope({ subsets: ["latin"] });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-display", weight: ["400", "700", "900"] });
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+const logoIconUrl = '/logow.webp?v=20260325'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -17,19 +18,21 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/logow.webp',
+        url: logoIconUrl,
         media: '(prefers-color-scheme: light)',
+        type: 'image/webp',
       },
       {
-        url: '/logow.webp',
+        url: logoIconUrl,
         media: '(prefers-color-scheme: dark)',
+        type: 'image/webp',
       },
       {
-        url: '/logow.webp',
-        type: 'image/svg+xml',
+        url: logoIconUrl,
+        type: 'image/webp',
       },
     ],
-    apple: '/logow.webp',
+    apple: logoIconUrl,
   },
 }
 

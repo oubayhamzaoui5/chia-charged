@@ -12,7 +12,7 @@ const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50
 
 export const metadata: Metadata = {
   title: 'Chia Charged | Blog',
-  description: 'Tips, science & stories behind every bite of Chia Charged.',
+  description: 'Tips, nutrition science, and stories behind every jar of Chia Charged. Fuel smarter — starting with knowing what you eat.',
 }
 
 export const dynamic = 'force-dynamic'
@@ -53,7 +53,7 @@ export default async function BlogPage() {
               className="mt-4 max-w-2xl text-sm font-black uppercase tracking-[0.15em] text-white md:text-base"
               style={{ fontFamily: FONT, fontWeight: 900 }}
             >
-              Stories, tips, and inspiration to light up your everyday spaces.
+              Nutrition science, recipes, and stories to help you fuel smarter every day.
             </p>
           </div>
         </section>

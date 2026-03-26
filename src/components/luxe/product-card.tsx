@@ -10,7 +10,7 @@ function formatEuro(value: number) {
 export default function ProductCard({ product }: { product: LuxeProduct }) {
   return (
     <article className="group rounded-2xl border border-stone-900/10 bg-white p-3 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <Link href={`/produit/${product.slug}`} aria-label={`Voir ${product.name}`} className="block overflow-hidden rounded-xl">
+      <Link href={`/product/${product.slug}`} aria-label={`Voir ${product.name}`} className="block overflow-hidden rounded-xl">
         <div className="relative aspect-[4/5] bg-stone-100">
           <Image
             src={product.image}

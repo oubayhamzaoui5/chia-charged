@@ -67,7 +67,7 @@ export default function HomeWoodProfileSection() {
           </div>
 
           <Link
-            href="/boutique"
+            href="/shop"
             className="inline-flex h-12 items-center justify-center rounded-full px-8 text-sm font-bold text-white transition-opacity hover:opacity-85"
             style={{ background: "#D4813A", boxShadow: "0 4px 24px rgba(212,129,58,0.35)" }}
           >

@@ -23,6 +23,8 @@ type IncomingOrderPayload = {
   notes?: unknown
   currency?: unknown
   items?: unknown
+  country?: unknown
+  state?: unknown
 }
 
 function asText(value: unknown) {
@@ -58,9 +60,11 @@ export async function POST(request: NextRequest) {
     const city = asText(body.city)
     const postalCode = asText(body.postalCode)
     const notes = asText(body.notes)
-    const currency = asText(body.currency) || "DT"
+    const currency = asText(body.currency) || "USD"
+    const country = asText(body.country)
+    const state = asText(body.state)
 
-    if (!firstName || !lastName || !phone || !address || !city) {
+    if (!firstName || !lastName || !address || !city || !country) {
       return NextResponse.json({ message: "Données de commande incomplètes." }, { status: 400 })
     }
 
@@ -100,13 +104,15 @@ export async function POST(request: NextRequest) {
         city,
         postalCode,
         notes,
+        country,
+        state,
         paymentMode: "cash_on_delivery",
         status: "pending",
         items,
         total,
         currency,
         userName: `${firstName} ${lastName}`.trim(),
-        location: `${address}, ${city}`.trim(),
+        location: `${city}, ${state ? state + ', ' : ''}${country}`.trim(),
       },
       { requestKey: null }
     )

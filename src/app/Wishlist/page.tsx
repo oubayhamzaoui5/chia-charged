@@ -6,9 +6,9 @@ import { getPresetInjectedSearchParams } from '@/lib/shop-presets'
 export const revalidate = 120
 
 export const metadata: Metadata = {
-  title: 'Update Design | Wishlist',
-  description: 'Retrouvez les produits sauvegardés dans votre wishlist Update Design.',
-  alternates: { canonical: '/Wishlist' },
+  title: 'Chia Charged | My Wishlist',
+  description: 'Your saved Chia Charged products. High-protein chia pudding delivered fast across Tunisia.',
+  alternates: { canonical: '/wishlist' },
 }
 
 type Props = {

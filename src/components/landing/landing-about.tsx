@@ -71,7 +71,7 @@ export default function LandingAbout() {
             </p>
 
             <Link
-              href="/a-propos"
+              href="/about"
               className="shimmer-btn relative isolate inline-flex items-center gap-2.5 overflow-hidden rounded-sm border-3 border-black px-8 py-3.5 text-xs font-black uppercase tracking-[0.12em] text-black transition-all duration-200 ease-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_rgba(0,0,0,0.6)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0px_rgba(0,0,0,0.6)]"
               style={{
                 fontFamily: FONT,

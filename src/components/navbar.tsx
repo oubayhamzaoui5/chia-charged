@@ -2,6 +2,7 @@
 "use client"
 
 import { useState, useEffect, useLayoutEffect, useRef } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { NavbarCart } from "@/components/navbar-cart"
@@ -143,6 +144,28 @@ export function Navbar(props: NavbarProps) {
 
     const params = new URLSearchParams(window.location.search)
     const authParam = params.get("auth")
+    const authErrorParam = params.get("auth_error")
+
+    if (authErrorParam) {
+      const errorMessages: Record<string, string> = {
+        google_not_configured: "Google sign-in is not configured yet. Please contact the admin.",
+        oauth_init_failed: "Could not initiate Google sign-in. Please try again.",
+        oauth_missing_params: "Google sign-in failed. Please try again.",
+        oauth_state_mismatch: "Google sign-in failed (security check). Please try again.",
+        oauth_no_record: "Google sign-in failed. No account found.",
+        oauth_failed: "Google sign-in failed. Please try again.",
+      }
+      setAuthError(errorMessages[authErrorParam] ?? "Sign-in failed. Please try again.")
+      setAuthMode("login")
+      setIsAuthModalOpen(true)
+      setIsProfileOpen(false)
+      setIsMenuOpen(false)
+      const url = new URL(window.location.href)
+      url.searchParams.delete("auth_error")
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`)
+      return
+    }
+
     if (authParam !== "login" && authParam !== "signup") return
 
     const nextParam = resolveRedirectPath(params.get("next"))
@@ -170,9 +193,7 @@ export function Navbar(props: NavbarProps) {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsAuthModalOpen(false)
-        setAuthPassword("")
         setAuthError("")
-        setAuthFieldErrors({})
       }
     }
 
@@ -225,6 +246,17 @@ export function Navbar(props: NavbarProps) {
     onScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const email = (e as CustomEvent<{ email: string }>).detail?.email ?? ""
+      setSignupEmail(email)
+      openAuthModal(null, "signup")
+    }
+    window.addEventListener("open-signup-modal", handler)
+    return () => window.removeEventListener("open-signup-modal", handler)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -385,17 +417,11 @@ export function Navbar(props: NavbarProps) {
       setAuthPassword("")
       return
     }
-
     if (!signupEmail && authEmail.includes("@")) {
       setSignupEmail(authEmail)
     }
     setSignupPassword("")
     setSignupPasswordConfirm("")
-  }
-
-  const handleSocialLoginClick = (provider: "google" | "facebook") => {
-    const label = provider === "google" ? "Google" : "Facebook"
-    setAuthError(`${label} sign-in coming soon.`)
   }
 
   const handleAuthLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -475,7 +501,6 @@ export function Navbar(props: NavbarProps) {
         return
       }
 
-      // Auto-login after successful registration
       const loginRes = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -681,7 +706,7 @@ export function Navbar(props: NavbarProps) {
           <div key={category.id}>
             <div className="flex items-center justify-between">
               <Link
-                href={`/boutique/categorie/${category.slug}`}
+                href={`/shop/category/${category.slug}`}
                 className="text-sm font-medium hover:opacity-70 transition-opacity"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -757,6 +782,7 @@ export function Navbar(props: NavbarProps) {
     [currentUser?.surname, currentUser?.name].filter(Boolean).join(" ") ||
     currentUser?.email ||
     "Account"
+  const NAVBAR_GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
   const shouldShowSignupPromo = showSignupPromo
   const navSpacerClass = reserveSpace
     ? shouldShowSignupPromo
@@ -789,7 +815,7 @@ export function Navbar(props: NavbarProps) {
         <div
           className="absolute inset-x-0 top-0 z-50 overflow-x-clip text-white"
           style={{
-            background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)",
+            background: "var(--accent)",
             backgroundClip: "padding-box",
           }}
         >
@@ -808,17 +834,17 @@ export function Navbar(props: NavbarProps) {
             <button
               type="button"
               onClick={closeSignupPromo}
-              className="absolute right-2 sm:right-4 inline-flex h-7 w-7 items-center justify-center hover:opacity-70 transition-opacity"
+              className="absolute right-2 sm:right-4 inline-flex h-8 w-8 cursor-pointer items-center justify-center hover:opacity-70 transition-opacity"
               aria-label="Close promotion"
             >
-              <X size={16} strokeWidth={3} />
+              <X size={20} strokeWidth={3} />
             </button>
           </div>
         </div>
       )}
 
       <nav
-        className={`left-0 right-0 bg-accent z-40 text-white transition-transform duration-300 ${
+        className={`left-0 right-0 z-40 text-white transition-transform duration-300 ${
           isMobileNavVisible ? "translate-y-0" : "-translate-y-full"
         } ${
           shouldShowSignupPromo
@@ -828,12 +854,13 @@ export function Navbar(props: NavbarProps) {
             : "fixed top-0"
         }`}
         style={{
+          background: NAVBAR_GRADIENT,
           borderBottom: '3px solid #111',
           boxShadow: '0 2px 24px rgba(124,58,237,0.35)',
         }}
       >
         {/* Desktop */}
-        <div className="hidden md:grid grid-cols-[auto_1fr_auto] items-center px-12 py-2 mx-auto">
+        <div className="hidden md:grid grid-cols-[auto_1fr_auto] items-center px-28 py-2 mx-auto">
           <Link href="/" className="flex items-center gap-3 justify-self-start mr-12">
             <LogoSwap size={140} />
           </Link>
@@ -945,7 +972,7 @@ export function Navbar(props: NavbarProps) {
                   <div className="space-y-1">
                       {/* Full name / Profile */}
 <Link
-  href={currentUser?.role === "admin" ? "/admin" : "/commandes"}
+  href={currentUser?.role === "admin" ? "/admin" : "/orders"}
   className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold tracking-wide bg-white border-2 border-black transition-all hover:shadow-[2px_2px_0_#111] hover:-translate-x-px hover:-translate-y-px"
   onClick={() => setIsProfileOpen(false)}
 >
@@ -959,7 +986,7 @@ export function Navbar(props: NavbarProps) {
                       {/* Orders */}
                     {currentUser?.role !== "admin" && (
   <Link
-    href="/commandes"
+    href="/orders"
     className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold tracking-wide bg-white border-2 border-black transition-all hover:shadow-[2px_2px_0_#111] hover:-translate-x-px hover:-translate-y-px"
     onClick={() => setIsProfileOpen(false)}
   >
@@ -974,7 +1001,7 @@ export function Navbar(props: NavbarProps) {
                       {/* Settings / Account */}
                       {currentUser?.role !== "admin" && (
                         <Link
-                          href="/mon-compte"
+                          href="/account"
                           className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold tracking-wide bg-white border-2 border-black transition-all hover:shadow-[2px_2px_0_#111] hover:-translate-x-px hover:-translate-y-px"
                           onClick={() => setIsProfileOpen(false)}
                         >
@@ -1079,7 +1106,7 @@ export function Navbar(props: NavbarProps) {
             {/* Mobile links */}
             <div className="space-y-4">
               <Link
-                href="/boutique"
+                href="/shop"
                 onClick={() => setIsMenuOpen(false)}
                 className="block text-sm font-semibold text-white hover:text-white tracking-wide transition-colors py-1"
               >
@@ -1135,69 +1162,156 @@ export function Navbar(props: NavbarProps) {
 
       {navSpacerClass ? <div aria-hidden className={navSpacerClass} /> : null}
 
-      {isAuthModalOpen && (() => {
+      {(() => {
         const MODAL_FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
         const MODAL_GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
-        const inputCls = "w-full border-[3px] border-black bg-white px-3 py-2.5 text-sm font-semibold text-black outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(124,58,237,0.2)] placeholder:text-black/30 placeholder:font-normal"
-        const labelCls = "block text-[10px] font-black uppercase tracking-[0.15em] mb-1"
+        const inputCls = "w-full rounded-sm border-[3px] border-black bg-white px-4 py-2.5 text-sm font-semibold text-black outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(124,58,237,0.18)] placeholder:text-black/25 placeholder:font-normal"
+        const labelCls = "block text-[9px] font-black uppercase tracking-[0.2em] mb-1.5"
+
+        const leftContent = {
+          login:  { lines: ["Welcome", "Back."],      sub: "Sign in to track orders & fuel your day." },
+          signup: { lines: ["Join The", "Movement."], sub: "Start your chia-powered journey today." },
+          forgot: { lines: ["Reset &",  "Return."],   sub: "We'll send a reset link to your inbox." },
+        }[authMode]
+
         return (
+          <AnimatePresence>
+          {isAuthModalOpen && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-            <div
+            <motion.div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={closeAuthModal}
             />
 
-            <div
-              className="relative w-full max-w-[560px] overflow-visible text-black"
-              style={{
-                background: "#f5efe4",
-                backgroundImage: "url('/texture.webp')",
-                backgroundSize: "280px 280px",
-                border: "4px solid #111",
-                boxShadow: "10px 10px 0 #111",
-              }}
+            <motion.div
+              className="relative flex w-full max-w-[820px] overflow-hidden rounded-sm"
+              initial={{ opacity: 0, y: 16, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.97 }}
+              transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
+              style={{ border: "4px solid #111", boxShadow: "10px 10px 0 #111" }}
             >
-              {/* Top gradient bar */}
-              <div className="h-1.5 w-full" style={{ background: MODAL_GRADIENT }} />
-
-              {/* Close button */}
-              <button
-                type="button"
-                onClick={closeAuthModal}
-                className="absolute right-4 top-4 z-10 inline-flex h-8 w-8 cursor-pointer items-center justify-center border-2 border-black bg-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#111]"
-                aria-label="Close"
+              {/* ── LEFT: gradient brand panel ── */}
+              <div
+                className="relative hidden w-[38%] shrink-0 flex-col justify-between overflow-hidden p-8 sm:flex"
+                style={{ background: MODAL_GRADIENT, minHeight: 500 }}
               >
-                <X size={14} strokeWidth={3} />
-              </button>
+                {/* Watermark */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -right-4 bottom-[-5%] select-none"
+                  style={{ fontSize: "15rem", fontFamily: MODAL_FONT, fontWeight: 900, color: "rgba(255,255,255,0.06)", lineHeight: 0.85 }}
+                >
+                  CC
+                </div>
 
-              <div className="px-9 pb-9 pt-8">
+                {/* Brand badge */}
+                <div>
+                  <div
+                    className="mb-6 inline-flex items-center gap-2 px-3 py-1.5"
+                    style={{ background: "rgba(255,255,255,0.15)", border: "2px solid rgba(255,255,255,0.3)" }}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-white/80" />
+                    <span
+                      className="text-[9px] uppercase tracking-[0.25em] text-white/90"
+                      style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}
+                    >
+                      Chia Charged
+                    </span>
+                  </div>
+
+                  <motion.h2
+                    key={authMode}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
+                    className="text-[2.5rem] uppercase leading-[0.88] tracking-tighter text-white"
+                    style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}
+                  >
+                    {leftContent.lines[0]}<br />{leftContent.lines[1]}
+                  </motion.h2>
+                  <motion.p
+                    key={authMode + "-sub"}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.08 }}
+                    className="mt-3 text-[10px] uppercase tracking-[0.15em] text-white/50"
+                    style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}
+                  >
+                    {leftContent.sub}
+                  </motion.p>
+                </div>
+
+                {/* Stats strip */}
+                <div className="flex gap-5 border-t border-white/15 pt-5">
+                  {[["22g", "Protein"], ["12g", "Fiber"], ["100%", "Natural"]].map(([val, label]) => (
+                    <div key={label}>
+                      <p className="text-base uppercase leading-none text-white" style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}>{val}</p>
+                      <p className="text-[8px] uppercase tracking-[0.15em] text-white/40" style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}>{label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── RIGHT: form panel ── */}
+              <div
+                className="relative flex flex-1 flex-col justify-center px-8 py-9"
+                style={{ background: "#f5efe4", backgroundImage: "url('/texture.webp')", backgroundSize: "280px 280px" }}
+              >
+                {/* Close */}
+                <button
+                  type="button"
+                  onClick={closeAuthModal}
+                  className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-sm border-2 border-black bg-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#111]"
+                  aria-label="Close"
+                >
+                  <X size={14} strokeWidth={3} />
+                </button>
+
+                {/* Mode tabs */}
+                <div className="mb-6 flex overflow-hidden rounded-sm border-[3px] border-black" style={{ boxShadow: "3px 3px 0 #111" }}>
+                  {(["login", "signup"] as const).map((m, i) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => switchAuthMode(m)}
+                      className="flex-1 cursor-pointer py-2.5 text-[9px] font-black uppercase tracking-[0.18em] transition-all"
+                      style={{
+                        fontFamily: MODAL_FONT,
+                        background: authMode === m ? MODAL_GRADIENT : "#fff",
+                        color: authMode === m ? "#fff" : "#111",
+                        borderRight: i === 0 ? "2px solid #111" : "none",
+                      }}
+                    >
+                      {m === "login" ? "Sign In" : "Sign Up"}
+                    </button>
+                  ))}
+                </div>
+
                 {/* Header */}
                 <div className="mb-5">
                   <p
-                    className="text-[10px] font-black uppercase tracking-[0.2em]"
+                    className="text-[9px] font-black uppercase tracking-[0.22em]"
                     style={{ fontFamily: MODAL_FONT, background: MODAL_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
                   >
-                    Chia Charged
+                    {authMode === "forgot" ? "Password Reset" : authMode === "login" ? "Welcome Back" : "New Account"}
                   </p>
                   <h2
-                    className="mt-1 text-[1.75rem] font-black uppercase leading-none tracking-tighter"
-                    style={{ fontFamily: MODAL_FONT, fontWeight: 900, color: "#111" }}
+                    className="mt-0.5 text-[1.7rem] font-black uppercase leading-none tracking-tighter text-black"
+                    style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}
                   >
                     {authMode === "login" ? "Sign In." : authMode === "signup" ? "Join Us." : "Reset."}
                   </h2>
-                  <p className="mt-1.5 text-xs font-semibold text-black/50">
-                    {authMode === "login"
-                      ? "Track your orders & manage your account."
-                      : authMode === "signup"
-                      ? "Create your account and start fueling smarter."
-                      : "Enter your email to receive a reset link."}
-                  </p>
                 </div>
 
                 {/* Error */}
                 {authError && (
                   <div
-                    className="mb-4 border-2 border-red-500 bg-red-50 px-3 py-2 text-xs font-bold text-red-700"
+                    className="mb-4 rounded-sm border-2 border-red-500 bg-red-50 px-3 py-2 text-xs font-bold text-red-700"
                     style={{ fontFamily: MODAL_FONT }}
                   >
                     {authError}
@@ -1209,7 +1323,7 @@ export function Navbar(props: NavbarProps) {
                   className="relative overflow-visible transition-[height] duration-300 ease-out"
                   style={authPanelHeight != null ? { height: `${authPanelHeight}px` } : undefined}
                 >
-                  {/* LOGIN PANEL */}
+                  {/* LOGIN */}
                   <div
                     ref={authLoginPanelRef}
                     className={`transition-transform duration-300 ease-out ${
@@ -1223,98 +1337,56 @@ export function Navbar(props: NavbarProps) {
                         <label htmlFor="auth-email" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
                           Email <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          id="auth-email"
-                          type="email"
-                          required
-                          value={authEmail}
-                          onChange={(e) => setAuthEmail(e.target.value)}
-                          className={inputCls}
-                          placeholder="you@domain.com"
-                        />
-                        {authFieldErrors.identifier ? (
-                          <p className="mt-1 text-[10px] font-semibold text-red-600">
-                            {authFieldErrors.identifier}
-                          </p>
-                        ) : null}
+                        <input id="auth-email" type="email" required value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} className={inputCls} placeholder="you@domain.com" />
+                        {authFieldErrors.identifier && <p className="mt-1 text-[10px] font-semibold text-red-600">{authFieldErrors.identifier}</p>}
                       </div>
 
                       <div>
-                        <label htmlFor="auth-password" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
-                          Password <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="auth-password"
-                          type="password"
-                          required
-                          value={authPassword}
-                          onChange={(e) => setAuthPassword(e.target.value)}
-                          className={inputCls}
-                          placeholder="••••••••"
-                        />
-                        {authFieldErrors.password ? (
-                          <p className="mt-1 text-[10px] font-semibold text-red-600">
-                            {authFieldErrors.password}
-                          </p>
-                        ) : null}
-                      </div>
-
-                      <div className="flex justify-end">
-                        <button
-                          type="button"
-                          onClick={() => switchAuthMode("forgot")}
-                          className="cursor-pointer text-[10px] font-black uppercase tracking-wider text-black/40 transition-colors hover:text-black"
-                          style={{ fontFamily: MODAL_FONT }}
-                        >
-                          Forgot password?
-                        </button>
+                        <div className="mb-1.5 flex items-center justify-between">
+                          <label htmlFor="auth-password" className={labelCls} style={{ fontFamily: MODAL_FONT, marginBottom: 0 }}>
+                            Password <span className="text-red-500">*</span>
+                          </label>
+                          <button type="button" onClick={() => switchAuthMode("forgot")} className="cursor-pointer text-[9px] font-black uppercase tracking-wider text-black/40 transition-colors hover:text-black" style={{ fontFamily: MODAL_FONT }}>
+                            Forgot?
+                          </button>
+                        </div>
+                        <input id="auth-password" type="password" required value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} className={inputCls} placeholder="••••••••" />
+                        {authFieldErrors.password && <p className="mt-1 text-[10px] font-semibold text-red-600">{authFieldErrors.password}</p>}
                       </div>
 
                       <button
                         type="submit"
                         disabled={isAuthSubmitting}
-                        className="mt-1 h-11 w-full cursor-pointer border-[3px] border-black text-sm font-black uppercase tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-60"
+                        className="mt-1 h-12 w-full cursor-pointer rounded-sm border-[3px] border-black text-sm font-black uppercase tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-60"
                         style={{ fontFamily: MODAL_FONT, background: MODAL_GRADIENT, boxShadow: "3px 3px 0 #111" }}
                       >
                         {isAuthSubmitting ? "Signing in..." : "Sign In →"}
                       </button>
                     </form>
 
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleSocialLoginClick("google")}
-                        className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 border-2 border-black bg-white text-xs font-black uppercase tracking-wide text-black transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#111]"
+                    <div className="mt-3">
+                      <a
+                        href="/api/auth/oauth/google"
+                        className="inline-flex w-full h-10 cursor-pointer items-center justify-center gap-2 rounded-sm border-2 border-black bg-white text-xs font-black uppercase tracking-wide text-black transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#111]"
                         style={{ fontFamily: MODAL_FONT, boxShadow: "2px 2px 0 #111" }}
                       >
-                        <span className="text-sm">G</span>
-                        <span>Google</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSocialLoginClick("facebook")}
-                        className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 border-2 border-black bg-white text-xs font-black uppercase tracking-wide text-black transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#111]"
-                        style={{ fontFamily: MODAL_FONT, boxShadow: "2px 2px 0 #111" }}
-                      >
-                        <span className="text-sm">f</span>
-                        <span>Facebook</span>
-                      </button>
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        <span>Continue with Google</span>
+                      </a>
                     </div>
 
                     <p className="mt-4 text-center text-xs font-semibold text-black/50">
                       No account yet?{" "}
-                      <button
-                        type="button"
-                        onClick={() => switchAuthMode("signup")}
-                        className="cursor-pointer font-black uppercase tracking-wide text-black underline underline-offset-2 transition-opacity hover:opacity-70"
-                        style={{ fontFamily: MODAL_FONT }}
-                      >
-                        Sign up
-                      </button>
+                      <button type="button" onClick={() => switchAuthMode("signup")} className="cursor-pointer font-black uppercase tracking-wide text-black underline underline-offset-2 transition-opacity hover:opacity-70" style={{ fontFamily: MODAL_FONT }}>Sign up</button>
                     </p>
                   </div>
 
-                  {/* SIGNUP PANEL */}
+                  {/* SIGNUP */}
                   <div
                     ref={authSignupPanelRef}
                     className={`transition-transform duration-300 ease-out ${
@@ -1326,114 +1398,39 @@ export function Navbar(props: NavbarProps) {
                     <form className="space-y-3" onSubmit={handleAuthSignup}>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label htmlFor="signup-surname" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
-                            First name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            id="signup-surname"
-                            type="text"
-                            required
-                            minLength={2}
-                            value={signupSurname}
-                            onChange={(e) => setSignupSurname(e.target.value)}
-                            className={inputCls}
-                            placeholder="First name"
-                          />
-                          {authFieldErrors.surname ? (
-                            <p className="mt-1 text-[10px] font-semibold text-red-600">
-                              {authFieldErrors.surname}
-                            </p>
-                          ) : null}
+                          <label htmlFor="signup-surname" className={labelCls} style={{ fontFamily: MODAL_FONT }}>First name <span className="text-red-500">*</span></label>
+                          <input id="signup-surname" type="text" required minLength={2} value={signupSurname} onChange={(e) => setSignupSurname(e.target.value)} className={inputCls} placeholder="First" />
+                          {authFieldErrors.surname && <p className="mt-1 text-[10px] font-semibold text-red-600">{authFieldErrors.surname}</p>}
                         </div>
                         <div>
-                          <label htmlFor="signup-name" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
-                            Last name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            id="signup-name"
-                            type="text"
-                            required
-                            minLength={2}
-                            value={signupName}
-                            onChange={(e) => setSignupName(e.target.value)}
-                            className={inputCls}
-                            placeholder="Last name"
-                          />
-                          {authFieldErrors.name ? (
-                            <p className="mt-1 text-[10px] font-semibold text-red-600">
-                              {authFieldErrors.name}
-                            </p>
-                          ) : null}
+                          <label htmlFor="signup-name" className={labelCls} style={{ fontFamily: MODAL_FONT }}>Last name <span className="text-red-500">*</span></label>
+                          <input id="signup-name" type="text" required minLength={2} value={signupName} onChange={(e) => setSignupName(e.target.value)} className={inputCls} placeholder="Last" />
+                          {authFieldErrors.name && <p className="mt-1 text-[10px] font-semibold text-red-600">{authFieldErrors.name}</p>}
                         </div>
                       </div>
 
                       <div>
-                        <label htmlFor="signup-email" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
-                          Email <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="signup-email"
-                          type="email"
-                          required
-                          value={signupEmail}
-                          onChange={(e) => setSignupEmail(e.target.value)}
-                          className={inputCls}
-                          placeholder="you@domain.com"
-                        />
-                          {authFieldErrors.email ? (
-                            <p className="mt-1 text-[10px] font-semibold text-red-600">
-                              {authFieldErrors.email}
-                            </p>
-                          ) : null}
+                        <label htmlFor="signup-email" className={labelCls} style={{ fontFamily: MODAL_FONT }}>Email <span className="text-red-500">*</span></label>
+                        <input id="signup-email" type="email" required value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} className={inputCls} placeholder="you@domain.com" />
+                        {authFieldErrors.email && <p className="mt-1 text-[10px] font-semibold text-red-600">{authFieldErrors.email}</p>}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label htmlFor="signup-password" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
-                            Password <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            id="signup-password"
-                            type="password"
-                            required
-                            minLength={8}
-                            value={signupPassword}
-                            onChange={(e) => setSignupPassword(e.target.value)}
-                            className={inputCls}
-                            placeholder="••••••••"
-                          />
-                          {authFieldErrors.password ? (
-                            <p className="mt-1 text-[10px] font-semibold text-red-600">
-                              {authFieldErrors.password}
-                            </p>
-                          ) : null}
-                        </div>
-                        <div>
-                          <label htmlFor="signup-password-confirm" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
-                            Confirm <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            id="signup-password-confirm"
-                            type="password"
-                            required
-                            minLength={8}
-                            value={signupPasswordConfirm}
-                            onChange={(e) => setSignupPasswordConfirm(e.target.value)}
-                            className={inputCls}
-                            placeholder="••••••••"
-                          />
-                          {authFieldErrors.passwordConfirm ? (
-                            <p className="mt-1 text-[10px] font-semibold text-red-600">
-                              {authFieldErrors.passwordConfirm}
-                            </p>
-                          ) : null}
-                        </div>
+                      <div>
+                        <label htmlFor="signup-password" className={labelCls} style={{ fontFamily: MODAL_FONT }}>Password <span className="text-red-500">*</span></label>
+                        <input id="signup-password" type="password" required minLength={8} value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} className={inputCls} placeholder="Min. 8 characters" />
+                        {authFieldErrors.password && <p className="mt-1 text-[10px] font-semibold text-red-600">{authFieldErrors.password}</p>}
+                      </div>
+
+                      <div>
+                        <label htmlFor="signup-password-confirm" className={labelCls} style={{ fontFamily: MODAL_FONT }}>Confirm password <span className="text-red-500">*</span></label>
+                        <input id="signup-password-confirm" type="password" required minLength={8} value={signupPasswordConfirm} onChange={(e) => setSignupPasswordConfirm(e.target.value)} className={inputCls} placeholder="Repeat password" />
+                        {authFieldErrors.passwordConfirm && <p className="mt-1 text-[10px] font-semibold text-red-600">{authFieldErrors.passwordConfirm}</p>}
                       </div>
 
                       <button
                         type="submit"
                         disabled={isAuthSubmitting}
-                        className="mt-1 h-11 w-full cursor-pointer border-[3px] border-black text-sm font-black uppercase tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-60"
+                        className="mt-1 h-12 w-full cursor-pointer rounded-sm border-[3px] border-black text-sm font-black uppercase tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-60"
                         style={{ fontFamily: MODAL_FONT, background: MODAL_GRADIENT, boxShadow: "3px 3px 0 #111" }}
                       >
                         {isAuthSubmitting ? "Creating..." : "Create Account →"}
@@ -1442,18 +1439,11 @@ export function Navbar(props: NavbarProps) {
 
                     <p className="mt-4 text-center text-xs font-semibold text-black/50">
                       Already have an account?{" "}
-                      <button
-                        type="button"
-                        onClick={() => switchAuthMode("login")}
-                        className="cursor-pointer font-black uppercase tracking-wide text-black underline underline-offset-2 transition-opacity hover:opacity-70"
-                        style={{ fontFamily: MODAL_FONT }}
-                      >
-                        Sign in
-                      </button>
+                      <button type="button" onClick={() => switchAuthMode("login")} className="cursor-pointer font-black uppercase tracking-wide text-black underline underline-offset-2 transition-opacity hover:opacity-70" style={{ fontFamily: MODAL_FONT }}>Sign in</button>
                     </p>
                   </div>
 
-                  {/* FORGOT PANEL */}
+                  {/* FORGOT */}
                   <div
                     ref={authForgotPanelRef}
                     className={`transition-transform duration-300 ease-out ${
@@ -1463,40 +1453,23 @@ export function Navbar(props: NavbarProps) {
                     }`}
                   >
                     {forgotSent ? (
-                      <div
-                        className="border-2 border-black bg-white px-4 py-5 text-center"
-                        style={{ boxShadow: "4px 4px 0 #111" }}
-                      >
-                        <p
-                          className="text-sm font-black uppercase tracking-wide text-black"
-                          style={{ fontFamily: MODAL_FONT }}
-                        >
-                          Email Sent!
-                        </p>
-                        <p className="mt-1 text-xs font-semibold text-black/50">
-                          Check your inbox and click the link to reset your password.
-                        </p>
+                      <div className="rounded-sm border-2 border-black bg-white px-4 py-6 text-center" style={{ boxShadow: "4px 4px 0 #111" }}>
+                        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center border-2 border-black" style={{ background: MODAL_GRADIENT }}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </div>
+                        <p className="text-sm font-black uppercase tracking-wide text-black" style={{ fontFamily: MODAL_FONT }}>Email Sent!</p>
+                        <p className="mt-1 text-xs font-semibold text-black/50">Check your inbox for the reset link.</p>
                       </div>
                     ) : (
                       <form className="space-y-3" onSubmit={handleForgotPassword}>
                         <div>
-                          <label htmlFor="forgot-email" className={labelCls} style={{ fontFamily: MODAL_FONT }}>
-                            Email <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            id="forgot-email"
-                            type="email"
-                            required
-                            value={forgotEmail}
-                            onChange={(e) => setForgotEmail(e.target.value)}
-                            className={inputCls}
-                            placeholder="you@domain.com"
-                          />
+                          <label htmlFor="forgot-email" className={labelCls} style={{ fontFamily: MODAL_FONT }}>Email <span className="text-red-500">*</span></label>
+                          <input id="forgot-email" type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className={inputCls} placeholder="you@domain.com" />
                         </div>
                         <button
                           type="submit"
                           disabled={isAuthSubmitting}
-                          className="mt-1 h-11 w-full cursor-pointer border-[3px] border-black text-sm font-black uppercase tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-60"
+                          className="mt-1 h-12 w-full cursor-pointer rounded-sm border-[3px] border-black text-sm font-black uppercase tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-60"
                           style={{ fontFamily: MODAL_FONT, background: MODAL_GRADIENT, boxShadow: "3px 3px 0 #111" }}
                         >
                           {isAuthSubmitting ? "Sending..." : "Send Reset Link →"}
@@ -1504,20 +1477,15 @@ export function Navbar(props: NavbarProps) {
                       </form>
                     )}
                     <p className="mt-4 text-center text-xs font-semibold text-black/50">
-                      <button
-                        type="button"
-                        onClick={() => switchAuthMode("login")}
-                        className="cursor-pointer font-black uppercase tracking-wide text-black underline underline-offset-2 transition-opacity hover:opacity-70"
-                        style={{ fontFamily: MODAL_FONT }}
-                      >
-                        ← Back to sign in
-                      </button>
+                      <button type="button" onClick={() => switchAuthMode("login")} className="cursor-pointer font-black uppercase tracking-wide text-black underline underline-offset-2 transition-opacity hover:opacity-70" style={{ fontFamily: MODAL_FONT }}>← Back to sign in</button>
                     </p>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
+          )}
+          </AnimatePresence>
         )
       })()}
     </>
@@ -1525,4 +1493,3 @@ export function Navbar(props: NavbarProps) {
     </NavbarCart>
   )
 }
-

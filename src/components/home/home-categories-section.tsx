@@ -107,14 +107,14 @@ export default function HomeCategoriesSection({ categories }: HomeCategoriesSect
             Find your perfect flavor — protein-packed and made with real ingredients.
           </p>
           <Link
-            href="/boutique"
+            href="/shop"
             className="mt-3 mb-0 inline-block border-b-2 border-accent/40 pb-1 font-bold text-accent transition-all duration-300 hover:border-accent hover:-translate-y-0.5 md:hidden"
           >
             Browse all products
           </Link>
         </div>
         <Link
-          href="/boutique"
+          href="/shop"
           className="hidden border-b-2 border-accent/20 pb-1 font-bold text-accent transition-all duration-300 hover:border-accent hover:-translate-y-0.5 md:inline-block"
         >
           Browse all products
