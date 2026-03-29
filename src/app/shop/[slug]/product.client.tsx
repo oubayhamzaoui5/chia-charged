@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ShoppingCart, ChevronLeft, ChevronRight, Zap, X, Beaker, GlassWater, Timer, Sparkles } from 'lucide-react'
+import { ShoppingCart, ChevronLeft, ChevronRight, X, Beaker, GlassWater, Timer, Sparkles } from 'lucide-react'
 
 import Footer from '@/components/footer'
 import { Navbar } from '@/components/navbar'
@@ -51,7 +51,13 @@ type VariantResolved = {
 
 // ─── Nutrition Modal ──────────────────────────────────────────────────────────
 
-function NutritionModal({ onClose }: { onClose: () => void }) {
+function NutritionModal({
+  onClose,
+  ingredientsText,
+}: {
+  onClose: () => void
+  ingredientsText: string
+}) {
   // Close on backdrop click
   const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) handleClose()
@@ -361,7 +367,7 @@ alignItems: 'flex-start',
           </div>
           <div className="nf-section" style={{ maxWidth: 760, margin: '16px auto 0' }}>
             <h3>Ingredients</h3>
-            <p>Chia Seed, Whey Protein Concentrate, Medium Chain Coconut Oil Triglycerides, Freeze Dried Strawberry Slices, Vanilla Flavor With Other Natural Flavors, Stevia Leaf Glycosides, Monk Fruit Extract.</p>
+            <p>{ingredientsText}</p>
           </div>
           <div className="nf-section" style={{ maxWidth: 760, margin: '10px auto 24px' }}>
             <p>Contains milk. Produced in a facility with tree nuts, peanuts, soybeans, milk, eggs, wheat and sesame.</p>
@@ -429,6 +435,15 @@ function variantKeyToString(value: VariantKey): string {
     .join('|')
 }
 
+function disableSmoothScrollForNextNavigation() {
+  if (typeof document === 'undefined') return
+  const root = document.documentElement
+  root.classList.add('no-smooth-scroll')
+  window.setTimeout(() => {
+    root.classList.remove('no-smooth-scroll')
+  }, 300)
+}
+
 function resolveVariantDisplay(
   variantKey: VariantKey | undefined,
   variantValuesMap: Record<string, VariantResolved[]>
@@ -444,33 +459,44 @@ function resolveVariantDisplay(
 }
 
 function Price({ p }: { p: ProductWithDetails }) {
+  const priceMainClass = 'text-base font-black tracking-wide'
+  const priceMainStyle = {
+    color: 'rgb(124,58,237)',
+    fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
+    fontWeight: 900 as const,
+  }
+
   const hasPromo = p.promoPrice != null && p.promoPrice > 0 && p.promoPrice < p.price
   if (!hasPromo) {
     return (
-      <div className="flex items-baseline gap-2">
-        <span className="text-4xl font-black tracking-tight" style={{ color: 'rgb(124,58,237)', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>
+      <div className="flex items-baseline gap-0">
+        <span className={priceMainClass} style={priceMainStyle}>{p.currency}</span>
+        <span className={priceMainClass} style={priceMainStyle}>
           {p.price.toFixed(2)}
         </span>
-        <span className="text-4xl font-black tracking-tight" style={{ color: 'rgb(124,58,237)', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>{p.currency}</span>
       </div>
     )
   }
 
-  const discount = Math.round(((p.price - p.promoPrice!) / p.price) * 100)
   return (
-    <div className="space-y-1.5">
+    <div>
       <div className="flex items-baseline gap-3">
-        <span className="text-4xl font-black tracking-tight" style={{ color: 'rgb(124,58,237)', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>
-          {p.promoPrice!.toFixed(2)}
+        <span
+          className="text-base font-black tracking-wide text-black/40 line-through"
+          style={{
+            fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
+            fontWeight: 900,
+          }}
+        >
+          {p.currency}
+          {p.price.toFixed(2)}
         </span>
-        <span className="text-4xl font-black tracking-tight" style={{ color: 'rgb(124,58,237)', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>{p.currency}</span>
-        <span className="text-sm font-black text-black/40 line-through">
-          {p.price.toFixed(2)} {p.currency}
-        </span>
-      </div>
-      <div className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold text-white" style={{ background: 'rgb(124,58,237)' }}>
-        <Zap size={10} />
-        -{discount}% PROMO
+        <div className="flex items-baseline gap-0">
+          <span className={priceMainClass} style={priceMainStyle}>{p.currency}</span>
+          <span className={priceMainClass} style={priceMainStyle}>
+            {p.promoPrice!.toFixed(2)}
+          </span>
+        </div>
       </div>
     </div>
   )
@@ -489,6 +515,7 @@ export default function ProductClient({
   variants = [],
   variantUrlMap = {},
   variantValuesMap = {},
+  metaPixelId = null,
 }: {
   product: ProductWithDetails
   imageUrls: string[]
@@ -500,6 +527,7 @@ export default function ProductClient({
   variants?: ProductWithDetails[]
   variantUrlMap?: Record<string, string>
   variantValuesMap?: Record<string, VariantResolved[]>
+  metaPixelId?: string | null
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -554,6 +582,49 @@ export default function ProductClient({
   }, [activeTab, hasDetails])
 
   const isInStock = availability.inStock
+  const maxSelectableQuantity = isInStock ? Math.max(1, availability.stock) : 1
+
+  // ─── Meta Pixel: ViewContent ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!metaPixelId) return
+    const pixelId = metaPixelId
+
+    function initAndTrack() {
+      const w = window as Window & { fbq?: (...args: unknown[]) => void; _fbq?: unknown }
+      if (typeof w.fbq !== 'function') {
+        // Minimal fbq stub
+        const fbq: ((...args: unknown[]) => void) & { callMethod?: (...args: unknown[]) => void; queue?: unknown[]; loaded?: boolean; version?: string } = function (...args: unknown[]) {
+          if (fbq.callMethod) fbq.callMethod(...args)
+          else { if (!fbq.queue) fbq.queue = []; fbq.queue.push(args) }
+        }
+        fbq.loaded = true
+        fbq.version = '2.0'
+        fbq.queue = []
+        w.fbq = fbq
+        w._fbq = fbq
+        const script = document.createElement('script')
+        script.async = true
+        script.src = 'https://connect.facebook.net/en_US/fbevents.js'
+        document.head.appendChild(script)
+      }
+      w.fbq!('init', pixelId)
+      w.fbq!('track', 'ViewContent', {
+        content_ids: [product.id],
+        content_type: 'product',
+        content_name: product.name,
+        value: product.promoPrice ?? product.price,
+        currency: product.currency ?? 'USD',
+      })
+    }
+
+    if (document.readyState === 'complete') {
+      initAndTrack()
+    } else {
+      window.addEventListener('load', initAndTrack, { once: true })
+      return () => window.removeEventListener('load', initAndTrack)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [metaPixelId, product.id])
 
 
   const mainCategory = useMemo(() => {
@@ -565,6 +636,47 @@ export default function ProductClient({
     () => hasInstallationStepsCategory(product, categories),
     [product, categories]
   )
+
+  const isProteinPuddingCategory = useMemo(() => {
+    const normalize = (value?: string | null) => (value ?? '').trim().toLowerCase()
+    const directCategory = normalize(categoryName)
+    if (directCategory === 'protein pudding') return true
+
+    const productCategoryIds = new Set(product.categories ?? [])
+    return categories.some((category) => {
+      if (!productCategoryIds.has(category.id)) return false
+      const name = normalize(category.name)
+      const slug = normalize(category.slug)
+      return (
+        name === 'protein pudding' ||
+        slug.includes('protein-pudding') ||
+        (name.includes('protein') && name.includes('pudding'))
+      )
+    })
+  }, [categoryName, categories, product.categories])
+
+  const selectedFlavorName = useMemo(() => {
+    const activeVariantKey = selectedVariant?.variantKey ?? product.variantKey
+    if (!activeVariantKey) return ''
+    const entry = Object.entries(activeVariantKey).find(([key]) => isFlavorKey(key))
+    if (!entry) return ''
+
+    const [key, rawValue] = entry
+    const resolved = variantValuesMap[key]?.find((item) => item.value === rawValue)?.resolvedValue?.value
+    return (resolved ?? rawValue ?? '').trim()
+  }, [selectedVariant, product.variantKey, variantValuesMap])
+
+  const nutritionIngredientsText = useMemo(() => {
+    const flavor = selectedFlavorName.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+    const isChocolateChipFlavor =
+      flavor.includes('chocolate') && (flavor.includes('chip') || flavor.includes('chips'))
+
+    if (isChocolateChipFlavor) {
+      return 'Chia Seed, Whey Protein Concentrate, Chocolate Chips (Chocolate, Cane Sugar, Cocoa Butter, Sunflower Lecithin), Medium Chain Coconut Oil Triglycerides, Natural Flavor, Cocoa Powder (Alkaline Process), Stevia Leaf Glycosides, Monk Fruit Extract.'
+    }
+
+    return 'Chia Seed, Whey Protein Concentrate, Medium Chain Coconut Oil Triglycerides, Freeze Dried Strawberry Slices, Vanilla Flavor With Other Natural Flavors, Stevia Leaf Glycosides, Monk Fruit Extract.'
+  }, [selectedFlavorName])
 
   const installationStep3Image = useMemo(() => {
     const productCategoryIds = new Set(product.categories ?? [])
@@ -612,6 +724,10 @@ export default function ProductClient({
     }, 140)
     return () => window.clearTimeout(t)
   }, [currentImageIdx, displayImageIdx])
+
+  useEffect(() => {
+    setQuantity((prev) => Math.max(1, Math.min(prev, maxSelectableQuantity)))
+  }, [maxSelectableQuantity])
 
   const handleAlsoLikeScroll = () => {
     const container = alsoLikeScrollRef.current
@@ -702,20 +818,36 @@ export default function ProductClient({
 
   const handleAddToCart = async () => {
     if (!isInStock) return
+    const safeQuantity = Math.max(1, Math.min(quantity, maxSelectableQuantity))
     try {
       setIsAdding(true)
-      try { await addToCartForUser(product.id, quantity) }
+      try { await addToCartForUser(product.id, safeQuantity) }
       catch {
         const current = getGuestCart()
         const idx = current.findIndex((it) => it.productId === product.id)
-        if (idx >= 0) current[idx].quantity += quantity
-        else current.push({ productId: product.id, quantity })
+        if (idx >= 0) current[idx].quantity = Math.min(current[idx].quantity + safeQuantity, maxSelectableQuantity)
+        else current.push({ productId: product.id, quantity: safeQuantity })
         setGuestCart(current)
       }
+      if (safeQuantity !== quantity) setQuantity(safeQuantity)
       setIsInCart(true)
       setAddMessage('Item added to cart.')
       window.setTimeout(() => setAddMessage(null), 2500)
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('cart:updated'))
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart:updated'))
+        window.dispatchEvent(new Event('cart:open'))
+        const w = window as Window & { fbq?: (...args: unknown[]) => void }
+        if (metaPixelId && typeof w.fbq === 'function') {
+          w.fbq('track', 'AddToCart', {
+            content_ids: [product.id],
+            content_type: 'product',
+            content_name: product.name,
+            value: product.promoPrice ?? product.price,
+            currency: product.currency ?? 'USD',
+            num_items: safeQuantity,
+          })
+        }
+      }
     } finally { setIsAdding(false) }
   }
 
@@ -748,7 +880,10 @@ export default function ProductClient({
         setGuestCart(current)
       }
       setRelatedInCartIds((prev) => new Set(prev).add(relatedProductId))
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('cart:updated'))
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart:updated'))
+        window.dispatchEvent(new Event('cart:open'))
+      }
     } finally { setIsAddingRelatedId(null) }
   }
 
@@ -768,7 +903,15 @@ export default function ProductClient({
       <Navbar />
 
       {/* ── Nutrition Modal ── */}
-      {showNutrition && <NutritionModal onClose={() => { setShowNutrition(false); requestAnimationFrame(() => setPanelFixedStyle(null)) }} />}
+      {showNutrition && isProteinPuddingCategory && (
+        <NutritionModal
+          ingredientsText={nutritionIngredientsText}
+          onClose={() => {
+            setShowNutrition(false)
+            requestAnimationFrame(() => setPanelFixedStyle(null))
+          }}
+        />
+      )}
 
       {/* ── Hero Split ── */}
       <div className="flex flex-col lg:flex-row lg:items-stretch">
@@ -885,7 +1028,12 @@ export default function ProductClient({
                               const variantLink = variantUrlMap[keyStr] ?? `/product/${product.slug}`
                               const isSelected = selectedVariant?.variantKey?.[key] === value.value
                               return (
-                                <Link key={value.id} href={variantLink} scroll={false} className="flex-1">
+                                <Link
+                                  key={value.id}
+                                  href={variantLink}
+                                  className="flex-1"
+                                  onClick={disableSmoothScrollForNextNavigation}
+                                >
                                   <span
                                     className={`flex h-11 w-full cursor-pointer items-center justify-center text-sm font-black uppercase tracking-wide transition-all duration-150 ${vi > 0 ? 'border-l-2 border-black' : ''}`}
                                     style={isSelected
@@ -912,7 +1060,12 @@ export default function ProductClient({
                                 : resolveFlavorImage(key, value.resolvedValue.value ?? '')
                               const displayName = value.resolvedValue.value ?? value.value
                               return (
-                                <Link key={value.id} href={variantLink} scroll={false} className="group relative flex-shrink-0">
+                                <Link
+                                  key={value.id}
+                                  href={variantLink}
+                                  className="group relative flex-shrink-0"
+                                  onClick={disableSmoothScrollForNextNavigation}
+                                >
                                   <span className="relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-2xl transition-all duration-200" style={{ background: 'transparent', border: 'none' }}>
                                     {isSelected && (
                                       <span className="absolute inset-0 rounded-2xl opacity-100 transition-opacity duration-200" style={{
@@ -948,13 +1101,13 @@ export default function ProductClient({
                               const isSelected = selectedVariant?.variantKey?.[key] === value.value
                               if (value.resolvedValue.type === 'color') {
                                 return (
-                                  <Link key={value.id} href={variantLink} scroll={false}>
+                                  <Link key={value.id} href={variantLink} onClick={disableSmoothScrollForNextNavigation}>
                                     <div className="h-9 w-9 cursor-pointer rounded-full border-3 border-black/10 transition" style={{ backgroundColor: value.resolvedValue.value, boxShadow: isSelected ? `0 0 0 2px white, 0 0 0 4px ${PURPLE}` : 'none' }} />
                                   </Link>
                                 )
                               }
                               return (
-                                <Link key={value.id} href={variantLink} scroll={false}>
+                                <Link key={value.id} href={variantLink} onClick={disableSmoothScrollForNextNavigation}>
                                   <span className="inline-flex cursor-pointer items-center justify-center rounded-md border-3 px-3 py-1.5 text-xs font-black uppercase tracking-wide transition-all"
                                     style={isSelected ? { background: PURPLE, borderColor: PURPLE, color: 'white', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 } : { borderColor: 'rgba(0,0,0,0.2)', color: 'black', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>
                                     {value.resolvedValue.value ?? value.value}
@@ -999,7 +1152,7 @@ export default function ProductClient({
               <div className="flex items-center overflow-hidden rounded-md border-3 border-black bg-white">
                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={!isInStock || quantity <= 1} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity <= 1 ? 'not-allowed' : 'pointer' }}>−</button>
                 <span className="w-8 text-center text-sm font-black text-black" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} disabled={!isInStock} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock ? 'not-allowed' : 'pointer' }}>+</button>
+                <button onClick={() => setQuantity((prev) => Math.min(prev + 1, maxSelectableQuantity))} disabled={!isInStock || quantity >= maxSelectableQuantity} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity >= maxSelectableQuantity ? 'not-allowed' : 'pointer' }}>+</button>
               </div>
               {!isMainCartStatusReady ? (
                 <button disabled className="flex flex-1 items-center justify-center rounded-md font-black uppercase tracking-widest text-white/70 opacity-80" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>Loading...</button>
@@ -1019,22 +1172,24 @@ export default function ProductClient({
             </div>
 
             {/* ── Nutrition Facts + Ingredients trigger ── */}
-            <div className="pt-4 pb-5 flex items-center justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  if (leftPanelRef.current) {
-                    const { top, left, width } = leftPanelRef.current.getBoundingClientRect()
-                    setPanelFixedStyle({ top, left, width })
-                  }
-                  setShowNutrition(true)
-                }}
-                className="text-sm font-black uppercase underline tracking-widest text-black transition-[letter-spacing] duration-200 ease-out hover:tracking-[0.12em]"
-                style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                Nutrition Facts + Ingredients
-              </button>
-            </div>
+            {isProteinPuddingCategory && (
+              <div className="pt-4 pb-5 flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (leftPanelRef.current) {
+                      const { top, left, width } = leftPanelRef.current.getBoundingClientRect()
+                      setPanelFixedStyle({ top, left, width })
+                    }
+                    setShowNutrition(true)
+                  }}
+                  className="text-sm font-black uppercase underline tracking-widest text-black transition-[letter-spacing] duration-200 ease-out hover:tracking-[0.12em]"
+                  style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  Nutrition Facts + Ingredients
+                </button>
+              </div>
+            )}
           </div>
 
           <hr className="border-t-2 border-black/15" />
@@ -1140,7 +1295,7 @@ export default function ProductClient({
               {
                 avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&q=80&fit=crop&crop=face',
                 name: 'Layla K.', role: 'Nutritionist', rating: 5,
-                quote: 'As a nutritionist, I\'m extremely picky about what I recommend. Zero added sugar, 22g plant protein, and MCT oil — this is the one I tell all my clients about.',
+                quote: 'As a nutritionist, I\'m extremely picky about what I recommend. Zero added sugar, 22g plant protein per serving, and MCT oil — this is the one I tell all my clients about.',
                 rotate: '1.2deg',
               },
             ] as { avatar: string; name: string; role: string; rating: number; quote: string; rotate: string }[]).map((t) => (

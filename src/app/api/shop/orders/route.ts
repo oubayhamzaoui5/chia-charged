@@ -38,7 +38,7 @@ function asNumber(value: unknown, fallback = 0) {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request)
-  const { allowed } = rateLimit(`orders:${ip}`, 10, 60 * 60 * 1000)
+  const { allowed } = await rateLimit(`orders:${ip}`, 10, 60 * 60 * 1000)
   if (!allowed) {
     return NextResponse.json(
       { message: 'Trop de commandes créées récemment. Réessayez dans 1 heure.' },
@@ -69,28 +69,60 @@ export async function POST(request: NextRequest) {
     }
 
     const rawItems = Array.isArray(body.items) ? (body.items as IncomingOrderItem[]) : []
-    const items = rawItems
+    const parsedItems = rawItems
       .map((item) => ({
         productId: asText(item.productId),
         name: asText(item.name) || "Produit",
         sku: asText(item.sku),
-        unitPrice: Math.max(0, asNumber(item.unitPrice, 0)),
         quantity: Math.max(1, Math.floor(asNumber(item.quantity, 1))),
       }))
-      .filter((item) => item.name && item.quantity > 0)
+      .filter((item) => item.quantity > 0)
 
-    if (items.length === 0) {
+    if (parsedItems.length === 0) {
       return NextResponse.json({ message: "Votre panier est vide." }, { status: 400 })
     }
-
-    const total = Number(
-      items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0).toFixed(2)
-    )
 
     const pb = createServerPb()
     if (user?.id && token) {
       pb.authStore.save(token, user as any)
     }
+
+    // Fetch real prices from PocketBase — never trust client-sent prices
+    const productIds = [...new Set(parsedItems.map((i) => i.productId).filter((id) => /^[a-zA-Z0-9]{15}$/.test(id)))]
+    if (productIds.length !== parsedItems.length) {
+      return NextResponse.json({ message: "Produit invalide dans le panier." }, { status: 400 })
+    }
+
+    const filter = productIds.map((id) => `id = '${id}'`).join(" || ")
+    const productRecords = await pb.collection("products").getFullList({
+      filter,
+      fields: "id,name,sku,price,promoPrice,isActive,inView",
+      requestKey: null,
+    })
+
+    const productMap = new Map(productRecords.map((p) => [p.id, p]))
+
+    const items = parsedItems.map((item) => {
+      const product = productMap.get(item.productId)
+      if (!product || product.isActive === false) {
+        throw Object.assign(new Error(`Produit indisponible: ${item.productId}`), { status: 400 })
+      }
+      const serverPrice =
+        product.promoPrice != null && Number.isFinite(Number(product.promoPrice)) && Number(product.promoPrice) > 0
+          ? Number(product.promoPrice)
+          : Number(product.price)
+      return {
+        productId: item.productId,
+        name: String(product.name) || item.name,
+        sku: String(product.sku || item.sku),
+        unitPrice: serverPrice,
+        quantity: item.quantity,
+      }
+    })
+
+    const total = Number(
+      items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0).toFixed(2)
+    )
 
     const created = await pb.collection("orders").create(
       {

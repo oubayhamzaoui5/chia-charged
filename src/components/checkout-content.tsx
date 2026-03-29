@@ -837,9 +837,9 @@ export function CheckoutContent() {
           <ChevronRight className="h-3 w-3" />
           <span style={{ color: '#111' }}>Information</span>
           <ChevronRight className="h-3 w-3" />
-          <span>Shipping</span>
-          <ChevronRight className="h-3 w-3" />
           <span>Payment</span>
+          <ChevronRight className="h-3 w-3" />
+          <span>Shipping</span>
         </nav>
 
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1fr_420px]">
@@ -1021,7 +1021,7 @@ export function CheckoutContent() {
                       className="mt-1.5 text-[10px] font-black uppercase tracking-wider"
                       style={{ fontFamily: FONT, fontWeight: 900, color: country === "US" ? '#2E7D32' : 'rgba(0,0,0,0.4)' }}
                     >
-                      {country === "US" ? "Shipping: $5.00 USD" : "International shipping: $20.00 USD"}
+                      {country === "US" ? "Shipping: $5.00" : "International shipping: $20.00"}
                     </p>
                   )}
                 </div>
@@ -1355,7 +1355,7 @@ export function CheckoutContent() {
                     className="text-sm font-black"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    ${cartSubtotal.toFixed(2)} USD
+                    ${cartSubtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -1369,7 +1369,7 @@ export function CheckoutContent() {
                     className="text-sm font-black"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}
                   >
-                    {country ? `+$${shipping.toFixed(2)} USD` : "Select country"}
+                    {country ? `+$${shipping.toFixed(2)}` : "Select country"}
                   </span>
                 </div>
                 <div className="flex items-end justify-between border-t-2 border-black/10 pt-3">
@@ -1390,7 +1390,7 @@ export function CheckoutContent() {
                       backgroundClip: 'text',
                     }}
                   >
-                    ${cartTotal.toFixed(2)} USD
+                    ${cartTotal.toFixed(2)}
                   </span>
                 </div>
               </div>

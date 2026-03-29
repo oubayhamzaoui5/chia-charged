@@ -18,7 +18,7 @@ const TESTIMONIALS = [
     name: "Nour A.",
     location: "Sousse",
     rating: 5,
-    quote: "22g of protein in something that tastes this good? I've been ordering every week since my first jar.",
+    quote: "22g of protein per serving in something that tastes this good? I've been ordering every week since my first jar.",
   },
   {
     id: 4,

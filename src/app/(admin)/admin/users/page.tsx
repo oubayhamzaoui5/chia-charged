@@ -29,6 +29,7 @@ async function getUsers(): Promise<AdminUser[]> {
   pb.authStore.save(session.token, session.user as any)
 
   const res = await pb.collection('users').getFullList({
+    filter: 'role = "customer"',
     sort: '-created',
     fields: 'id,email,surname,name,phone,username,role,isActive,verified,created',
     requestKey: null,

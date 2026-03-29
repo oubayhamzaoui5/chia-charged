@@ -1,15 +1,37 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
 
 export default function Footer() {
   const [footerEmail, setFooterEmail] = useState("")
+  const [isAuthResolved, setIsAuthResolved] = useState(false)
+  const [isSignedIn, setIsSignedIn] = useState(false)
 
-  function handleFooterSignup(e: React.FormEvent) {
+  useEffect(() => {
+    let cancelled = false
+
+    const loadSession = async () => {
+      try {
+        const res = await fetch("/api/auth/session", { cache: "no-store" })
+        if (!cancelled) setIsSignedIn(res.ok)
+      } catch {
+        if (!cancelled) setIsSignedIn(false)
+      } finally {
+        if (!cancelled) setIsAuthResolved(true)
+      }
+    }
+
+    void loadSession()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  function handleFooterSignup(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!footerEmail.trim()) return
     const captured = footerEmail.trim()
@@ -67,39 +89,41 @@ export default function Footer() {
               </p>
             </div>
 
-            {/* Newsletter signup */}
-            <div className="w-full max-w-md">
-              <p
-                className="mb-3 text-sm font-black uppercase tracking-[0.12em] text-white"
-                style={{ fontFamily: FONT, fontWeight: 900 }}
-              >
-                Sign up to get 10% off your first order
-              </p>
-              <form className="flex" onSubmit={handleFooterSignup}>
-                <input
-                  type="email"
-                  required
-                  value={footerEmail}
-                  onChange={e => setFooterEmail(e.target.value)}
-                  placeholder="Your email"
-                  className="h-13 flex-1 border-3 border-r-0 border-white bg-white/95 px-4 text-sm font-bold text-black outline-none placeholder:text-black/30"
-                  style={{ borderRadius: "4px 0 0 4px" }}
-                />
-                <button
-                  type="submit"
-                  className="shimmer-btn relative isolate h-13 overflow-hidden border-3 border-white px-6 text-xs font-black uppercase tracking-widest text-white transition-all duration-200 ease-out hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
-                  style={{
-                    fontFamily: FONT,
-                    fontWeight: 900,
-                    background: GRADIENT,
-                    borderRadius: "0 4px 4px 0",
-                    cursor: "pointer",
-                  }}
+            {/* Newsletter signup (hidden for signed-in users) */}
+            {isAuthResolved && !isSignedIn && (
+              <div className="w-full max-w-md">
+                <p
+                  className="mb-3 text-sm font-black uppercase tracking-[0.12em] text-white"
+                  style={{ fontFamily: FONT, fontWeight: 900 }}
                 >
-                  Sign Up
-                </button>
-              </form>
-            </div>
+                  Sign up to get 10% off your first order
+                </p>
+                <form className="flex" onSubmit={handleFooterSignup}>
+                  <input
+                    type="email"
+                    required
+                    value={footerEmail}
+                    onChange={e => setFooterEmail(e.target.value)}
+                    placeholder="Your email"
+                    className="h-13 flex-1 border-3 border-r-0 border-white bg-white/95 px-4 text-sm font-bold text-black outline-none placeholder:text-black/30"
+                    style={{ borderRadius: "4px 0 0 4px" }}
+                  />
+                  <button
+                    type="submit"
+                    className="shimmer-btn relative isolate h-13 overflow-hidden border-3 border-white px-6 text-xs font-black uppercase tracking-widest text-white transition-all duration-200 ease-out hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
+                    style={{
+                      fontFamily: FONT,
+                      fontWeight: 900,
+                      background: GRADIENT,
+                      borderRadius: "0 4px 4px 0",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Sign Up
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
 
           {/* ── Divider ── */}

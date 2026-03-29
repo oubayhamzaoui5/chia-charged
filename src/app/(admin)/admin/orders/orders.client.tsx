@@ -4,20 +4,26 @@ import { useMemo, useState, useRef, useEffect, Fragment } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import EmptyState from '@/components/admin/empty-state'
-import { Trash2, ChevronDown, ChevronUp, Pause, ShoppingCart, CheckCircle2, Clock, Truck, Search, ExternalLink } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronUp, Pause, ShoppingCart, CheckCircle2, Clock, Truck, Search, ExternalLink, Download } from 'lucide-react'
 import type { OrderRecord, OrderStatus } from '@/types/order.types'
 import { deleteOrderAction, updateOrderStatusAction } from './actions'
+import { useAdminToast } from '@/components/admin/AdminToast'
 
 export default function OrdersClient({ initialOrders }: { initialOrders: OrderRecord[] }) {
   const [orders, setOrders] = useState<OrderRecord[]>(initialOrders)
   const [query, setQuery] = useState('')
-  const [notice, setNotice] = useState<string | null>(null)
+  const { toast, ToastContainer } = useAdminToast()
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [yearFilter, setYearFilter] = useState<'all' | number>('all')
   const [monthFilter, setMonthFilter] = useState<'all' | number>('all')
   const [statusFilter, setStatusFilter] = useState<'all' | OrderStatus>('all')
+
+  function csvCell(value: unknown) {
+    const normalized = String(value ?? '').replace(/"/g, '""')
+    return `"${normalized}"`
+  }
 
   const verifiedIcon = (isVerified: boolean | undefined) => {
     if (!isVerified) return null;
@@ -93,6 +99,64 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
     returned: 'Returned',
   }
 
+  function exportOrdersCsv() {
+    if (sortedOrders.length === 0) {
+      toast('No orders to export.', 'error')
+      return
+    }
+
+    const headers = [
+      'Order ID',
+      'Date',
+      'Customer',
+      'Phone',
+      'Address',
+      'City',
+      'Postal Code',
+      'Status',
+      'Amount',
+      'Currency',
+      'Payment Mode',
+      'Items',
+      'Notes',
+    ]
+
+    const rows = sortedOrders.map((order) => {
+      const itemsSummary = (order.items ?? [])
+        .map((item) => `${item.quantity ?? 1}x ${item.name}${item.sku ? ` (${item.sku})` : ''}`)
+        .join(' | ')
+
+      return [
+        order.id,
+        new Date(order.created).toISOString(),
+        order.userName || 'Guest',
+        order.phone || '',
+        order.address || '',
+        order.city || '',
+        order.postalCode || '',
+        statusLabels[order.status as OrderStatus] ?? order.status,
+        order.total.toFixed(2),
+        order.currency || '$',
+        order.paymentMode || '',
+        itemsSummary,
+        order.notes || '',
+      ]
+    })
+
+    const csv = [headers, ...rows].map((row) => row.map(csvCell).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    toast('Orders CSV exported.', 'success')
+  }
+
   async function deleteOrder(id: string) {
     if (!confirm('Delete this order?')) return
 
@@ -101,11 +165,11 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
 
     try {
       await deleteOrderAction(id)
-      setNotice('Order deleted.')
+      toast('Order deleted.', 'success')
       window.dispatchEvent(new Event('admin:orders-changed'))
     } catch {
       setOrders(prev)
-      setNotice('Delete failed.')
+      toast('Delete failed.', 'error')
     }
   }
 
@@ -121,11 +185,11 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
         current.map((o) => (o.id === orderId ? { ...o, status: result.status } : o))
       )
       setOpenMenuId(null)
-      setNotice('Status updated.')
+      toast('Status updated.', 'success')
       window.dispatchEvent(new Event('admin:orders-changed'))
     } catch {
       setOrders(prev)
-      setNotice('Failed to update status.')
+      toast('Failed to update status.', 'error')
     }
   }
 
@@ -154,31 +218,42 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
     <div className="p-6 md:p-8">
 
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-blue-600 mb-2">
-          Orders
-        </h1>
-        <p className="text-slate-600 text-lg">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+          Operations
+        </p>
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>
+            Orders
+          </h1>
+          <span className="text-sm font-medium" style={{ color: '#6B7280' }}>
+            {sortedOrders.length} result{sortedOrders.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
           Manage and track all customer orders in real time.
         </p>
       </div>
 
       <div className="flex flex-col md:flex-row items-center gap-3 mb-6">
-        
-       <div className="relative flex-1 w-full">
-    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-    <input
-      type="text"
-      placeholder="Search by customer, city, postal code..."
-      value={query}
-      onChange={e => setQuery(e.target.value)}
-      className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder:text-slate-400 transition-all"
-    />
-  </div>
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#9CA3AF' }} />
+          <input
+            type="text"
+            placeholder="Search by customer, city, postal code..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all"
+            style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#111827' }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#4F46E5')}
+            onBlur={e => (e.currentTarget.style.borderColor = '#E8EAED')}
+          />
+        </div>
 
         <select
           value={yearFilter}
           onChange={e => setYearFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500"
+          className="rounded-xl px-4 py-2.5 text-sm outline-none"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
         >
           <option value="all">All years</option>
           {years.map(y => <option key={y} value={y}>{y}</option>)}
@@ -187,7 +262,8 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
         <select
           value={monthFilter}
           onChange={e => setMonthFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500"
+          className="rounded-xl px-4 py-2.5 text-sm outline-none"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
         >
           <option value="all">All months</option>
           {monthNames.map((name, i) => <option key={name} value={i+1}>{name}</option>)}
@@ -196,7 +272,8 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
         <select
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value as OrderStatus | 'all')}
-          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500"
+          className="rounded-xl px-4 py-2.5 text-sm outline-none"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
         >
           <option value="all">All statuses</option>
           {Object.keys(statusLabels).map(s => (
@@ -205,13 +282,17 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
             </option>
           ))}
         </select>
-      </div>
 
-      {notice && (
-        <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-slate-700">
-          {notice}
-        </div>
-      )}
+        <button
+          type="button"
+          onClick={exportOrdersCsv}
+          className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
+        >
+          <Download className="h-4 w-4" />
+          Export CSV
+        </button>
+      </div>
 
       {sortedOrders.length === 0 ? (
         <EmptyState title="No orders found" description="You don't have any orders yet." />
@@ -220,14 +301,15 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
   <div className="overflow-x-auto">
     <table className="w-full">
       <thead>
-        <tr className="border-b border-slate-200">
-          <th className="text-left py-3 px-4"></th>
-          <th className="py-3 ox-4 text-left text-slate-700 font-semibold text-base">Customer</th>
-          <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Date</th>
-          <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Address</th>
-          <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Status</th>
-          <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Amount</th>
-          <th className="py-3 px-4"></th>
+        <tr style={{ borderBottom: '1px solid #F0F2F5' }}>
+          <th className="text-left py-3 px-4 w-8"></th>
+          <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>ID</th>
+          <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>Customer</th>
+          <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>Date</th>
+          <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>Address</th>
+          <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>Status</th>
+          <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>Amount</th>
+          <th className="py-3 px-4 w-10"></th>
         </tr>
       </thead>
 
@@ -238,7 +320,8 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
               onClick={() =>
                 setExpandedId(expandedId === order.id ? null : order.id)
               }
-              className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+              className="cursor-pointer transition-colors hover:bg-[#F9FAFB]"
+              style={{ borderBottom: '1px solid #F0F2F5' }}
             >
               <td className="py-4 px-4">
                 {expandedId === order.id ? (
@@ -249,8 +332,12 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
               </td>
 
               <td className="py-4 px-4">
+                <span className="font-mono text-xs text-slate-600">{order.id.slice(-8)}</span>
+              </td>
+
+              <td className="py-4 px-4">
                 <div className="flex flex-col">
-                  <span className="text-blue-600 font-medium">
+                  <span className="font-semibold" style={{ color: '#4F46E5' }}>
                     {order.userName || 'Guest'}
                   </span>
                   {order.phone && (
@@ -287,7 +374,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
 </td>
 
               <td className="py-4 px-4 text-slate-800 font-medium">
-                {order.total.toFixed(2)} {order.currency || '$'}
+                ${order.total.toFixed(2)}
               </td>
 
               <td className="py-4 px-4">
@@ -309,8 +396,8 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
             </tr>
 
             {expandedId === order.id && (
-              <tr className="bg-slate-50 border-b border-slate-100">
-                <td colSpan={7} className="px-6 py-5">
+              <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #F0F2F5' }}>
+                <td colSpan={8} className="px-6 py-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
 
                     <div>
@@ -390,10 +477,9 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
                               </span>
                             </span>
                             <span className="font-medium">
-                              {(Number(item.unitPrice ?? 0) *
+                              ${(Number(item.unitPrice ?? 0) *
                                 (item.quantity ?? 1)
-                              ).toFixed(2)}{' '}
-                              {order.currency || '$'}
+                              ).toFixed(2)}
                             </span>
                           </div>
                         ))}
@@ -401,20 +487,28 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
                     </div>
 
                     <div className="md:col-span-2 pt-3 border-t border-slate-200">
-                      <div className="flex justify-between text-slate-700 mb-2">
-                        <span>Shipping</span>
-                        <span className="font-medium">
-                          8 {order.currency || '$'}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-slate-800 font-semibold text-base">
-                        <span>Total</span>
-                        <span>
-                          {order.total.toFixed(2)}{' '}
-                          {order.currency || '$'}
-                        </span>
-                      </div>
+                      {(() => {
+                        const subtotal = order.items?.reduce((sum, item) => sum + (Number(item.unitPrice ?? 0) * (item.quantity ?? 1)), 0) ?? 0
+                        const shipping = order.total - subtotal
+                        return (
+                          <>
+                            {shipping > 0 && (
+                              <div className="flex justify-between text-slate-700 mb-2">
+                                <span>Shipping</span>
+                                <span className="font-medium">
+                                  ${shipping.toFixed(2)}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex justify-between text-slate-800 font-semibold text-base">
+                              <span>Total</span>
+                              <span>
+                                ${order.total.toFixed(2)}
+                              </span>
+                            </div>
+                          </>
+                        )
+                      })()}
 
                       <div className="mt-3">
                         <Link
@@ -440,28 +534,30 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
 </>
         )}
 
-      {openMenuId && dropdownPos && createPortal(
-        <div id="order-dropdown" className="absolute w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-50" style={{ top: dropdownPos.top + 2, left: dropdownPos.left }}>
-          {['pending', 'confirmed', 'delevering', 'delivered', 'cancelled', 'on hold' , "returned"].map(s => (
-  <button
-    key={s}
-    onClick={() => updateStatus(openMenuId, s as OrderStatus)}
-    className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 text-slate-700 first:rounded-t-lg ${
-      orders.find(o => o.id === openMenuId)?.status === s
-        ? 'font-semibold bg-slate-50'
-        : ''
-    }`}
-  >
-    {statusLabels[s as OrderStatus]}
-  </button>
-))}
+      {ToastContainer}
 
-<button
-  onClick={() => deleteOrder(openMenuId)}
-  className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600 border-t border-slate-200 rounded-b-lg"
->
-  Delete
-</button>
+      {openMenuId && dropdownPos && createPortal(
+        <div id="order-dropdown" className="absolute w-44 rounded-xl z-50 overflow-hidden" style={{ top: dropdownPos.top + 4, left: dropdownPos.left, background: '#FFFFFF', border: '1px solid #E8EAED', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
+          {['pending', 'confirmed', 'delevering', 'delivered', 'cancelled', 'on hold', 'returned'].map(s => (
+            <button
+              key={s}
+              onClick={() => updateStatus(openMenuId, s as OrderStatus)}
+              className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[#F4F6FB]"
+              style={{
+                color: orders.find(o => o.id === openMenuId)?.status === s ? '#4F46E5' : '#374151',
+                fontWeight: orders.find(o => o.id === openMenuId)?.status === s ? 600 : 400,
+              }}
+            >
+              {statusLabels[s as OrderStatus]}
+            </button>
+          ))}
+          <button
+            onClick={() => deleteOrder(openMenuId)}
+            className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[#FEF2F2]"
+            style={{ color: '#EF4444', borderTop: '1px solid #F0F2F5' }}
+          >
+            Delete
+          </button>
         </div>, document.body
       )}
     </div>

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import ProductClient from '@/app/shop/[slug]/product.client'
 import { getProductDetailsBySlug } from '@/lib/services/product.service'
+import { getOAuthKeys } from '@/lib/oauth-keys'
 
 export const revalidate = 120
 
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : 'Chia Charged | Product',
     description: product?.description
       ? product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160)
-      : 'High-protein chia seed pudding with 22g protein, 12g fiber and MCT oil. Available in Strawberry & Cream and Chocolate.',
+      : 'High-protein chia seed pudding with 22g protein per serving, 12g fiber and MCT oil. Available in Strawberry & Cream and Chocolate.',
     alternates: { canonical: `/product/${slug}` },
   }
 }
@@ -32,7 +33,10 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const data = await getProductDetailsBySlug(slug)
+  const [data, metaPixelId] = await Promise.all([
+    getProductDetailsBySlug(slug),
+    Promise.resolve(getOAuthKeys()?.metaPixelId ?? null),
+  ])
 
   if (!data) {
     notFound()
@@ -50,6 +54,7 @@ export default async function ProductPage({
       variants={data.variants}
       variantUrlMap={data.variantUrlMap}
       variantValuesMap={data.variantValuesMap}
+      metaPixelId={metaPixelId}
     />
   )
 }

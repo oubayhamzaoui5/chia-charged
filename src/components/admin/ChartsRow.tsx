@@ -28,19 +28,34 @@ export default function ChartsRow() {
     });
   };
 
-  useEffect(() => {
+  const [error, setError] = useState(false)
+
+  const load = () => {
+    setLoading(true)
+    setError(false)
     getChartRowDataAction()
       .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+      .catch(() => setError(true))
+      .finally(() => setLoading(false))
+  }
 
-  if (loading || !data) {
+  useEffect(() => { load() }, []);
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center h-48 bg-white rounded-xl shadow-sm mb-8">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      <div className="flex items-center justify-center h-48 rounded-2xl bg-white mb-8" style={{ border: '1px solid #E8EAED' }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#4F46E5' }} />
       </div>
     );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex h-48 items-center justify-center gap-3 rounded-2xl mb-8" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
+        <span className="text-sm font-medium" style={{ color: '#991B1B' }}>Failed to load chart data.</span>
+        <button onClick={load} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white" style={{ background: '#EF4444' }}>Retry</button>
+      </div>
+    )
   }
 
   const maxSale = Math.max(...(data.weeklySalesData || [1]), 1);
@@ -68,14 +83,14 @@ export default function ChartsRow() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       {/* Weekly Sales */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="rounded-2xl bg-white p-6" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
         <div className="flex items-center gap-2 mb-4">
-          <h3 className="text-slate-700 font-semibold">Weekly Sales</h3>
+          <h3 className="font-semibold" style={{ color: '#111827' }}>Weekly Sales</h3>
         </div>
         <div className="flex items-end justify-between gap-6">
           <div className="flex flex-col justify-end pb-2">
             <p className="text-3xl font-bold text-slate-800 mb-1">
-              {formatDT(data.weeklySalesTotal)} <span className="text-lg font-medium text-slate-500">$</span>
+              ${formatDT(data.weeklySalesTotal)}
             </p>
             <span className={`inline-flex items-center text-sm font-medium ${data.salesGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {data.salesGrowth}% &nbsp;
@@ -121,8 +136,8 @@ export default function ChartsRow() {
       </div>
 
       {/* Top Categories */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <h3 className="text-slate-700 font-semibold mb-6">Top Categories</h3>
+      <div className="rounded-2xl bg-white p-6" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+        <h3 className="font-semibold mb-6" style={{ color: '#111827' }}>Top Categories</h3>
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-3 w-full max-w-[220px]">
             {data.topCategories.map((item: any) => (

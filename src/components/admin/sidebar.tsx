@@ -10,8 +10,8 @@ import {
   LogOut,
   Sliders,
   FileText,
-  Star,
   Users,
+  ShieldCheck,
   Settings,
   KeyRound,
 } from "lucide-react"
@@ -58,35 +58,83 @@ export default function Sidebar() {
   }, [])
 
   return (
-    <aside className="hidden w-60 border-r border-foreground/10 bg-background md:flex md:flex-col">
-      <div className="flex items-center justify-center px-6 py-4">
-        <Link href="/" className="flex items-center justify-center">
-          <div className="relative h-20 w-20">
-            <Image src="/logow.webp" alt="Chia Charged logo" width={160} height={160} className="object-cover" />
+    <aside
+      className="hidden w-60 md:flex md:flex-col"
+      style={{
+        background: '#FFFFFF',
+        borderRight: '1px solid #E8EAED',
+      }}
+    >
+      {/* Logo */}
+      <div
+        className="flex items-center gap-3 px-5 py-4"
+        style={{ borderBottom: '1px solid #F0F2F5' }}
+      >
+        <Link href="/" className="flex items-center gap-3">
+          <div
+            className="relative h-8 w-8 overflow-hidden rounded-lg shrink-0"
+            style={{ background: '#EEF2FF' }}
+          >
+            <Image
+              src="/logow.webp"
+              alt="logo"
+              width={32}
+              height={32}
+              className="object-cover"
+            />
           </div>
+          <span
+            className="text-sm font-bold truncate"
+            style={{ color: '#111827', letterSpacing: '-0.01em' }}
+          >
+            Admin Panel
+          </span>
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-2 px-3 py-0">
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        <p
+          className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest"
+          style={{ color: '#9CA3AF' }}
+        >
+          Main
+        </p>
         <NavLink href="/admin" icon={LayoutDashboard} label="Dashboard" />
         <NavLink href="/admin/products" icon={Package} label="Products" />
-        <NavLink href="/admin/vedettes" icon={Star} label="Featured" />
         <NavLink href="/admin/categories" icon={FolderTree} label="Categories" />
         <NavLink href="/admin/variables" icon={Sliders} label="Variables" />
+
+        <p
+          className="px-3 pt-4 pb-2 text-[10px] font-semibold uppercase tracking-widest"
+          style={{ color: '#9CA3AF' }}
+        >
+          Operations
+        </p>
         <NavLink href="/admin/orders" icon={ShoppingCart} label="Orders" badge={pendingCount} />
         <NavLink href="/admin/inventory" icon={Boxes} label="Inventory" />
         <NavLink href="/admin/users" icon={Users} label="Customers" />
+        <NavLink href="/admin/admins" icon={ShieldCheck} label="Admins" />
         <NavLink href="/admin/blog" icon={FileText} label="Blog" />
+
+        <p
+          className="px-3 pt-4 pb-2 text-[10px] font-semibold uppercase tracking-widest"
+          style={{ color: '#9CA3AF' }}
+        >
+          System
+        </p>
         <NavLink href="/admin/keys" icon={KeyRound} label="API Keys" />
         <NavLink href="/admin/settings" icon={Settings} label="Settings" />
       </nav>
 
-      <div className="px-3 pb-4">
+      {/* Logout */}
+      <div className="px-3 pb-4 pt-2" style={{ borderTop: '1px solid #F0F2F5' }}>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-red-600 cursor-pointer transition-colors hover:bg-foreground/15"
+          className="group flex w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[#FFF1F1]"
+          style={{ color: '#EF4444' }}
         >
-          <LogOut size={20} />
+          <LogOut size={16} />
           Sign out
         </button>
       </div>

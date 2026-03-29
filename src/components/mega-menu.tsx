@@ -313,7 +313,7 @@ function MegaProductCard({
               )}
               {hasPromo && (
                 <span
-                  className="rounded-sm border-2 border-white/30 bg-white/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white backdrop-blur-sm"
+                  className="rounded-sm border-2 border-red-900/40 bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white"
                   style={{ fontFamily: FONT }}
                 >
                   Promo

@@ -7,7 +7,7 @@ const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50
 
 const stats = [
   { value: "500+", label: "Happy Customers" },
-  { value: "22g", label: "Protein Per Jar" },
+  { value: "22g", label: "Protein Per Serving" },
   { value: "100%", label: "Natural Ingredients" },
   { value: "4.8", label: "Average Rating", suffix: "★" },
 ]

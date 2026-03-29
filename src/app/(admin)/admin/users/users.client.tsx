@@ -1,16 +1,21 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Search, CheckCircle2, XCircle, ShieldCheck, User } from 'lucide-react'
+import { Search, CheckCircle2, XCircle, ShieldCheck, User, Download } from 'lucide-react'
 import type { AdminUser } from './page'
 import { toggleUserActiveAction } from './actions'
+import { useAdminToast } from '@/components/admin/AdminToast'
 
 export default function UsersCustomer({ initialUsers }: { initialUsers: AdminUser[] }) {
   const [users, setUsers] = useState<AdminUser[]>(initialUsers)
   const [query, setQuery] = useState('')
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'customer'>('all')
-  const [notice, setNotice] = useState<string | null>(null)
+  const { toast, ToastContainer } = useAdminToast()
   const [togglingId, setTogglingId] = useState<string | null>(null)
+
+  function csvCell(value: unknown) {
+    const normalized = String(value ?? '').replace(/"/g, '""')
+    return `"${normalized}"`
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -22,22 +27,20 @@ export default function UsersCustomer({ initialUsers }: { initialUsers: AdminUse
         u.email.toLowerCase().includes(q) ||
         u.phone.toLowerCase().includes(q) ||
         u.username.toLowerCase().includes(q)
-      const matchesRole = roleFilter === 'all' || u.role === roleFilter
-      return matchesQuery && matchesRole
+      return matchesQuery
     })
-  }, [users, query, roleFilter])
+  }, [users, query])
 
   async function handleToggleActive(user: AdminUser) {
     setTogglingId(user.id)
     try {
       await toggleUserActiveAction(user.id, !user.isActive)
       setUsers(prev => prev.map(u => u.id === user.id ? { ...u, isActive: !u.isActive } : u))
-      setNotice(`${user.name || user.email} ${!user.isActive ? 'activated' : 'deactivated'}.`)
+      toast(`${user.name || user.email} ${!user.isActive ? 'activated' : 'deactivated'}.`, 'success')
     } catch {
-      setNotice('Error updating user.')
+      toast('Error updating user.', 'error')
     } finally {
       setTogglingId(null)
-      setTimeout(() => setNotice(null), 3000)
     }
   }
 
@@ -47,45 +50,94 @@ export default function UsersCustomer({ initialUsers }: { initialUsers: AdminUse
     return d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
+  function exportUsersCsv() {
+    if (filtered.length === 0) {
+      toast('No customers to export.', 'error')
+      return
+    }
+
+    const headers = [
+      'User ID',
+      'First Name',
+      'Last Name',
+      'Username',
+      'Email',
+      'Phone',
+      'Role',
+      'Verified',
+      'Status',
+      'Joined',
+    ]
+
+    const rows = filtered.map((user) => [
+      user.id,
+      user.name || '',
+      user.surname || '',
+      user.username || '',
+      user.email || '',
+      user.phone || '',
+      user.role || '',
+      user.verified ? 'Yes' : 'No',
+      user.isActive ? 'Active' : 'Inactive',
+      user.created ? new Date(user.created).toISOString() : '',
+    ])
+
+    const csv = [headers, ...rows].map((row) => row.map(csvCell).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `customers-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    toast('Customers CSV exported.', 'success')
+  }
+
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Customers</h1>
-        <span className="text-sm text-muted-foreground">{filtered.length} customer{filtered.length !== 1 ? 's' : ''}</span>
-      </div>
-
-      {notice && (
-        <div className="rounded-md bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-700">
-          {notice}
+        <div>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+            Operations
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>Customers</h1>
         </div>
-      )}
+        <span className="text-sm font-medium" style={{ color: '#6B7280' }}>{filtered.length} customer{filtered.length !== 1 ? 's' : ''}</span>
+      </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#9CA3AF' }} />
           <input
             type="text"
             placeholder="Search by name, email, phone..."
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className="w-full rounded-lg border border-foreground/20 bg-background pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+            className="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none transition-all"
+            style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#111827' }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#4F46E5')}
+            onBlur={e => (e.currentTarget.style.borderColor = '#E8EAED')}
           />
         </div>
-        <select
-          value={roleFilter}
-          onChange={e => setRoleFilter(e.target.value as 'all' | 'admin' | 'customer')}
-          className="rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+        <button
+          type="button"
+          onClick={exportUsersCsv}
+          className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
         >
-          <option value="all">All roles</option>
-          <option value="customer">Customers</option>
-          <option value="admin">Admins</option>
-        </select>
+          <Download className="h-4 w-4" />
+          Export CSV
+        </button>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-foreground/10">
+      <div className="overflow-x-auto rounded-2xl bg-white" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-foreground/10 bg-foreground/5 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <tr className="text-left text-xs font-semibold uppercase tracking-widest" style={{ borderBottom: '1px solid #F0F2F5', color: '#9CA3AF', background: '#FAFAFA' }}>
+              <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">User</th>
               <th className="px-4 py-3">Contact</th>
               <th className="px-4 py-3">Role</th>
@@ -95,28 +147,31 @@ export default function UsersCustomer({ initialUsers }: { initialUsers: AdminUse
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-foreground/10">
+          <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">No users found.</td>
+                <td colSpan={8} className="px-4 py-12 text-center" style={{ color: '#9CA3AF' }}>No users found.</td>
               </tr>
             ) : (
               filtered.map(user => (
-                <tr key={user.id} className="hover:bg-foreground/5 transition-colors">
+                <tr key={user.id} className="transition-colors hover:bg-[#F9FAFB]" style={{ borderBottom: '1px solid #F0F2F5' }}>
                   <td className="px-4 py-3">
-                    <div className="font-medium text-foreground">
+                    <span className="font-mono text-xs text-[#6B7280]">{user.id.slice(-8)}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="font-medium" style={{ color: '#111827' }}>
                       {user.name || user.surname
                         ? `${user.name} ${user.surname}`.trim()
-                        : <span className="text-muted-foreground italic">No name</span>}
+                        : <span className="italic text-[#9CA3AF]">No name</span>}
                     </div>
                     {user.username && (
-                      <div className="text-xs text-muted-foreground">@{user.username}</div>
+                      <div className="text-xs text-[#6B7280]">@{user.username}</div>
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-foreground">{user.email}</div>
+                    <div className="text-[#111827]">{user.email}</div>
                     {user.phone && (
-                      <div className="text-xs text-muted-foreground">{user.phone}</div>
+                      <div className="text-xs text-[#6B7280]">{user.phone}</div>
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -136,7 +191,7 @@ export default function UsersCustomer({ initialUsers }: { initialUsers: AdminUse
                     {user.verified ? (
                       <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                     ) : (
-                      <XCircle className="h-4 w-4 text-foreground/30" />
+                      <XCircle className="h-4 w-4 text-[#111827]/30" />
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -150,7 +205,7 @@ export default function UsersCustomer({ initialUsers }: { initialUsers: AdminUse
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">
+                  <td className="px-4 py-3 text-[#6B7280]">
                     {formatDate(user.created)}
                   </td>
                   <td className="px-4 py-3">
@@ -173,6 +228,7 @@ export default function UsersCustomer({ initialUsers }: { initialUsers: AdminUse
           </tbody>
         </table>
       </div>
+      {ToastContainer}
     </div>
   )
 }

@@ -16,6 +16,24 @@ export async function getTodaySalesAction() {
   return fetchTodaySales()
 }
 
+export async function getTodayVisitsAction(): Promise<number> {
+  await requireAdmin()
+  const { pb } = await getAdminPbForAction()
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const toPb = (d: Date) =>
+    d.toISOString().replace('T', ' ').split('.')[0]
+  try {
+    const result = await pb.collection('visits').getList(1, 1, {
+      filter: `created >= "${toPb(start)}"`,
+      requestKey: null,
+    })
+    return result.totalItems
+  } catch {
+    return 0
+  }
+}
+
 export async function getAlertCountsAction() {
   await requireAdmin()
   return fetchAlertCounts()

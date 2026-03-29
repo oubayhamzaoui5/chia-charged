@@ -15,7 +15,7 @@ const TESTIMONIALS = [
     handle: "Marathon Runner",
     rating: 5,
     quote:
-      "22g of protein and it tastes like dessert? I've been eating this every morning for three months. My energy levels have never been more consistent.",
+      "22g of protein per serving and it tastes like dessert? I've been eating this every morning for three months. My energy levels have never been more consistent.",
   },
   {
     id: 3,

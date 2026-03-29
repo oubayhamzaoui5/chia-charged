@@ -94,11 +94,11 @@ export function Navbar(props: NavbarProps) {
 
   // profile dropdown state (desktop)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const profileTimeoutRef = useRef<number | null>(null)
 
   // profile dropdown positioning
   const [profileShiftX, setProfileShiftX] = useState(0)
   const profileMenuRef = useRef<HTMLDivElement | null>(null)
+  const profileRootRef = useRef<HTMLDivElement | null>(null)
 
   // auth user (PocketBase)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
@@ -314,24 +314,6 @@ export function Navbar(props: NavbarProps) {
       window.dispatchEvent(new Event("signup-promo:visibility-change"))
     }
     setShowSignupPromo(false)
-  }
-
-  const handleProfileEnter = () => {
-    if (!currentUser) return
-    if (profileTimeoutRef.current) {
-      window.clearTimeout(profileTimeoutRef.current)
-    }
-    setIsProfileOpen(true)
-  }
-
-  const handleProfileLeave = () => {
-    if (!currentUser) return
-    if (profileTimeoutRef.current) {
-      window.clearTimeout(profileTimeoutRef.current)
-    }
-    profileTimeoutRef.current = window.setTimeout(() => {
-      setIsProfileOpen(false)
-    }, 150)
   }
 
   const handleLogout = async () => {
@@ -646,6 +628,30 @@ export function Navbar(props: NavbarProps) {
     }
   }, [isProfileOpen])
 
+  useEffect(() => {
+    if (!isProfileOpen) return
+
+    const onDocClick = (event: MouseEvent) => {
+      const target = event.target as Node
+      if (!profileRootRef.current?.contains(target)) {
+        setIsProfileOpen(false)
+      }
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsProfileOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", onDocClick)
+    window.addEventListener("keydown", onKeyDown)
+    return () => {
+      document.removeEventListener("mousedown", onDocClick)
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [isProfileOpen])
+
   // close language menu on outside click
   useEffect(() => {
     if (!isLangOpen) return
@@ -782,6 +788,10 @@ export function Navbar(props: NavbarProps) {
     [currentUser?.surname, currentUser?.name].filter(Boolean).join(" ") ||
     currentUser?.email ||
     "Account"
+  const fullName = [currentUser?.surname, currentUser?.name].filter(Boolean).join(" ").trim()
+  const profileLabel = currentUser
+    ? (fullName || currentUser.email || "Account")
+    : "Log in"
   const NAVBAR_GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
   const shouldShowSignupPromo = showSignupPromo
   const navSpacerClass = reserveSpace
@@ -913,7 +923,7 @@ export function Navbar(props: NavbarProps) {
             {/* Cart with badge */}
             <button
               type="button"
-              className="relative inline-flex h-12 w-12 items-center justify-center rounded-xl text-white transition-all hover:opacity-80 active:scale-95"
+              className="relative inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl text-white transition-all hover:opacity-80 active:scale-95"
               aria-label="Cart"
               onClick={openCart}
             >
@@ -928,15 +938,14 @@ export function Navbar(props: NavbarProps) {
               )}
             </button>
 
-            {/* Profile + centered dropdown with delay */}
+            {/* Profile + centered dropdown (click to toggle) */}
             <div
               className="relative"
-              onMouseEnter={currentUser ? handleProfileEnter : undefined}
-              onMouseLeave={currentUser ? handleProfileLeave : undefined}
+              ref={profileRootRef}
             >
               <button
                 type="button"
-                className="inline-flex h-12 w-12 items-center justify-center rounded-xl text-white transition-all hover:opacity-80 active:scale-95"
+                className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl px-3 text-white transition-all hover:opacity-80 active:scale-95"
                 aria-label="Account"
                 onClick={() => {
                   if (!currentUser) {
@@ -947,19 +956,36 @@ export function Navbar(props: NavbarProps) {
                 }}
               >
                 <CircleUser size={32} strokeWidth={2} />
+                <span
+                  className="max-w-[12rem] truncate text-[0.8rem] font-black uppercase tracking-[0.12em] text-white"
+                  style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}
+                >
+                  {profileLabel}
+                </span>
               </button>
 
+              <AnimatePresence>
               {currentUser && isProfileOpen && (
                 <div
                   ref={profileMenuRef}
-                  className="absolute left-1/2 top-full mt-3 w-64 max-w-[calc(100vw-4rem)] space-y-2 rounded-2xl px-3 py-3 text-black overflow-hidden bg-accent"
+                  className="absolute left-1/2 top-full mt-3 w-64 max-w-[calc(100vw-4rem)]"
                   style={{
                     transform: `translateX(calc(-50% + ${profileShiftX}px))`,
+                    maxWidth: 'calc(100vw - 16px)',
+                    width: 'min(16rem, calc(100vw - 16px))',
+                  }}
+                >
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="space-y-2 rounded-2xl px-3 py-3 text-black overflow-hidden bg-accent"
+                  style={{
+                    transformOrigin: "top center",
                     border: '4px solid #111',
                     boxShadow: '6px 6px 0 #111',
                     fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
-                    maxWidth: 'calc(100vw - 16px)',
-                    width: 'min(16rem, calc(100vw - 16px))',
                   }}
                 >
                   <div
@@ -1025,8 +1051,10 @@ export function Navbar(props: NavbarProps) {
                         </div>
                       </button>
                     </div>
+                </motion.div>
                 </div>
               )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -1042,7 +1070,7 @@ export function Navbar(props: NavbarProps) {
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                className="inline-flex h-12 w-12 items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
+                className="inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
                 aria-label="Account"
                 onClick={() => {
                   if (!currentUser) {
@@ -1063,7 +1091,7 @@ export function Navbar(props: NavbarProps) {
                 type="button"
                 onClick={openCart}
                 aria-label="Cart"
-                className="relative inline-flex h-12 w-12 items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
+                className="relative inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
               >
                 <ShoppingBag size={30} strokeWidth={2.25} />
                 {cartCount > 0 && (
@@ -1248,7 +1276,7 @@ export function Navbar(props: NavbarProps) {
 
                 {/* Stats strip */}
                 <div className="flex gap-5 border-t border-white/15 pt-5">
-                  {[["22g", "Protein"], ["12g", "Fiber"], ["100%", "Natural"]].map(([val, label]) => (
+                  {[["22g", "Protein/Serving"], ["12g", "Fiber"], ["100%", "Natural"]].map(([val, label]) => (
                     <div key={label}>
                       <p className="text-base uppercase leading-none text-white" style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}>{val}</p>
                       <p className="text-[8px] uppercase tracking-[0.15em] text-white/40" style={{ fontFamily: MODAL_FONT, fontWeight: 900 }}>{label}</p>

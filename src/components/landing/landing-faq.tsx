@@ -26,7 +26,7 @@ const faqItems = [
   {
     question: "How much protein does each jar contain?",
     answer:
-      "Each jar packs 22g of high-quality plant protein per serving, 12g of fiber, MCT oil and zero added sugar. It's the perfect snack for muscle recovery and sustained energy.",
+      "Each serving packs 22g of high-quality plant protein, 12g of fiber, MCT oil and zero added sugar. It's the perfect snack for muscle recovery and sustained energy.",
   },
   {
     question: "Do you offer economy shipping?",

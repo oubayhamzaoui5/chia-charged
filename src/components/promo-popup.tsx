@@ -16,13 +16,36 @@ export default function PromoPopup() {
   const [email, setEmail] = useState('')
 
   useEffect(() => {
-    try {
-      const dismissed = localStorage.getItem(STORAGE_KEY)
-      if (dismissed && Date.now() - Number(dismissed) < COOLDOWN_MS) return
-    } catch { /* SSR / privacy mode */ }
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | null = null
 
-    const t = setTimeout(() => setVisible(true), DELAY_MS)
-    return () => clearTimeout(t)
+    async function initPopup() {
+      try {
+        const res = await fetch('/api/auth/session', { cache: 'no-store' })
+        const data = await res.json().catch(() => null)
+        if (res.ok && data?.user?.id) return
+      } catch {
+        // fallback to popup behavior if auth check fails
+      }
+
+      try {
+        const dismissed = localStorage.getItem(STORAGE_KEY)
+        if (dismissed && Date.now() - Number(dismissed) < COOLDOWN_MS) return
+      } catch {
+        // SSR / privacy mode
+      }
+
+      timer = setTimeout(() => {
+        if (!cancelled) setVisible(true)
+      }, DELAY_MS)
+    }
+
+    void initPopup()
+
+    return () => {
+      cancelled = true
+      if (timer) clearTimeout(timer)
+    }
   }, [])
 
   function handleClose() {
@@ -101,7 +124,7 @@ export default function PromoPopup() {
                     className="mt-0.5 text-[13px] uppercase leading-tight"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    22g Protein &middot; 12g Fiber &middot; MCT Oil
+                    22g Protein/Serving &middot; 12g Fiber &middot; MCT Oil
                   </p>
                 </div>
               </div>
@@ -223,7 +246,7 @@ export default function PromoPopup() {
                       <div className="mt-8 flex gap-6 border-t border-white/15 pt-5">
                         {[
                           ['1000+', 'Customers'],
-                          ['22g', 'Protein'],
+                          ['22g', 'Protein/Serving'],
                           ['100%', 'Natural'],
                         ].map(([val, label]) => (
                           <div key={label}>

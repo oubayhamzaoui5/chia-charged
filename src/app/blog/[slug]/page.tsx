@@ -77,7 +77,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <Link
               href="/blog"
               className="mb-8 inline-flex items-center gap-2 border-3 border-black bg-white px-6 py-3.5 text-xs font-black uppercase tracking-[0.12em] text-black transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
-              style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111' }}
+              style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111', borderRadius: '8px' }}
             >
               <ArrowLeft size={12} />
               Back to Blog
@@ -107,7 +107,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="mx-auto -mt-1 max-w-4xl px-6">
             <div
               className="relative -mt-8 aspect-video overflow-hidden border-4 border-black bg-white"
-              style={{ boxShadow: '8px 8px 0 #111' }}
+              style={{ boxShadow: '8px 8px 0 #111', borderRadius: '8px' }}
             >
               <Image
                 src={post.coverImage}
@@ -127,7 +127,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <article className="mx-auto w-full max-w-4xl px-6 py-14 md:py-20">
           <div
             className="overflow-hidden border-4 border-black bg-white p-6 md:p-10 lg:p-14"
-            style={{ boxShadow: '8px 8px 0 #111' }}
+            style={{ boxShadow: '8px 8px 0 #111', borderRadius: '8px' }}
           >
             <style>{`
               .brutalist-prose h2 {
@@ -211,7 +211,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <Link
               href="/blog"
               className="flex flex-1 items-center justify-center gap-2 border-3 border-black bg-white px-6 py-3.5 text-xs font-black uppercase tracking-[0.12em] text-black transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
-              style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111' }}
+              style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111', borderRadius: '8px' }}
             >
               <ArrowLeft className="h-4 w-4" />
               All Articles
@@ -219,7 +219,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <Link
               href="/"
               className="flex flex-1 items-center justify-center gap-2 border-3 border-black px-6 py-3.5 text-xs font-black uppercase tracking-[0.12em] text-white transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
-              style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '4px 4px 0 #111' }}
+              style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '4px 4px 0 #111', borderRadius: '8px' }}
             >
               Shop Now
               <ArrowRight className="h-4 w-4" />
@@ -250,6 +250,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     style={
                       {
                         border: '4px solid #111',
+                        borderRadius: '8px',
                         '--card-rotate': i === 0 ? '-0.8deg' : '0.6deg',
                       } as CSSProperties & { ['--card-rotate']?: string }
                     }

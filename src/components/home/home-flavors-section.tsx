@@ -112,7 +112,7 @@ export default function HomeFlavorsSection() {
                 </p>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {['22g Protein', '12g Fiber', 'MCT Oil'].map((tag) => (
+                  {['22g Protein/Serving', '12g Fiber', 'MCT Oil'].map((tag) => (
                     <span
                       key={tag}
                       className="rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700"

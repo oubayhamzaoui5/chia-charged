@@ -7,7 +7,7 @@ const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50
 
 const ingredients = [
   { name: "Chia Seeds", desc: "Rich in omega-3, fiber and antioxidants. The ultimate superfood.", emoji: "🌱" },
-  { name: "Plant Protein", desc: "22g of high-quality protein for muscle recovery.", emoji: "💪" },
+  { name: "Plant Protein", desc: "22g of high-quality protein per serving for muscle recovery.", emoji: "💪" },
   { name: "MCT Oil", desc: "Healthy fats for energy, focus and metabolism.", emoji: "⚡" },
   { name: "Real Fruit", desc: "Real strawberries or real chocolate — never artificial flavors.", emoji: "🍓" },
 ]

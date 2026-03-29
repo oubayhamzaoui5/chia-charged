@@ -146,6 +146,17 @@ export default function ProductForm({
   const [promoMode, setPromoMode] = useState<PromoMode>("percent")
   const [thumbOrder, setThumbOrder] = useState<string[]>([])
   const [relatedSearch, setRelatedSearch] = useState("")
+  const [skuWarning, setSkuWarning] = useState(false)
+
+  function checkSkuDuplicate(value: string) {
+    const trimmed = value.trim().toLowerCase()
+    if (!trimmed) { setSkuWarning(false); return }
+    const isDuplicate = relatedProductOptions.some(
+      (p) => p.sku.toLowerCase() === trimmed &&
+        !(editState.mode === 'edit' && p.id === editState.id)
+    )
+    setSkuWarning(isDuplicate)
+  }
 
   const thumbItems = useMemo(() => {
     const existingItems = form.existing.map((filename) => ({
@@ -515,9 +526,10 @@ export default function ProductForm({
                 type="text"
                 value={form.sku}
                 placeholder="SKU-001"
-                onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                onChange={(e) => { setForm({ ...form, sku: e.target.value }); setSkuWarning(false) }}
+                onBlur={(e) => checkSkuDuplicate(e.target.value)}
                 className={`${inputClasses} ${
-                  unchangedParentSku
+                  unchangedParentSku || skuWarning
                     ? "border-red-300 bg-red-50/40 text-red-700 focus:border-red-500 focus:ring-red-500/10"
                     : ""
                 }`}
@@ -525,6 +537,11 @@ export default function ProductForm({
               {unchangedParentSku && (
                 <p className="mt-1 text-xs font-medium text-red-600">
                   Changez le SKU pour la variante.
+                </p>
+              )}
+              {skuWarning && !unchangedParentSku && (
+                <p className="mt-1 text-xs font-medium text-red-600">
+                  This SKU is already used by another product.
                 </p>
               )}
             </div>
@@ -738,7 +755,7 @@ export default function ProductForm({
                   className={`${inputClasses} pr-12`}
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
-                  {form.currency || "$"}
+                  $
                 </span>
               </div>
             </div>
@@ -770,7 +787,7 @@ export default function ProductForm({
                       promoMode === "price" ? "bg-blue-600 text-white shadow-sm" : "text-slate-500 hover:bg-slate-100"
                     }`}
                   >
-                    {form.currency || "$"}
+                    $
                   </button>
                 </div>
               </div>
@@ -778,7 +795,7 @@ export default function ProductForm({
                 <div className="mt-2 flex items-center gap-1.5 px-1">
                   <div className="h-1 w-1 rounded-full bg-blue-500" />
                   <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-tight">
-                    Final price: <span className="text-blue-600">{form.promoPrice || "0"} {form.currency}</span>
+                    Final price: <span className="text-blue-600">${form.promoPrice || "0"}</span>
                   </p>
                 </div>
               )}

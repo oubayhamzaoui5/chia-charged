@@ -115,3 +115,35 @@ export async function getStripeKeysStatusAction(): Promise<{
   const masked = pk.length > 12 ? `${pk.slice(0, 8)}••••${pk.slice(-4)}` : '••••••••••••'
   return { configured: true, publishableKeyMasked: masked }
 }
+
+export async function saveMetaPixelAction(
+  pixelId: string
+): Promise<{ success: boolean; error?: string }> {
+  await requireAdmin()
+  const id = pixelId.trim()
+  if (!id) return { success: false, error: 'Pixel ID is required.' }
+  if (!/^\d{10,20}$/.test(id)) return { success: false, error: 'Invalid Pixel ID format (should be 10–20 digits).' }
+  mergeOAuthKeys({ metaPixelId: id })
+  return { success: true }
+}
+
+export async function deleteMetaPixelAction(): Promise<{ success: boolean; error?: string }> {
+  await requireAdmin()
+  mergeOAuthKeys({ metaPixelId: undefined })
+  return { success: true }
+}
+
+export async function getMetaPixelStatusAction(): Promise<{
+  configured: boolean
+  pixelIdMasked: string | null
+}> {
+  await requireAdmin()
+  const keys = getOAuthKeys()
+  if (!keys?.metaPixelId) return { configured: false, pixelIdMasked: null }
+  return { configured: true, pixelIdMasked: maskId(keys.metaPixelId) }
+}
+
+/** Used by public page server components — no admin auth required */
+export async function getMetaPixelIdPublicAction(): Promise<string | null> {
+  return getOAuthKeys()?.metaPixelId ?? null
+}

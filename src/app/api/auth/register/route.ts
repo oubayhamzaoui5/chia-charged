@@ -140,7 +140,7 @@ function buildFallbackEmail(phone: string): string {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request)
-  const { allowed } = rateLimit(`register:${ip}`, 5, 60 * 60 * 1000)
+  const { allowed } = await rateLimit(`register:${ip}`, 5, 60 * 60 * 1000)
   if (!allowed) {
     return NextResponse.json(
       { message: 'Trop de tentatives. Réessayez dans 1 heure.' },

@@ -7,6 +7,7 @@ import { productImageUrl } from '@/utils/inventory.utils'
 import type { ProductStock, CategoryOption } from '@/types/inventory.types'
 import { SquarePen } from 'lucide-react'
 import { updateProductStockAction } from './actions'
+import { useAdminToast } from '@/components/admin/AdminToast'
 
 export default function InventoryClient({
   products,
@@ -15,20 +16,24 @@ export default function InventoryClient({
   products: ProductStock[]
   allCategories: CategoryOption[]
 }) {
-  const [notice, setNotice] = useState<string | null>(null)
+  const { toast, ToastContainer } = useAdminToast()
+  const [savingId, setSavingId] = useState<string | null>(null)
 
   const inv = useInventory(products, async (id, stock) => {
     await updateProductStockAction(id, stock)
   })
 
   async function commitStock(productId: string, fallbackStock: number) {
+    if (savingId) return
     const next = inv.draftStock ?? fallbackStock
+    setSavingId(productId)
     try {
       await inv.updateStock(productId, next)
-      setNotice('Stock updated.')
+      toast('Stock updated.', 'success')
     } catch {
-      setNotice('Failed to update stock.')
+      toast('Failed to update stock.', 'error')
     } finally {
+      setSavingId(null)
       inv.setEditingId(null)
       inv.setDraftStock(null)
     }
@@ -37,35 +42,37 @@ export default function InventoryClient({
   return (
     <div className="space-y-6 p-6 md:p-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-blue-600 mb-2">
-          Product Stock
-        </h1>
-        <p className="text-slate-600 text-lg">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+          Operations
+        </p>
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>
+            Product Stock
+          </h1>
+          <span className="text-sm font-medium" style={{ color: '#6B7280' }}>
+            {inv.filtered.length} product{inv.filtered.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
           Manage stock quantities for all products.
         </p>
       </div>
     
       <InventoryFilters {...inv} allCategories={allCategories} />
 
-      {notice && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-slate-700">
-          {notice}
-        </div>
-      )}
-      
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
-              <tr className="border-b border-slate-200">
-                <th className="py-4 text-left text-slate-700 font-semibold text-base">
+              <tr style={{ borderBottom: '1px solid #F0F2F5' }}>
+                <th className="py-4 text-left text-xs font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
                   Product details
                 </th>
-                <th className="py-4 text-center text-slate-600 text-sm font-medium min-w-[120px]">
+                <th className="py-4 text-center text-xs font-semibold uppercase tracking-widest min-w-[120px]" style={{ color: '#9CA3AF' }}>
                   Stock
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody>
               {/* --- ETAT VIDE --- */}
               {inv.filtered.length === 0 ? (
                 <tr>
@@ -120,10 +127,17 @@ export default function InventoryClient({
 
                       <td className="relative text-center min-w-[120px] py-4 px-2">
                         {inv.editingId === p.id ? (
+                          savingId === p.id ? (
+                            <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: '#4F46E5' }}>
+                              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                              Saving…
+                            </span>
+                          ) : (
                           <input
                             type="number"
                             autoFocus
                             value={inv.draftStock ?? p.stock}
+                            onFocus={(e) => e.currentTarget.select()}
                             onChange={(e) => inv.setDraftStock(Number(e.target.value))}
                             onBlur={async () => {
                               await commitStock(p.id, p.stock)
@@ -133,11 +147,13 @@ export default function InventoryClient({
                                 await commitStock(p.id, p.stock)
                               }
                             }}
+                            disabled={!!savingId}
                             className={`
-                              w-24 h-9 rounded-lg border text-center font-medium focus:outline-none focus:ring-2 focus:ring-blue-500
+                              w-24 h-9 rounded-lg border text-center font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50
                               ${isLowStock ? 'border-orange-400' : 'border-slate-200'}
                             `}
                           />
+                          )
                         ) : (
                           <div className="flex items-center justify-center gap-2">
                             <span className={`font-bold text-base ${stockTextColor}`}>
@@ -148,7 +164,8 @@ export default function InventoryClient({
                                 inv.setEditingId(p.id)
                                 inv.setDraftStock(p.stock)
                               }}
-                              className="p-1.5 rounded-md hover:bg-white/50 transition"
+                              disabled={!!savingId}
+                              className="p-1.5 rounded-md hover:bg-white/50 transition disabled:opacity-40 disabled:cursor-not-allowed"
                               title="Edit stock"
                             >
                               <SquarePen className="h-4 w-4 text-slate-600" />
@@ -163,8 +180,8 @@ export default function InventoryClient({
             </tbody>
           </table>
         </div>
+      {ToastContainer}
     </div>
   )
 }
-
 

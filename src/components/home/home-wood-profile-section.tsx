@@ -55,7 +55,7 @@ export default function HomeWoodProfileSection() {
           </p>
 
           <div className="mb-8 flex flex-wrap gap-2">
-            {["Rich Chocolate", "22g Protein", "MCT Oil", "Plant-Based"].map((tag) => (
+            {["Rich Chocolate", "22g Protein/Serving", "MCT Oil", "Plant-Based"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full px-4 py-1.5 text-xs font-bold"

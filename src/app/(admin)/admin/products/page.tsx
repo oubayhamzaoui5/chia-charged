@@ -21,7 +21,7 @@ export default async function AdminProductsPage() {
         initialProducts={products}
         totalItems={totalItems}
         initialPage={1}
-        perPage={Math.max(products.length, 1)}
+        perPage={24}
         initialQuery=""
         initialSort="name"
         allCategories={categories}

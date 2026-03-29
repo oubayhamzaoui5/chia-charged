@@ -3,6 +3,7 @@ import 'server-only'
 import { requireAdmin } from '@/lib/auth'
 import { createServerPb } from '@/lib/pb'
 import type { OrderRecord, OrderStatus, UserRecord } from '@/types/order.types'
+import { normalizeRelationIds, normalizeFeatures } from '@/utils/product.utils'
 
 export type AdminCategoryRecord = {
   id: string
@@ -54,22 +55,6 @@ export type AdminVedetteRecord = {
   product: AdminVedetteProductOption | null
 }
 
-function normalizeParentIds(p: unknown): string[] {
-  if (!p) return []
-  if (Array.isArray(p)) {
-    return p
-      .map((item) => {
-        if (!item) return null
-        if (typeof item === 'string') return item
-        if (typeof item === 'object' && 'id' in item) return (item as { id: string }).id
-        return null
-      })
-      .filter((v): v is string => !!v)
-  }
-  if (typeof p === 'string') return [p]
-  if (typeof p === 'object' && p && 'id' in p) return [(p as { id: string }).id]
-  return []
-}
 
 function buildVariableImageUrl(id: string, image?: string) {
   if (!image || !image.trim()) return undefined
@@ -98,25 +83,6 @@ function buildCategoryCoverImageUrl(id: string, image?: string) {
   return `${getPbBaseUrl()}/api/files/categories/${id}/${encodeURIComponent(image)}`
 }
 
-function normalizeFeatures(raw: unknown): string[] {
-  if (Array.isArray(raw)) {
-    return raw.map((item) => String(item).trim()).filter(Boolean)
-  }
-  if (typeof raw === 'string') {
-    const trimmed = raw.trim()
-    if (!trimmed) return []
-    try {
-      const parsed = JSON.parse(trimmed)
-      if (Array.isArray(parsed)) {
-        return parsed.map((item) => String(item).trim()).filter(Boolean)
-      }
-    } catch {
-      return [trimmed]
-    }
-    return []
-  }
-  return []
-}
 
 function mapAdminVedetteProduct(record: any): AdminVedetteProductOption {
   const images = Array.isArray(record?.images) ? record.images.map(String) : []
@@ -157,7 +123,7 @@ export async function getAdminCategories(): Promise<AdminCategoryRecord[]> {
     name: r.name ?? '',
     slug: r.slug ?? '',
     order: Number(r.order ?? 0),
-    parents: normalizeParentIds(r.parent),
+    parents: normalizeRelationIds(r.parent),
     desc: r.desc ?? '',
     promo: Number(r.promo ?? 0),
     activeAll: Boolean(r.activeAll),

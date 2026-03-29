@@ -22,8 +22,8 @@ export default function ParentHeader({ parent, variables, onSave }: Props) {
         <ProductGallery images={imageUrls} productName={parent.name} />
 
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-slate-900">{parent.name}</h1>
-          <p className="mb-6 text-foreground/60">Reference: {parent.sku}</p>
+          <h1 className="text-3xl font-bold" style={{ color: '#111827' }}>{parent.name}</h1>
+          <p className="mb-6" style={{ color: '#9CA3AF' }}>Reference: {parent.sku}</p>
           <VariantAttributesEditor
             parentId={parent.id}
             initialVariantKey={Object.entries(parent.variantKey ?? {}).map(([key, value]) => ({

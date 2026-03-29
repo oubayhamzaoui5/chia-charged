@@ -56,7 +56,7 @@ export default function LandingShowcase() {
               Real strawberries. Creamy texture. Zero added sugar — pure indulgence that actually fuels you.
             </p>
             <div className="mb-8 flex flex-wrap gap-2">
-              {["Real Strawberries", "0g Sugar", "Ready to Eat", "22g Protein"].map((tag) => (
+              {["Real Strawberries", "0g Sugar", "Ready to Eat", "22g Protein/Serving"].map((tag) => (
                 <span
                   key={tag}
                   className="rounded-sm border-2 border-black/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider"
@@ -127,7 +127,7 @@ export default function LandingShowcase() {
               Rich, deep chocolate taste loaded with protein. Your cravings deserve more than compromise.
             </p>
             <div className="mb-8 flex flex-wrap gap-2">
-              {["Rich Chocolate", "22g Protein", "MCT Oil", "Plant-Based"].map((tag) => (
+              {["Rich Chocolate", "22g Protein/Serving", "MCT Oil", "Plant-Based"].map((tag) => (
                 <span
                   key={tag}
                   className="rounded-sm border-2 border-black/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider"

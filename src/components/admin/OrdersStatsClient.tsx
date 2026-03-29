@@ -3,7 +3,41 @@
 import { useEffect, useState } from "react"
 import { Clock, CheckCircle2, Truck, Package } from "lucide-react"
 import { getOrdersKpisAction } from "@/app/(admin)/admin/dashboard/actions"
-import Card from "@/components/admin/card"
+
+const kpiConfig = [
+  {
+    key: "pendingToday" as const,
+    label: "New Orders",
+    subLabel: "Today",
+    icon: Clock,
+    accent: '#EF4444',
+    accentBg: '#FEF2F2',
+  },
+  {
+    key: "pendingAll" as const,
+    label: "Pending",
+    subLabel: "All time",
+    icon: Package,
+    accent: '#F59E0B',
+    accentBg: '#FFFBEB',
+  },
+  {
+    key: "confirmedAll" as const,
+    label: "Confirmed",
+    subLabel: "Total validated",
+    icon: CheckCircle2,
+    accent: '#10B981',
+    accentBg: '#ECFDF5',
+  },
+  {
+    key: "deliveredToday" as const,
+    label: "Delivered",
+    subLabel: "Today",
+    icon: Truck,
+    accent: '#4F46E5',
+    accentBg: '#EEF2FF',
+  },
+]
 
 export default function OrdersStatsClient() {
   const [stats, setStats] = useState({
@@ -13,82 +47,85 @@ export default function OrdersStatsClient() {
     deliveredToday: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-  useEffect(() => {
-    async function fetchOrders() {
-      try {
-        const kpis = await getOrdersKpisAction()
-        setStats(kpis)
-      } finally {
-        setLoading(false)
-      }
+  const fetchOrders = async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const kpis = await getOrdersKpisAction()
+      setStats(kpis)
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
     }
-    fetchOrders()
-  }, [])
+  }
 
-  const kpis = [
-    {
-      label: "New Orders",
-      subLabel: "Today",
-      value: stats.pendingToday,
-      icon: Clock,
-      theme: "text-rose-600 bg-rose-50 border-rose-100",
-    },
-    {
-      label: "Pending",
-      subLabel: "All time",
-      value: stats.pendingAll,
-      icon: Package,
-      theme: "text-amber-600 bg-amber-50 border-amber-100",
-    },
-    {
-      label: "Confirmed",
-      subLabel: "Total validated",
-      value: stats.confirmedAll,
-      icon: CheckCircle2,
-      theme: "text-emerald-600 bg-emerald-50 border-emerald-100",
-    },
-    {
-      label: "Delivered",
-      subLabel: "Today",
-      value: stats.deliveredToday,
-      icon: Truck,
-      theme: "text-blue-600 bg-blue-50 border-blue-100",
-    },
-  ]
+  useEffect(() => { fetchOrders() }, [])
+
+  if (error) {
+    return (
+      <div className="flex h-28 items-center justify-center gap-3 rounded-2xl" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
+        <span className="text-sm font-medium" style={{ color: '#991B1B' }}>Failed to load order stats.</span>
+        <button onClick={fetchOrders} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white" style={{ background: '#EF4444' }}>
+          Retry
+        </button>
+      </div>
+    )
+  }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {kpis.map((kpi) => {
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {kpiConfig.map((kpi) => {
         const Icon = kpi.icon
         return (
-          <Card
+          <div
             key={kpi.label}
-            className="group relative overflow-hidden border border-slate-100 bg-white p-6 transition-all duration-300  rounded-3xl"
+            className="relative overflow-hidden rounded-2xl bg-white p-5"
+            style={{
+              border: '1px solid #E8EAED',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+            }}
           >
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-500">{kpi.label}</p>
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-widest"
+                  style={{ color: '#9CA3AF' }}
+                >
+                  {kpi.label}
+                </p>
                 {loading ? (
-                  <div className="h-9 w-12 animate-pulse rounded-md bg-slate-100" />
+                  <div
+                    className="h-9 w-12 animate-pulse rounded-lg"
+                    style={{ background: '#F3F4F6' }}
+                  />
                 ) : (
-                  <h3 className="text-3xl font-bold tracking-tight text-slate-900">
-                    {kpi.value}
+                  <h3
+                    className="text-3xl font-extrabold tracking-tight"
+                    style={{ color: '#111827', fontVariantNumeric: 'tabular-nums' }}
+                  >
+                    {stats[kpi.key]}
                   </h3>
                 )}
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <p className="text-[11px] font-medium" style={{ color: '#9CA3AF' }}>
                   {kpi.subLabel}
                 </p>
               </div>
-
-              <div className={`rounded-2xl p-3 transition-colors ${kpi.theme}`}>
-                <Icon className="h-6 w-6" />
+              <div
+                className="rounded-xl p-2.5"
+                style={{ background: kpi.accentBg }}
+              >
+                <Icon className="h-5 w-5" style={{ color: kpi.accent }} />
               </div>
             </div>
-
-            {/* Subtle background decoration */}
-            <div className={`absolute -right-4 -bottom-4 h-24 w-24 rounded-full opacity-5 transition-transform group-hover:scale-110 ${kpi.theme.split(' ')[1]}`} />
-          </Card>
+            {/* Accent bottom bar */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-0.5"
+              style={{ background: kpi.accent, opacity: 0.35 }}
+            />
+          </div>
         )
       })}
     </div>

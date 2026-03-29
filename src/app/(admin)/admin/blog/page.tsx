@@ -21,19 +21,23 @@ export default async function AdminBlogPage() {
     <div className="space-y-6 p-6 md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="mb-2 text-4xl font-bold text-blue-600">Blog</h1>
-          <p className="text-slate-600 text-lg">Manage your posts.</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+            Content
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>Blog</h1>
+          <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>Manage your posts.</p>
         </div>
         <Link
           href="/admin/blog/create"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+          className="rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style={{ background: '#4F46E5' }}
         >
           New post
         </Link>
       </div>
 
       {posts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-foreground/20 p-8 text-sm text-foreground/70">
+        <div className="rounded-2xl p-8 text-sm" style={{ border: '2px dashed #E8EAED', color: '#9CA3AF' }}>
           No posts yet.
         </div>
       ) : (
@@ -60,7 +64,7 @@ export default async function AdminBlogPage() {
                     <Link
                       href={`/admin/blog/${post.id}/edit`}
                       aria-label={`Edit ${post.title}`}
-                      className="rounded-md p-2 text-white transition  bg-blue-600 hover:bg-blue-500 "
+                      className="rounded-lg p-2 text-white transition-opacity hover:opacity-80" style={{ background: '#4F46E5' }}
                     >
                       <SquarePen className="h-4 w-4" />
                     </Link>
@@ -69,7 +73,7 @@ export default async function AdminBlogPage() {
                       <button
                         type="submit"
                         aria-label={post.published ? `Hide ${post.title}` : `Publish ${post.title}`}
-                        className="rounded-md p-2 bg-slate-600 cursor-pointer text-white transition hover:bg-slate-500 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                        className="rounded-lg p-2 cursor-pointer text-white transition-opacity hover:opacity-80" style={{ background: '#6B7280' }}
                       >
                         {post.published ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                       </button>

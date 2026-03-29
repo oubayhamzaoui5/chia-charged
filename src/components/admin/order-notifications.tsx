@@ -142,7 +142,7 @@ function useOrderNotificationsListener(enabled: boolean) {
 
     writeLastSeenOrderId(latest.id)
 
-    const amount = `${latest.total.toFixed(2)} ${latest.currency}`
+    const amount = `$${latest.total.toFixed(2)}`
     const notification = new Notification('New Order', {
       body: `${latest.customerName} placed an order (${amount}).`,
       tag: `order-${latest.id}`,

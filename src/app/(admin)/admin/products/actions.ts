@@ -7,22 +7,11 @@ import { getAdminPbForAction } from '@/lib/admin/actions'
 import { assertPocketBaseId } from '@/lib/admin/validation'
 import type { Product } from '@/types/product.types'
 import { slugify } from '@/utils/slug'
+import { normalizeRelationIds } from '@/utils/product.utils'
 
 type VariantAttributeRow = {
   key: string
   value: string
-}
-
-function normalizeRelationIds(p: unknown): string[] {
-  if (!p) return []
-  if (Array.isArray(p)) {
-    return p
-      .map((item) => (typeof item === 'string' ? item : (item as { id?: string })?.id))
-      .filter((v): v is string => !!v)
-  }
-  if (typeof p === 'string') return [p]
-  if (typeof p === 'object' && p && 'id' in p) return [String((p as { id: string }).id)]
-  return []
 }
 
 function resolvePromoPrice(

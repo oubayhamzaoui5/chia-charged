@@ -18,7 +18,7 @@ export default function HomeHeritageSection() {
           <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-center gap-0 divide-x divide-violet-200 px-6">
             {[
               { stat: "500+", label: "Happy Customers" },
-              { stat: "22g",  label: "Protein Per Jar" },
+              { stat: "22g",  label: "Protein Per Serving" },
               { stat: "100%", label: "Natural Ingredients" },
               { stat: "4.8★", label: "Average Rating" },
             ].map(({ stat, label }) => (

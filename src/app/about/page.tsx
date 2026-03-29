@@ -6,7 +6,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://chiacharged.com'
 export const metadata: Metadata = {
   title: 'Chia Charged | Our Story — High-Protein Chia Pudding from Tunisia',
   description:
-    "From a kitchen experiment to Tunisia's boldest protein snack. Learn how Chia Charged crafted a 22g-protein chia seed pudding with MCT oil, zero junk, and two irresistible flavors.",
+    "From a kitchen experiment to Tunisia's boldest protein snack. Learn how Chia Charged crafted a chia seed pudding with 22g protein per serving, MCT oil, zero junk, and two irresistible flavors.",
   keywords: [
     'chia charged',
     'about chia charged',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Chia Charged | Our Story — Fuel Smarter.',
     description:
-      "From a kitchen experiment to Tunisia's boldest protein snack. 22g protein, 12g fiber, MCT oil. Zero junk. Two irresistible flavors.",
+      "From a kitchen experiment to Tunisia's boldest protein snack. 22g protein per serving, 12g fiber, MCT oil. Zero junk. Two irresistible flavors.",
     url: `${siteUrl}/about`,
     siteName: 'Chia Charged',
     type: 'website',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Chia Charged | Our Story',
     description:
-      "From a kitchen experiment to Tunisia's boldest protein snack. 22g protein, MCT oil, zero junk.",
+      "From a kitchen experiment to Tunisia's boldest protein snack. 22g protein per serving, MCT oil, zero junk.",
   },
   alternates: {
     canonical: '/about',

@@ -1,57 +1,63 @@
 /**
- * Simple in-memory rate limiter.
- * Works reliably for single-server deployments.
- * For multi-instance / serverless, swap the store for Upstash Redis.
+ * Redis-backed rate limiter using local Redis (redis://localhost:6379).
+ * Works correctly across multiple processes/instances on the same server.
+ * Falls back to allowing the request if Redis is unavailable.
  */
 
-type Entry = {
-  count: number
-  resetAt: number
-}
+import Redis from 'ioredis'
 
-const store = new Map<string, Entry>()
+let redis: Redis | null = null
 
-// Purge expired entries every 5 minutes to prevent memory leaks
-const CLEANUP_INTERVAL_MS = 5 * 60 * 1000
-let cleanupTimer: ReturnType<typeof setInterval> | null = null
-
-function ensureCleanup() {
-  if (cleanupTimer !== null) return
-  cleanupTimer = setInterval(() => {
-    const now = Date.now()
-    for (const [key, entry] of store) {
-      if (entry.resetAt < now) store.delete(key)
-    }
-  }, CLEANUP_INTERVAL_MS)
-
-  // Allow Node.js to exit even if the timer is still active
-  if (cleanupTimer && typeof cleanupTimer === 'object' && 'unref' in cleanupTimer) {
-    (cleanupTimer as { unref(): void }).unref()
+function getRedis(): Redis {
+  if (!redis) {
+    redis = new Redis({
+      host: process.env.REDIS_HOST ?? 'localhost',
+      port: Number(process.env.REDIS_PORT ?? 6379),
+      lazyConnect: true,
+      enableOfflineQueue: false,
+      maxRetriesPerRequest: 1,
+    })
+    redis.on('error', () => {
+      // Suppress unhandled error events — failures are handled in rateLimit()
+    })
   }
+  return redis
 }
 
-export function rateLimit(
+export async function rateLimit(
   key: string,
   limit: number,
   windowMs: number
-): { allowed: boolean; remaining: number; resetAt: number } {
-  ensureCleanup()
-
+): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
   const now = Date.now()
-  const entry = store.get(key)
+  const resetAt = now + windowMs
+  const windowSecs = Math.ceil(windowMs / 1000)
 
-  if (!entry || entry.resetAt < now) {
-    const resetAt = now + windowMs
-    store.set(key, { count: 1, resetAt })
-    return { allowed: true, remaining: limit - 1, resetAt }
+  try {
+    const client = getRedis()
+    const redisKey = `rl:${key}`
+
+    // INCR atomically increments (creates key at 0 if missing, then increments to 1)
+    const count = await client.incr(redisKey)
+
+    // Set expiry only on first request in the window
+    if (count === 1) {
+      await client.expire(redisKey, windowSecs)
+    }
+
+    // Get remaining TTL to compute resetAt accurately
+    const ttl = await client.pttl(redisKey)
+    const actualResetAt = ttl > 0 ? now + ttl : resetAt
+
+    if (count > limit) {
+      return { allowed: false, remaining: 0, resetAt: actualResetAt }
+    }
+
+    return { allowed: true, remaining: limit - count, resetAt: actualResetAt }
+  } catch {
+    // If Redis is down, fail open (allow the request) to avoid blocking all users
+    return { allowed: true, remaining: limit, resetAt }
   }
-
-  if (entry.count >= limit) {
-    return { allowed: false, remaining: 0, resetAt: entry.resetAt }
-  }
-
-  entry.count++
-  return { allowed: true, remaining: limit - entry.count, resetAt: entry.resetAt }
 }
 
 export function getClientIp(request: Request): string {

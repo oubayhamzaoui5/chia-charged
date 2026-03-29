@@ -33,3 +33,22 @@ export function normalizeRelationIds(p: unknown): string[] {
   if (typeof p === 'object' && p && 'id' in p) return [String((p as { id: string }).id)]
   return []
 }
+
+export function normalizeFeatures(raw: unknown): string[] {
+  if (Array.isArray(raw)) {
+    return raw.map((item) => String(item).trim()).filter(Boolean)
+  }
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim()
+    if (!trimmed) return []
+    try {
+      const parsed = JSON.parse(trimmed)
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => String(item).trim()).filter(Boolean)
+      }
+    } catch {
+      return [trimmed]
+    }
+  }
+  return []
+}

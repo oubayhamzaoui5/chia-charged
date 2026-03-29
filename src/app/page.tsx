@@ -11,9 +11,11 @@ import LandingShowcase from '@/components/landing/landing-showcase'
 import LandingTestimonials from '@/components/landing/landing-testimonials'
 import LandingBlog from '@/components/landing/landing-blog'
 import { getAllPublishedPosts } from '@/lib/services/posts.service'
+import { getProductDetailsBySlug } from '@/lib/services/product.service'
 import LandingFaq from '@/components/landing/landing-faq'
 import LandingContact from '@/components/landing/landing-contact'
 import LandingCta from '@/components/landing/landing-cta'
+import LandingCtaBanner from '@/components/landing/landing-cta-banner'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,9 +24,9 @@ const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://chiacharged.com'
 
 export const metadata: Metadata = {
-  title: 'Chia Charged | Pudding Proteine aux Graines de Chia — 22g Protein, Zero Junk',
+  title: 'Chia Charged | Pudding Proteine aux Graines de Chia — 22g Protein Per Serving, Zero Junk',
   description:
-    'Chia Charged: pudding proteine aux graines de chia avec 22g de proteine, 12g de fibre, huile MCT et zero sucre ajoute. Saveurs Fraises & Creme et Chocolat. Livraison rapide en Tunisie.',
+    'Chia Charged: pudding proteine aux graines de chia avec 22g de proteine par portion, 12g de fibre, huile MCT et zero sucre ajoute. Saveurs Fraises & Creme et Chocolat. Livraison rapide en Tunisie.',
   keywords: [
     'chia pudding',
     'protein pudding',
@@ -40,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Chia Charged — Fuel Smarter. Taste Better.',
     description:
-      'High-protein chia seed pudding with 22g protein, 12g fiber, and MCT oil. Two irresistible flavors. Zero junk.',
+      'High-protein chia seed pudding with 22g protein per serving, 12g fiber, and MCT oil. Two irresistible flavors. Zero junk.',
     url: siteUrl,
     siteName: 'Chia Charged',
     type: 'website',
@@ -50,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Chia Charged — Fuel Smarter. Taste Better.',
     description:
-      'High-protein chia seed pudding with 22g protein, 12g fiber, and MCT oil. Two irresistible flavors. Zero junk.',
+      'High-protein chia seed pudding with 22g protein per serving, 12g fiber, and MCT oil. Two irresistible flavors. Zero junk.',
   },
   alternates: {
     canonical: '/',
@@ -58,7 +60,43 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const posts = await getAllPublishedPosts()
+  const [posts, strawberryData, chocolateData] = await Promise.all([
+    getAllPublishedPosts(),
+    getProductDetailsBySlug('strawberries-n-cream-cc-str-4'),
+    getProductDetailsBySlug('chocolate-chip-cc-chklt-4'),
+  ])
+
+  const flavorPriceBySlug: Record<
+    string,
+    {
+      price: number
+      basePrice: number
+      promoPrice: number | null
+      hasPromo: boolean
+      currency: string
+    }
+  > = {}
+
+  const assignPrice = (
+    slug: string,
+    data: Awaited<ReturnType<typeof getProductDetailsBySlug>>
+  ) => {
+    const product = data?.product
+    if (!product) return
+    const hasPromo =
+      product.promoPrice != null && product.promoPrice > 0 && product.promoPrice < product.price
+    const effectivePrice = hasPromo ? (product.promoPrice as number) : product.price
+    flavorPriceBySlug[slug] = {
+      price: effectivePrice,
+      basePrice: product.price,
+      promoPrice: hasPromo ? (product.promoPrice as number) : null,
+      hasPromo,
+      currency: product.currency || '$',
+    }
+  }
+
+  assignPrice('strawberries-n-cream-cc-str-4', strawberryData)
+  assignPrice('chocolate-chip-cc-chklt-4', chocolateData)
 
   return (
     <div style={{ fontFamily: FONT }}>
@@ -84,7 +122,7 @@ export default async function HomePage() {
           <LandingHero />
           <LandingStats />
         </div>
-        <LandingFlavors />
+        <LandingFlavors flavorPriceBySlug={flavorPriceBySlug} />
         <LandingAbout />
                 <LandingTestimonials />
 
@@ -92,6 +130,7 @@ export default async function HomePage() {
         <LandingBlog posts={posts} />
         <LandingContact />
         <LandingFaq />
+        <LandingCtaBanner />
       </main>
 
       <Footer />

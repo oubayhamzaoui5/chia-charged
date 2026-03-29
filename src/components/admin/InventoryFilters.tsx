@@ -1,4 +1,4 @@
-﻿import { Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import type { CategoryOption } from '@/types/inventory.types'
 
 type InventoryFiltersProps = {
@@ -23,19 +23,23 @@ export default function InventoryFilters({
   return (
     <div className="flex w-full flex-col gap-3 md:flex-row">
       <div className="relative w-full flex-1">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#9CA3AF' }} />
         <input
           placeholder="Search by product name or reference..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 py-2 pl-10 pr-4 text-sm text-slate-700 outline-none transition-all placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+          className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#111827' }}
+          onFocus={e => (e.currentTarget.style.borderColor = '#4F46E5')}
+          onBlur={e => (e.currentTarget.style.borderColor = '#E8EAED')}
         />
       </div>
 
       <select
         value={categoryFilter}
         onChange={(e) => setCategoryFilter(e.target.value)}
-        className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+        className="rounded-xl px-4 py-2.5 text-sm outline-none"
+        style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
       >
         <option value="">All categories</option>
         {allCategories.map((c: CategoryOption) => (
@@ -48,7 +52,8 @@ export default function InventoryFilters({
       <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value as 'sku' | 'stock-asc' | 'stock-desc')}
-        className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+        className="rounded-xl px-4 py-2.5 text-sm outline-none"
+        style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
       >
         <option value="sku">Sort by reference</option>
         <option value="stock-asc">Stock: low to high</option>

@@ -9,7 +9,7 @@ const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50
 
 const values = [
   { icon: Leaf, title: "100% Plant-Based", desc: "No dairy, no eggs, no compromise." },
-  { icon: Zap, title: "22g Protein", desc: "Fuel your body with every spoonful." },
+  { icon: Zap, title: "22g Protein/Serving", desc: "Fuel your body with every spoonful." },
   { icon: CircleSlash, title: "0% Junk", desc: "Clean ingredients only, no fillers." },
 ]
 
@@ -134,6 +134,5 @@ export default function LandingAbout() {
     </section>
   )
 }
-
 
 

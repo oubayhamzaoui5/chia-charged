@@ -1,12 +1,13 @@
-import { getKeysStatusAction, getStripeKeysStatusAction } from './actions'
+import { getKeysStatusAction, getStripeKeysStatusAction, getMetaPixelStatusAction } from './actions'
 import KeysClient from './keys.client'
 
 export const dynamic = 'force-dynamic'
 
 export default async function KeysPage() {
-  const [google, stripe] = await Promise.all([
+  const [google, stripe, meta] = await Promise.all([
     getKeysStatusAction(),
     getStripeKeysStatusAction(),
+    getMetaPixelStatusAction(),
   ])
   return (
     <KeysClient
@@ -14,6 +15,8 @@ export default async function KeysPage() {
       googleClientIdMasked={google.clientIdMasked}
       stripeConfigured={stripe.configured}
       stripePublishableKeyMasked={stripe.publishableKeyMasked}
+      metaConfigured={meta.configured}
+      metaPixelIdMasked={meta.pixelIdMasked}
     />
   )
 }

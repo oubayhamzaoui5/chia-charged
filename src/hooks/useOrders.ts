@@ -13,8 +13,7 @@ export type OrderPayload = {
   user?: string
 }
 
-// Hard-coded guest user
-const GUEST_USER_ID = 'f3pfpd03b04sypz'
+const GUEST_USER_ID = process.env.NEXT_PUBLIC_GUEST_USER_ID ?? ''
 
 export function useOrders(initialOrders: OrderRecord[]) {
   const [orders, setOrders] = useState<OrderRecord[]>(initialOrders)

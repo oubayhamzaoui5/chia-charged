@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer 
@@ -15,6 +15,7 @@ export default function OrdersTrendChart() {
   const [data, setData] = useState<any[] | null>(null);
   const [totals, setTotals] = useState({ delivered: 0, returned: 0 });
   const [loading, setLoading] = useState(true);
+  const [chartError, setChartError] = useState(false);
   
   const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
@@ -25,72 +26,76 @@ export default function OrdersTrendChart() {
 
   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const trend = await getMonthlyOrdersTrendAction(viewMode, selectedMonth, selectedYear);
-        const formattedData = trend.labels.map((label: string, i: number) => ({
-          name: label,
-          delivered: trend.delivered[i],
-          returned: trend.returned[i],
-        }));
-        setData(formattedData);
-        setTotals({ delivered: trend.deliveredTotal, returned: trend.returnedTotal });
-      } catch (error) {
-        console.error("Failed to load chart:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setChartError(false);
+    try {
+      const trend = await getMonthlyOrdersTrendAction(viewMode, selectedMonth, selectedYear);
+      const formattedData = trend.labels.map((label: string, i: number) => ({
+        name: label,
+        delivered: trend.delivered[i],
+        returned: trend.returned[i],
+      }));
+      setData(formattedData);
+      setTotals({ delivered: trend.deliveredTotal, returned: trend.returnedTotal });
+    } catch {
+      setChartError(true);
+    } finally {
+      setLoading(false);
+    }
   }, [viewMode, selectedMonth, selectedYear]);
 
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
+
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-slate-100">
+    <div className="rounded-2xl bg-white p-6 mb-8" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
         <div>
-           <h3 className="text-slate-800 font-semibold text-lg flex items-center gap-2">
+           <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: '#111827' }}>
             <Box className="w-5 h-5 text-blue-600" />
             Orders
           </h3>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm" style={{ color: '#6B7280' }}>
             {viewMode === 'month' ? `Daily view for ${MONTHS_FR[selectedMonth]}` : `Monthly view for ${selectedYear}`}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* View Switcher */}
-          <div className="flex bg-slate-100 p-1 rounded-lg mr-2">
-            <button 
+          <div className="flex p-1 rounded-xl mr-2" style={{ background: '#F4F6FB' }}>
+            <button
               onClick={() => setViewMode('month')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'month' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === 'month' ? 'bg-white shadow-sm text-[#4F46E5]' : 'text-[#6B7280] hover:text-[#111827]'}`}
             >
               <CalendarDays className="w-3.5 h-3.5" /> Monthly
             </button>
-            <button 
+            <button
               onClick={() => setViewMode('year')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'year' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === 'year' ? 'bg-white shadow-sm text-[#4F46E5]' : 'text-[#6B7280] hover:text-[#111827]'}`}
             >
               <CalendarRange className="w-3.5 h-3.5" /> Yearly
             </button>
           </div>
 
           {/* Selectors */}
-          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
+          <div className="flex items-center gap-2 p-1 rounded-xl" style={{ background: '#F4F6FB', border: '1px solid #E8EAED' }}>
             {viewMode === 'month' && (
-              <select 
+              <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="bg-transparent text-sm font-medium text-slate-600 outline-none p-1 cursor-pointer"
+                className="bg-transparent text-sm font-medium outline-none p-1 cursor-pointer"
+                style={{ color: '#374151' }}
               >
                 {MONTHS_FR.map((name, i) => <option key={name} value={i}>{name}</option>)}
               </select>
             )}
-            <select 
+            <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="bg-transparent text-sm font-medium text-slate-600 outline-none p-1 cursor-pointer"
+              className="bg-transparent text-sm font-medium outline-none p-1 cursor-pointer"
+              style={{ color: '#374151' }}
             >
               {years.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
@@ -128,6 +133,12 @@ export default function OrdersTrendChart() {
       </div>
 
       <div className="h-72 w-full relative">
+        {chartError && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-xl" style={{ background: '#FEF2F2' }}>
+            <span className="text-sm font-medium" style={{ color: '#991B1B' }}>Failed to load chart.</span>
+            <button onClick={loadData} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white" style={{ background: '#EF4444' }}>Retry</button>
+          </div>
+        )}
         {loading && (
           <div className="absolute inset-0 z-10 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />

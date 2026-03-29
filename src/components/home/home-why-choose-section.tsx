@@ -4,9 +4,9 @@ const features = [
   {
     icon: Zap,
     stat: "22g",
-    unit: "Protein",
+    unit: "Protein/Serving",
     title: "High Protein, Real Results",
-    desc: "Fuel muscle recovery, stay satiated, and power through your day — every single jar.",
+    desc: "Fuel muscle recovery, stay satiated, and power through your day — every single serving.",
     iconColor: "text-amber-500",
     iconBg: "bg-amber-50",
     borderColor: "border-amber-100",

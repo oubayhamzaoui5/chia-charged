@@ -37,6 +37,7 @@ export default function ProductsClient({
   const {
     products,
     pageItems,
+    totalPages,
     query,
     setQuery,
     sortBy,
@@ -103,25 +104,31 @@ export default function ProductsClient({
     <div className="space-y-6 p-6 md:p-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-blue-600 mb-2">
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+            Catalog
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>
             {parent ? `Variants of ${parent.name}` : 'Products'}
           </h1>
-          <p className="text-slate-600 text-lg">
+          <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
             {parent
               ? 'Manage variants for the selected product'
               : 'Manage your product catalog'}
           </p>
         </div>
-        <button onClick={openCreateForm}           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium whitespace-nowrap"
->
-          <Plus className="h-5 w-5" />
+        <button
+          onClick={openCreateForm}
+          className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 whitespace-nowrap"
+          style={{ background: '#4F46E5' }}
+        >
+          <Plus className="h-4 w-4" />
           {parent ? 'New variant' : 'New product'}
         </button>
       </div>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#9CA3AF' }} />
           <input
             type="text"
             placeholder="Search by reference or name..."
@@ -130,7 +137,14 @@ export default function ProductsClient({
               setQuery(e.target.value)
               setPage(1)
             }}
-            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder:text-slate-400 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all"
+            style={{
+              border: '1px solid #E8EAED',
+              background: '#FFFFFF',
+              color: '#111827',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#4F46E5')}
+            onBlur={e => (e.currentTarget.style.borderColor = '#E8EAED')}
           />
         </div>
 
@@ -140,7 +154,8 @@ export default function ProductsClient({
             setCategoryFilter(e.target.value)
             setPage(1)
           }}
-          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500"
+          className="rounded-xl px-4 py-2.5 text-sm outline-none"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
         >
           <option value="">All categories</option>
           {allCategories.map((c) => (
@@ -153,7 +168,8 @@ export default function ProductsClient({
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500"
+          className="rounded-xl px-4 py-2.5 text-sm outline-none"
+          style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
         >
           <option value="name">Sort by name</option>
           <option value="price">Sort by price</option>
@@ -161,10 +177,17 @@ export default function ProductsClient({
       </div>
 
       {notice && (
-        <div className="rounded-md border border-foreground/15 bg-foreground/5 px-4 py-3 text-sm">
+        <div className="rounded-xl px-4 py-3 text-sm font-medium" style={{ background: '#EEF2FF', color: '#4F46E5', border: '1px solid #C7D2FE' }}>
           {notice}
         </div>
       )}
+
+      {/* Result count */}
+      <p className="text-sm" style={{ color: '#9CA3AF' }}>
+        {products.length === 0
+          ? 'No products'
+          : `${pageItems.length > 0 ? (page - 1) * perPage + 1 : 0}–${Math.min(page * perPage, products.filter(p => !categoryFilter || p.categories?.includes(categoryFilter)).length)} of ${products.filter(p => !categoryFilter || p.categories?.includes(categoryFilter)).length} product${products.length !== 1 ? 's' : ''}`}
+      </p>
 
       {pageItems.length === 0 ? (
         <EmptyState
@@ -172,38 +195,91 @@ export default function ProductsClient({
           description="Adjust your filters or add a new product"
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
-          {pageItems.map((p) => {
-            const imgs = p.images ?? []
-            const currentIndex = imageIndexes[p.id] ?? 0
-            const hasImages = imgs.length > 0
-            const clampedIndex = hasImages
-              ? Math.max(0, Math.min(currentIndex, imgs.length - 1))
-              : 0
-            const currentSrc = hasImages
-              ? fileUrl(p.id, imgs[clampedIndex])
-              : '/aboutimg.webp'
-            const cats = (p.categories || [])
-              .map((id) => categoryMap.get(id))
-              .filter(Boolean) as CategoryOption[]
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            {pageItems.map((p) => {
+              const imgs = p.images ?? []
+              const currentIndex = imageIndexes[p.id] ?? 0
+              const hasImages = imgs.length > 0
+              const clampedIndex = hasImages
+                ? Math.max(0, Math.min(currentIndex, imgs.length - 1))
+                : 0
+              const currentSrc = hasImages
+                ? fileUrl(p.id, imgs[clampedIndex])
+                : '/aboutimg.webp'
+              const cats = (p.categories || [])
+                .map((id) => categoryMap.get(id))
+                .filter(Boolean) as CategoryOption[]
 
-            return (
-              <div key={p.id} className="col-span-1 h-full flex">
-                <ProductCard
-                  product={p}
-                  imageSrc={currentSrc}
-                  categories={cats}
-                  parentVariantKeys={parentVariantKeys}
-                  variables={variables}
-                  openEdit={openEditForm}
-                  deleteProduct={remove}
-                  updateVariantValue={updateVariantValue}
-                  Price={Price}
-                />
+              return (
+                <div key={p.id} className="col-span-1 h-full flex">
+                  <ProductCard
+                    product={p}
+                    imageSrc={currentSrc}
+                    categories={cats}
+                    parentVariantKeys={parentVariantKeys}
+                    variables={variables}
+                    openEdit={openEditForm}
+                    deleteProduct={remove}
+                    updateVariantValue={updateVariantValue}
+                    Price={Price}
+                  />
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="rounded-xl px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
+              >
+                ← Prev
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                  .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push('...')
+                    acc.push(p)
+                    return acc
+                  }, [])
+                  .map((p, i) =>
+                    p === '...' ? (
+                      <span key={`ellipsis-${i}`} className="px-2 text-sm" style={{ color: '#9CA3AF' }}>…</span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setPage(p as number)}
+                        className="h-9 w-9 rounded-xl text-sm font-medium transition-colors"
+                        style={{
+                          background: page === p ? '#4F46E5' : '#FFFFFF',
+                          color: page === p ? '#FFFFFF' : '#374151',
+                          border: `1px solid ${page === p ? '#4F46E5' : '#E8EAED'}`,
+                        }}
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
               </div>
-            )
-          })}
-        </div>
+
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="rounded-xl px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {open && (

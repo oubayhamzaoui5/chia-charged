@@ -1,85 +1,105 @@
 'use server'
 
-import PocketBase from 'pocketbase'
 import { requireAdmin } from '@/lib/auth'
-import { getOAuthKeys, saveOAuthKeys, deleteOAuthKeys } from '@/lib/oauth-keys'
+import { createServerPb } from '@/lib/pb'
+import { cookies } from 'next/headers'
 
-const PB_URL =
-  process.env.POCKETBASE_URL ?? process.env.NEXT_PUBLIC_PB_URL ?? 'http://127.0.0.1:8090'
-const PB_ADMIN_EMAIL =
-  process.env.PB_ADMIN_EMAIL ?? process.env.POCKETBASE_ADMIN_EMAIL ?? ''
-const PB_ADMIN_PASSWORD =
-  process.env.PB_ADMIN_PASSWORD ?? process.env.POCKETBASE_ADMIN_PASSWORD ?? ''
+function getErrorMessage(error: unknown): string {
+  if (!error || typeof error !== 'object') return 'Failed to update password.'
 
-async function getAdminPb(): Promise<PocketBase> {
-  const pb = new PocketBase(PB_URL)
-  await pb.collection('_superusers').authWithPassword(PB_ADMIN_EMAIL, PB_ADMIN_PASSWORD)
-  return pb
-}
-
-function maskId(id: string): string {
-  if (id.length <= 12) return '••••••••••••'
-  return `${id.slice(0, 8)}••••${id.slice(-4)}`
-}
-
-export async function getGoogleKeysStatusAction(): Promise<{
-  configured: boolean
-  clientIdMasked: string | null
-}> {
-  await requireAdmin()
-  const keys = getOAuthKeys()
-  if (!keys) return { configured: false, clientIdMasked: null }
-  return { configured: true, clientIdMasked: maskId(keys.googleClientId) }
-}
-
-export async function saveGoogleKeysAction(
-  clientId: string,
-  clientSecret: string
-): Promise<{ success: boolean; error?: string }> {
-  await requireAdmin()
-
-  const id = clientId.trim()
-  const secret = clientSecret.trim()
-
-  if (!id || !secret) {
-    return { success: false, error: 'Both Client ID and Client Secret are required.' }
-  }
-
-  saveOAuthKeys({ googleClientId: id, googleClientSecret: secret })
-
-  try {
-    const pb = await getAdminPb()
-    await pb.settings.update({
-      googleAuth: {
-        enabled: true,
-        clientId: id,
-        clientSecret: secret,
-      },
-    })
-  } catch (err) {
-    console.error('Failed to apply Google OAuth to PocketBase:', err)
-    return {
-      success: true,
-      error:
-        'Keys saved locally but could not be applied to PocketBase automatically. ' +
-        'You may need to configure the Google provider in the PocketBase admin panel.',
+  const maybe = error as {
+    message?: unknown
+    response?: {
+      message?: unknown
+      data?: Record<string, { message?: string }>
     }
   }
 
-  return { success: true }
-}
-
-export async function disableGoogleAction(): Promise<{ success: boolean; error?: string }> {
-  await requireAdmin()
-
-  try {
-    const pb = await getAdminPb()
-    await pb.settings.update({ googleAuth: { enabled: false } })
-    deleteOAuthKeys()
-  } catch (err) {
-    console.error('Failed to disable Google OAuth:', err)
-    return { success: false, error: 'Failed to disable Google OAuth.' }
+  const fieldErrors = maybe.response?.data
+  if (fieldErrors && typeof fieldErrors === 'object') {
+    for (const [, detail] of Object.entries(fieldErrors)) {
+      if (detail?.message) return detail.message
+    }
   }
 
-  return { success: true }
+  if (typeof maybe.response?.message === 'string' && maybe.response.message.trim()) {
+    return maybe.response.message
+  }
+
+  if (typeof maybe.message === 'string' && maybe.message.trim()) {
+    return maybe.message
+  }
+
+  return 'Failed to update password.'
+}
+
+export async function updateAdminPasswordAction(input: {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}): Promise<{ success: boolean; error?: string }> {
+  const currentPassword = input.currentPassword.trim()
+  const newPassword = input.newPassword.trim()
+  const confirmPassword = input.confirmPassword.trim()
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { success: false, error: 'All password fields are required.' }
+  }
+
+  if (newPassword.length < 8) {
+    return { success: false, error: 'New password must be at least 8 characters.' }
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { success: false, error: 'New password and confirmation do not match.' }
+  }
+
+  const session = await requireAdmin()
+  const pb = createServerPb()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pb.authStore.save(session.token, session.user as any)
+
+  try {
+    await pb.collection('users').update(session.user.id, {
+      oldPassword: currentPassword,
+      password: newPassword,
+      passwordConfirm: confirmPassword,
+    })
+
+    // Re-authenticate with the new password and refresh auth cookie
+    // so the admin stays logged in after password rotation.
+    const loginPb = createServerPb()
+    const authData = await loginPb.collection('users').authWithPassword(session.user.email, newPassword)
+
+    if (authData?.token && authData?.record) {
+      const cookieStore = await cookies()
+      const authCookie = JSON.stringify({
+        token: authData.token,
+        record: {
+          id: authData.record.id,
+          email: authData.record.email,
+          phone: authData.record.phone,
+          surname: authData.record.surname,
+          name: authData.record.name,
+          username: authData.record.username,
+          role: authData.record.role || 'customer',
+          isActive: authData.record.isActive !== false,
+          verified: authData.record.verified || false,
+          avatar: authData.record.avatar || undefined,
+        },
+      })
+
+      cookieStore.set('pb_auth', authCookie, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+      })
+    }
+
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: getErrorMessage(error) }
+  }
 }

@@ -28,6 +28,8 @@ import {
   reorderCategoriesAction,
   updateCategoryAction,
 } from './actions'
+import { useAdminToast } from '@/components/admin/AdminToast'
+import { normalizeRelationIds, normalizeFeatures } from '@/utils/product.utils'
 
 type Category = {
   id: string
@@ -48,7 +50,7 @@ type EditState =
   | { mode: 'edit'; id: string }
 
 const inputClasses =
-  'mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/30 px-4 py-2.5 text-sm outline-none transition-all focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400'
+  'mt-1.5 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-all focus:border-[#4F46E5] focus:ring-4 focus:ring-[#4F46E5]/5 placeholder:text-[#9CA3AF] bg-white'
 
 const descEditorTheme = {
   ltr: 'ltr',
@@ -63,23 +65,6 @@ const descEditorTheme = {
   },
 }
 
-// Normalize "parent" or "parents" from PocketBase into an array of ids
-function normalizeParentIds(p: unknown): string[] {
-  if (!p) return []
-  if (Array.isArray(p)) {
-    return p
-      .map((item) => {
-        if (!item) return null
-        if (typeof item === 'string') return item
-        if (typeof item === 'object' && 'id' in item) return item.id as string
-        return null
-      })
-      .filter((v): v is string => !!v)
-  }
-  if (typeof p === 'string') return [p]
-  if (typeof p === 'object' && 'id' in p) return [p.id as string]
-  return []
-}
 
 function compareCategories(a: Category, b: Category) {
   const orderA = Number.isFinite(a.order) ? a.order : 0
@@ -88,24 +73,6 @@ function compareCategories(a: Category, b: Category) {
   return a.name.localeCompare(b.name)
 }
 
-function normalizeFeatures(raw: unknown): string[] {
-  if (Array.isArray(raw)) {
-    return raw.map((item) => String(item).trim()).filter(Boolean)
-  }
-  if (typeof raw === 'string') {
-    const trimmed = raw.trim()
-    if (!trimmed) return []
-    try {
-      const parsed = JSON.parse(trimmed)
-      if (Array.isArray(parsed)) {
-        return parsed.map((item) => String(item).trim()).filter(Boolean)
-      }
-    } catch {
-      return [trimmed]
-    }
-  }
-  return []
-}
 
 function stripHtmlToText(value: string): string {
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
@@ -117,7 +84,7 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
   const [categories, setCategories] = useState<Category[]>(initialCategories)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
-  const [notice, setNotice] = useState<string | null>(null)
+  const { toast, ToastContainer } = useAdminToast()
   const [saving, setSaving] = useState(false)
   const [movingId, setMovingId] = useState<string | null>(null)
 
@@ -358,12 +325,11 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
 
   async function submitCategory() {
     if (!form.name) {
-      setNotice('Please fill the required field: Name.')
+      toast('Please fill the required field: Name.', 'error')
       return
     }
 
     setSaving(true)
-    setNotice(null)
 
     try {
       const features = form.features.map((item) => item.trim()).filter(Boolean)
@@ -387,7 +353,7 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
           name: created.name ?? payload.name,
           slug: created.slug ?? payload.slug,
           order: Number(created.order ?? payload.order ?? 0),
-          parents: normalizeParentIds(created.parent ?? payload.parentIds),
+          parents: normalizeRelationIds(created.parent ?? payload.parentIds),
           desc: created.desc ?? payload.desc,
           features: normalizeFeatures(created.features ?? payload.features),
           promo: Number(created.promo ?? payload.promo ?? 0),
@@ -396,7 +362,7 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
           coverImageUrl: coverImagePreview || undefined,
         }
         setCategories((prev) => [...prev, rec])
-        setNotice('Category created successfully.')
+        toast('Category created successfully.', 'success')
       } else {
         const id = editState.id
         const updatedRec = await updateCategoryAction(id, payload)
@@ -405,7 +371,7 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
           name: updatedRec.name ?? payload.name,
           slug: updatedRec.slug ?? payload.slug,
           order: Number(updatedRec.order ?? payload.order ?? 0),
-          parents: normalizeParentIds(updatedRec.parent ?? payload.parentIds),
+          parents: normalizeRelationIds(updatedRec.parent ?? payload.parentIds),
           desc: updatedRec.desc ?? payload.desc,
           features: normalizeFeatures(updatedRec.features ?? payload.features),
           promo: Number(updatedRec.promo ?? payload.promo ?? 0),
@@ -414,7 +380,7 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
           coverImageUrl: coverImagePreview || undefined,
         }
         setCategories((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
-        setNotice('Category updated successfully.')
+        toast('Category updated successfully.', 'success')
       }
 
       setOpen(false)
@@ -422,9 +388,7 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
       closeParentDropdown()
     } catch (e) {
       console.error(e)
-      setNotice(
-        'Failed to save category. Check your PocketBase URL, collection fields, and rules.'
-      )
+      toast('Failed to save category. Check your PocketBase URL, collection fields, and rules.', 'error')
     } finally {
       setSaving(false)
     }
@@ -435,10 +399,10 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
     try {
       await deleteCategoryAction(id)
       setCategories((prev) => prev.filter((c) => c.id !== id))
-      setNotice('Category deleted.')
+      toast('Category deleted.', 'success')
     } catch (e) {
       console.error(e)
-      setNotice('Failed to delete category.')
+      toast('Failed to delete category.', 'error')
     }
   }
 
@@ -462,7 +426,6 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
     const snapshot = categories
 
     setMovingId(catId)
-    setNotice(null)
     setCategories((prev) =>
       prev.map((item) =>
         updatesMap.has(item.id)
@@ -473,11 +436,11 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
 
     try {
       await reorderCategoriesAction(updates)
-      setNotice('Category order updated.')
+      toast('Category order updated.', 'success')
     } catch (e) {
       console.error(e)
       setCategories(snapshot)
-      setNotice('Failed to update category order.')
+      toast('Failed to update category order.', 'error')
     } finally {
       setMovingId(null)
     }
@@ -593,10 +556,18 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
     <div className="p-6 md:p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-blue-600 mb-2">
-          Categories
-        </h1>
-        <p className="text-slate-600 text-lg">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+          Catalog
+        </p>
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>
+            Categories
+          </h1>
+          <span className="text-sm font-medium" style={{ color: '#6B7280' }}>
+            {visible.length} result{visible.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
           Manage and organize all product categories.
         </p>
       </div>
@@ -604,31 +575,28 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
       <div className="flex flex-col md:flex-row items-center gap-3 mb-6">
         {/* Search */}
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#9CA3AF' }} />
           <input
             type="text"
             placeholder="Search by name..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-slate-700 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder:text-slate-400 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all"
+            style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#111827' }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#4F46E5')}
+            onBlur={e => (e.currentTarget.style.borderColor = '#E8EAED')}
           />
         </div>
 
         <button
           onClick={openCreate}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium whitespace-nowrap"
+          className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-white transition-opacity hover:opacity-90 text-sm font-semibold whitespace-nowrap"
+          style={{ background: '#4F46E5' }}
         >
           <Plus className="h-5 w-5" />
           New category
         </button>
       </div>
-
-      {/* Notice */}
-      {notice && (
-        <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-slate-700">
-          {notice}
-        </div>
-      )}
 
       {/* Table list */}
       {visible.length === 0 ? (
@@ -945,6 +913,7 @@ export default function CategoriesClient(props: { initialCategories: Category[] 
           </div>
         </>
       )}
+      {ToastContainer}
     </div>
   )
 }

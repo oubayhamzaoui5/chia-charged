@@ -4,7 +4,7 @@ import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request)
-  const { allowed } = rateLimit(`forgot-password:${ip}`, 3, 60 * 60 * 1000)
+  const { allowed } = await rateLimit(`forgot-password:${ip}`, 3, 60 * 60 * 1000)
   if (!allowed) {
     // Return success to avoid email enumeration, but don't actually send
     return NextResponse.json({ ok: true })

@@ -7,6 +7,7 @@ import {
   type ProductRecord 
 } from '@/types/product.server.types'
 import type { Product, CategoryOption, Variable } from '@/types/product.types'
+import { normalizeRelationIds } from '@/utils/product.utils'
 
 function buildPbFileUrl(collection: string, id: string, file?: string): string | undefined {
   if (!file || !file.trim()) return undefined
@@ -17,28 +18,6 @@ function buildPbFileUrl(collection: string, id: string, file?: string): string |
   return `${base}/api/files/${collection}/${id}/${file}`
 }
 
-/**
- * Normalize category/parent relations to array of IDs
- */
-function normalizeRelationIds(p: unknown): string[] {
-  if (!p) return []
-  if (Array.isArray(p)) {
-    return p
-      .map((item) => {
-        if (typeof item === 'string') return item
-        if (typeof item === 'object' && item && 'id' in item) {
-          return String((item as { id: unknown }).id ?? '')
-        }
-        return ''
-      })
-      .filter((value): value is string => Boolean(value))
-  }
-  if (typeof p === 'string') return [p]
-  if (typeof p === 'object' && p && 'id' in p) {
-    return [String((p as { id: unknown }).id ?? '')].filter(Boolean)
-  }
-  return []
-}
 
 function buildCategoryPromoMap(
   categories: Array<Record<string, unknown>>

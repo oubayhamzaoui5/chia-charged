@@ -1,9 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
@@ -91,6 +91,7 @@ export default function LandingBlog({ posts }: { posts: Post[] }) {
                 style={{
                   background: "white",
                   border: "4px solid #111",
+                  borderRadius: "8px",
                   boxShadow: "8px 8px 0 #111",
                   transform: `rotate(${rotations[i % rotations.length]})`,
                   transition: "transform 0.25s ease, box-shadow 0.25s ease",
@@ -106,12 +107,12 @@ export default function LandingBlog({ posts }: { posts: Post[] }) {
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
                   {post.coverImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={post.coverImage}
                       alt={post.title}
-                      loading="lazy"
-                      decoding="async"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      priority={i === 0}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (

@@ -244,7 +244,7 @@ async function authenticateWithCandidates(
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request)
-  const { allowed } = rateLimit(`login:${ip}`, 10, 15 * 60 * 1000)
+  const { allowed } = await rateLimit(`login:${ip}`, 10, 15 * 60 * 1000)
   if (!allowed) {
     return NextResponse.json(
       { message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' },

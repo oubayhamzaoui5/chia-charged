@@ -5,6 +5,7 @@ import { Image, Palette, Trash2 } from 'lucide-react'
 
 import { deleteVariableAction } from './actions'
 import CreateVariable from './create-variable'
+import { useAdminToast } from '@/components/admin/AdminToast'
 
 type VariableRecord = {
   id: string
@@ -21,7 +22,7 @@ export default function VariablesClient({
 }) {
   const [variables, setVariables] = useState<VariableRecord[]>(initialVariables)
   const [query, setQuery] = useState('')
-  const [notice, setNotice] = useState<string | null>(null)
+  const { toast, ToastContainer } = useAdminToast()
 
   const { filteredColors, filteredImages } = useMemo(() => {
     const lower = query.toLowerCase()
@@ -38,19 +39,22 @@ export default function VariablesClient({
     setVariables((current) => current.filter((v) => v.id !== id))
     try {
       await deleteVariableAction(id)
-      setNotice('Variable deleted.')
+      toast('Variable deleted.', 'success')
     } catch (error) {
       console.error(error)
       setVariables(prev)
-      setNotice('Delete failed.')
+      toast('Delete failed.', 'error')
     }
   }
 
   return (
     <div className="p-6 md:p-8">
       <div className="mb-8">
-        <h1 className="mb-2 text-4xl font-bold text-blue-600">Variables</h1>
-        <p className="text-lg text-slate-600">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+          Catalog
+        </p>
+        <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>Variables</h1>
+        <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
           Manage the colors and images used in your products.
         </p>
       </div>
@@ -64,19 +68,13 @@ export default function VariablesClient({
         />
       </div>
 
-      {notice && (
-        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-slate-700">
-          {notice}
-        </div>
-      )}
-
       <div className="mb-8">
         <CreateVariable
           onCreated={(next) => {
             setVariables((current) => [next, ...current])
-            setNotice('Variable created.')
+            toast('Variable created.', 'success')
           }}
-          onError={(message) => setNotice(message)}
+          onError={(message) => toast(message, 'error')}
         />
       </div>
 
@@ -185,6 +183,7 @@ export default function VariablesClient({
           </div>
         )}
       </section>
+      {ToastContainer}
     </div>
   )
 }

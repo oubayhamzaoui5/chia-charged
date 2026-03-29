@@ -7,7 +7,7 @@ export function Price({ p }: { p: Product }) {
   if (!hasPromo) {
     return (
       <span className="font-semibold">
-        {p.price.toFixed(2)} {p.currency}
+        ${p.price.toFixed(2)}
       </span>
     )
   }
@@ -15,10 +15,10 @@ export function Price({ p }: { p: Product }) {
   return (
     <div className="flex items-center gap-2">
       <span className="font-semibold">
-        {p.promoPrice!.toFixed(2)} {p.currency}
+        ${p.promoPrice!.toFixed(2)}
       </span>
       <span className="text-xs line-through text-foreground/60">
-        {p.price.toFixed(2)} {p.currency}
+        ${p.price.toFixed(2)}
       </span>
     </div>
   )

@@ -10,10 +10,10 @@ import {
   Droplets,
   FlaskConical,
   Heart,
-  ArrowRight,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import Footer from "@/components/footer"
+import LandingCtaBanner from "@/components/landing/landing-cta-banner"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT =
@@ -41,7 +41,7 @@ const values = [
   {
     icon: FlaskConical,
     title: "Science-Backed",
-    desc: "22g protein, 12g fiber, MCT oil — each number exists for a reason. We obsess over formulation so you don't have to.",
+    desc: "22g protein per serving, 12g fiber, MCT oil — each number exists for a reason. We obsess over formulation so you don't have to.",
     rotate: "0.8deg",
   },
   {
@@ -62,7 +62,7 @@ const ingredients = [
   {
     icon: Zap,
     name: "Premium Protein",
-    stat: "22g / Jar",
+    stat: "22g / Serving",
     why: "High-quality plant protein for muscle recovery, sustained energy, and real satiation — not the chalky kind you've been suffering through.",
   },
   {
@@ -80,7 +80,7 @@ const ingredients = [
 ]
 
 const stats = [
-  { value: "22g", label: "Protein Per Jar" },
+  { value: "22g", label: "Protein Per Serving" },
   { value: "12g", label: "Dietary Fiber" },
   { value: "0%", label: "Artificial Junk" },
   { value: "2", label: "Bold Flavors" },
@@ -105,7 +105,7 @@ export default function AboutPageContent() {
 
       <main>
         <section
-          className="relative overflow-hidden border-b-4 border-black pb-16 pt-32 md:pb-24 md:pt-44"
+          className="relative overflow-hidden border-b-4 border-black pb-12 pt-28 md:pb-16 md:pt-36"
           style={{ background: GRADIENT }}
         >
           <div
@@ -123,77 +123,92 @@ export default function AboutPageContent() {
           </div>
 
           <div className="relative mx-auto max-w-[1400px] px-6 md:px-10">
-            <motion.h1
-              initial={{ opacity: 0, y: 32 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease }}
-              className="mb-6 text-[3.5rem] font-black uppercase leading-[0.85] tracking-tighter text-white md:text-[5.5rem] lg:text-[7.5rem]"
-              style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em" }}
-            >
-              Not Built
-              <br />
-              In A Lab.
-              <br />
-              <span
-                style={{
-                  background: "rgba(255,255,255,0.15)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "rgba(255,255,255,0.55)",
-                  backgroundClip: "text",
-                }}
-              >
-                Made In A Kitchen.
-              </span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="max-w-2xl text-sm font-black uppercase tracking-[0.12em] text-white md:text-base"
-              style={{ fontFamily: FONT, fontWeight: 900 }}
-            >
-              Made In A Kitchen.
-              <br />
-              <br />
-              Born from frustration with bad protein shakes. Built with chia seeds, MCT oil, and
-              an obsession with clean nutrition. Fueling Tunisia — one jar at a time.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.45 }}
-              className="mt-10 inline-flex flex-wrap border-3 border-black bg-white"
-              style={{ boxShadow: "5px 5px 0 #111" }}
-            >
-              {[
-                ["22g", "Protein"],
-                ["12g", "Fiber"],
-                ["0%", "Junk"],
-                ["MCT", "Oil"],
-              ].map(([v, l], i) => (
-                <div
-                  key={l}
-                  className={`flex flex-col items-center px-5 py-3 sm:px-8 ${
-                    i > 0 ? "border-l-2 border-black" : ""
-                  }`}
+            <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:gap-0">
+              <div className="flex-1 lg:flex-[1.25]">
+                <motion.h1
+                  initial={{ opacity: 0, y: 32 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.1, ease }}
+                  className="mb-6 text-[3.5rem] font-black uppercase leading-[0.85] tracking-tighter text-white md:text-[5.5rem] lg:text-[7.5rem]"
+                  style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em" }}
                 >
-                  <span
-                    className="text-2xl font-black sm:text-3xl"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
-                  >
-                    {v}
+                  <span className="text-white/55">
+                    Not Built
+                    <br />
+                    In A Lab.
                   </span>
-                  <span
-                    className="text-[8px] font-black uppercase tracking-[0.18em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
-                  >
-                    {l}
-                  </span>
+                  <br />
+                  <span className="text-white">Made In A Kitchen.</span>
+                </motion.h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="max-w-2xl text-sm font-black uppercase tracking-[0.12em] text-white md:text-base"
+                  style={{ fontFamily: FONT, fontWeight: 900 }}
+                >
+                  Made In A Kitchen.
+                  <br />
+                  <br />
+                  Born from frustration with bad protein shakes. Built with chia seeds, MCT oil, and
+                  an obsession with clean nutrition. Fueling Tunisia — one jar at a time.
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.45 }}
+                  className="mt-10 inline-flex flex-wrap rounded-sm border-3 border-black bg-white"
+                  style={{ boxShadow: "5px 5px 0 #111" }}
+                >
+                  {[
+                    ["22g", "Protein/Serving"],
+                    ["12g", "Fiber"],
+                    ["0%", "Junk"],
+                    ["MCT", "Oil"],
+                  ].map(([v, l], i) => (
+                    <div
+                      key={l}
+                      className={`flex flex-col items-center px-5 py-3 sm:px-8 ${
+                        i > 0 ? "border-l-2 border-black" : ""
+                      }`}
+                    >
+                      <span
+                        className="text-2xl font-black sm:text-3xl"
+                        style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
+                      >
+                        {v}
+                      </span>
+                      <span
+                        className="text-[8px] font-black uppercase tracking-[0.18em]"
+                        style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
+                      >
+                        {l}
+                      </span>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.88 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2, ease }}
+                className="flex flex-1 items-center justify-center lg:flex-[0.75]"
+                style={{ minHeight: 320 }}
+              >
+                <div className="relative h-[300px] w-[300px] md:h-[420px] md:w-[420px]">
+                  <Image
+                    src="/strawberry.webp"
+                    alt="Fresh strawberry"
+                    fill
+                    priority
+                    className="scale-[1.26] object-contain drop-shadow-[0_32px_60px_rgba(0,0,0,0.3)] md:scale-[1.22]"
+                  />
                 </div>
-              ))}
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </section>
 
@@ -212,6 +227,7 @@ export default function AboutPageContent() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
+                className="lg:order-2"
               >
                 <h2
                   className="mb-6 text-[2.5rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.5rem] lg:text-[4.5rem]"
@@ -251,7 +267,7 @@ export default function AboutPageContent() {
                 </p>
 
                 <div
-                  className="inline-flex flex-wrap items-center gap-4 border-3 border-black bg-white px-5 py-3"
+                  className="inline-flex flex-wrap items-center gap-4 rounded-sm border-3 border-black bg-white px-5 py-3"
                   style={{ boxShadow: "4px 4px 0 #111" }}
                 >
                   <div>
@@ -298,7 +314,7 @@ export default function AboutPageContent() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, ease }}
-                className="relative flex items-center justify-center pt-12 lg:pt-0"
+                className="relative flex items-center justify-center pt-12 lg:order-1 lg:pt-0"
                 style={{ minHeight: 520 }}
               >
                 <div
@@ -316,8 +332,8 @@ export default function AboutPageContent() {
                 >
                   <div className="relative -mt-16 h-[520px] w-full max-w-[440px] md:-mt-24 md:h-[620px] md:max-w-[520px]">
                     <Image
-                      src="/product1.webp"
-                      alt="Chia Charged strawberry jar"
+                      src="/chocolate.webp"
+                      alt="Chia Charged chocolate jar"
                       fill
                       priority
                       className="object-contain drop-shadow-[0_24px_50px_rgba(0,0,0,0.35)]"
@@ -382,41 +398,44 @@ export default function AboutPageContent() {
                 <motion.div
                   key={title}
                   variants={fadeUp}
-                  className="flex flex-col gap-5 border-4 border-black bg-white p-7"
-                  style={{
-                    borderRadius: "14px",
-                    boxShadow: "8px 8px 0 #111",
-                    transform: `rotate(${rotate})`,
-                    transition: "transform 0.25s ease, box-shadow 0.25s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    ;(e.currentTarget as HTMLElement).style.transform =
-                      "rotate(0deg) translate(-4px,-4px)"
-                    ;(e.currentTarget as HTMLElement).style.boxShadow = "12px 12px 0 #111"
-                  }}
-                  onMouseLeave={(e) => {
-                    ;(e.currentTarget as HTMLElement).style.transform = `rotate(${rotate})`
-                    ;(e.currentTarget as HTMLElement).style.boxShadow = "8px 8px 0 #111"
-                  }}
                 >
                   <div
-                    className="flex h-12 w-12 items-center justify-center"
-                    style={{ color: "rgb(124,58,237)" }}
+                    className="flex flex-col gap-5 border-4 border-black bg-white p-7"
+                    style={{
+                      borderRadius: "14px",
+                      boxShadow: "8px 8px 0 #111",
+                      transform: `rotate(${rotate})`,
+                      transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      ;(e.currentTarget as HTMLElement).style.transform =
+                        "rotate(0deg) translate(-4px,-4px)"
+                      ;(e.currentTarget as HTMLElement).style.boxShadow = "12px 12px 0 #111"
+                    }}
+                    onMouseLeave={(e) => {
+                      ;(e.currentTarget as HTMLElement).style.transform = `rotate(${rotate})`
+                      ;(e.currentTarget as HTMLElement).style.boxShadow = "8px 8px 0 #111"
+                    }}
                   >
-                    <Icon className="h-8 w-8" strokeWidth={2.5} />
+                    <div
+                      className="flex h-12 w-12 items-center justify-center"
+                      style={{ color: "rgb(124,58,237)" }}
+                    >
+                      <Icon className="h-8 w-8" strokeWidth={2.5} />
+                    </div>
+                    <h3
+                      className="text-lg font-black uppercase tracking-tight"
+                      style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
+                    >
+                      {title}
+                    </h3>
+                    <p
+                      className="text-sm font-semibold leading-relaxed"
+                      style={{ color: "rgba(0,0,0,0.5)" }}
+                    >
+                      {desc}
+                    </p>
                   </div>
-                  <h3
-                    className="text-lg font-black uppercase tracking-tight"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
-                  >
-                    {title}
-                  </h3>
-                  <p
-                    className="text-sm font-semibold leading-relaxed"
-                    style={{ color: "rgba(0,0,0,0.5)" }}
-                  >
-                    {desc}
-                  </p>
                 </motion.div>
               ))}
             </motion.div>
@@ -475,58 +494,61 @@ export default function AboutPageContent() {
                 <motion.div
                   key={name}
                   variants={fadeUp}
-                  className="relative overflow-hidden border-4 border-black bg-white p-6"
-                  style={{
-                    borderRadius: "14px",
-                    boxShadow: "8px 8px 0 #111",
-                    transform: `rotate(${ingredientRotations[i]})`,
-                    transition: "transform 0.25s ease, box-shadow 0.25s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    ;(e.currentTarget as HTMLElement).style.transform =
-                      "rotate(0deg) translate(-3px,-3px)"
-                    ;(e.currentTarget as HTMLElement).style.boxShadow = "11px 11px 0 #111"
-                  }}
-                  onMouseLeave={(e) => {
-                    ;(e.currentTarget as HTMLElement).style.transform = `rotate(${ingredientRotations[i]})`
-                    ;(e.currentTarget as HTMLElement).style.boxShadow = "8px 8px 0 #111"
-                  }}
                 >
                   <div
-                    className="absolute left-0 right-0 top-0 h-1.5"
-                    style={{ background: GRADIENT }}
-                  />
-                  <div
-                    className="mb-4 flex h-10 w-10 items-center justify-center"
-                    style={{ color: "rgb(124,58,237)" }}
-                  >
-                    <Icon className="h-7 w-7" strokeWidth={2.5} />
-                  </div>
-                  <div
-                    className="mb-1 text-[9px] font-black uppercase tracking-[0.2em]"
+                    className="relative overflow-hidden border-4 border-black bg-white p-6"
                     style={{
-                      fontFamily: FONT,
-                      fontWeight: 900,
-                      background: GRADIENT,
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
+                      borderRadius: "14px",
+                      boxShadow: "8px 8px 0 #111",
+                      transform: `rotate(${ingredientRotations[i]})`,
+                      transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      ;(e.currentTarget as HTMLElement).style.transform =
+                        "rotate(0deg) translate(-3px,-3px)"
+                      ;(e.currentTarget as HTMLElement).style.boxShadow = "11px 11px 0 #111"
+                    }}
+                    onMouseLeave={(e) => {
+                      ;(e.currentTarget as HTMLElement).style.transform = `rotate(${ingredientRotations[i]})`
+                      ;(e.currentTarget as HTMLElement).style.boxShadow = "8px 8px 0 #111"
                     }}
                   >
-                    {stat}
+                    <div
+                      className="absolute left-0 right-0 top-0 h-1.5"
+                      style={{ background: GRADIENT }}
+                    />
+                    <div
+                      className="mb-4 flex h-10 w-10 items-center justify-center"
+                      style={{ color: "rgb(124,58,237)" }}
+                    >
+                      <Icon className="h-7 w-7" strokeWidth={2.5} />
+                    </div>
+                    <div
+                      className="mb-1 text-[9px] font-black uppercase tracking-[0.2em]"
+                      style={{
+                        fontFamily: FONT,
+                        fontWeight: 900,
+                        background: GRADIENT,
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      {stat}
+                    </div>
+                    <h3
+                      className="mb-3 text-base font-black uppercase"
+                      style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
+                    >
+                      {name}
+                    </h3>
+                    <p
+                      className="text-xs font-semibold leading-relaxed"
+                      style={{ color: "rgba(0,0,0,0.45)" }}
+                    >
+                      {why}
+                    </p>
                   </div>
-                  <h3
-                    className="mb-3 text-base font-black uppercase"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
-                  >
-                    {name}
-                  </h3>
-                  <p
-                    className="text-xs font-semibold leading-relaxed"
-                    style={{ color: "rgba(0,0,0,0.45)" }}
-                  >
-                    {why}
-                  </p>
                 </motion.div>
               ))}
             </motion.div>
@@ -565,7 +587,7 @@ export default function AboutPageContent() {
                   key={label}
                   variants={fadeUp}
                   className="flex flex-col items-center justify-center border-3 border-black bg-white py-8 text-center"
-                  style={{ boxShadow: "5px 5px 0 #111" }}
+                  style={{ boxShadow: "5px 5px 0 #111", borderRadius: "14px" }}
                 >
                   <span
                     className="text-3xl font-black md:text-4xl"
@@ -610,11 +632,11 @@ export default function AboutPageContent() {
             >
               <div
                 className="border-4 border-black bg-white px-8 py-12 text-center md:px-16 md:py-16"
-                style={{ boxShadow: "10px 10px 0 #111" }}
+                style={{ boxShadow: "10px 10px 0 #111", borderRadius: "14px" }}
               >
                 <div
                   className="mb-5 inline-flex items-center gap-2 border-3 border-black px-3 py-1.5"
-                  style={{ boxShadow: "2px 2px 0 #111", background: GRADIENT }}
+                  style={{ boxShadow: "2px 2px 0 #111", background: GRADIENT, borderRadius: "6px" }}
                 >
                   <span
                     className="text-[9px] font-black uppercase tracking-[0.2em] text-white"
@@ -654,62 +676,7 @@ export default function AboutPageContent() {
           </div>
         </section>
 
-        <section
-          className="relative overflow-hidden py-20 md:py-28"
-          style={{ background: GRADIENT }}
-        >
-          <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-            <motion.div
-              initial={{ opacity: 0, y: 32 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease }}
-              className="flex flex-col items-center gap-8 text-center"
-            >
-              <h2
-                className="text-[2.8rem] font-black uppercase leading-[0.88] tracking-tighter text-white md:text-[4.5rem] lg:text-[6rem]"
-                style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em" }}
-              >
-                Ready To
-                <br />
-                <span style={{ color: "white" }}>
-                  Fuel Smarter?
-                </span>
-              </h2>
-              <p
-                className="max-w-xl text-sm font-black uppercase tracking-[0.12em]"
-                style={{ fontFamily: FONT, fontWeight: 900, color: "white" }}
-              >
-                Join the hundreds of people who've swapped bad snacks for something that actually works.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <Link
-                  href="/#flavors"
-                  className="inline-flex items-center gap-2.5 border-4 border-black bg-white px-8 py-4 text-xs font-black uppercase tracking-[0.15em] text-black transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
-                  style={{
-                    fontFamily: FONT,
-                    fontWeight: 900,
-                    boxShadow: "5px 5px 0 #111",
-                  }}
-                >
-                  Shop Now
-                  <ArrowRight size={14} />
-                </Link>
-                <Link
-                  href="/blog"
-                  className="inline-flex items-center gap-2.5 border-4 border-white bg-transparent px-8 py-4 text-xs font-black uppercase tracking-[0.15em] text-white transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
-                  style={{
-                    fontFamily: FONT,
-                    fontWeight: 900,
-                    boxShadow: "5px 5px 0 rgba(0,0,0,0.25)",
-                  }}
-                >
-                  Read Articles
-                </Link>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+        <LandingCtaBanner />
       </main>
 
       <Footer />

@@ -136,6 +136,10 @@
   html {
     scroll-behavior: smooth;
   }
+  html.no-smooth-scroll,
+  html.no-smooth-scroll body {
+    scroll-behavior: auto !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -55,7 +55,7 @@ export default function HomeMarblePanelSection() {
           </p>
 
           <div className="mb-8 flex flex-wrap gap-2">
-            {["Real Strawberries", "0g Sugar", "Ready to Eat", "22g Protein"].map((tag) => (
+            {["Real Strawberries", "0g Sugar", "Ready to Eat", "22g Protein/Serving"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full px-4 py-1.5 text-xs font-bold"

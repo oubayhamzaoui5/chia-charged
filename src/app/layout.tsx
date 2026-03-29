@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Manrope, Fraunces } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
-import Providers from './providers';
+import Providers from './providers'
+import VisitTracker from '@/components/VisitTracker'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -44,7 +45,10 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body suppressHydrationWarning className={`${manrope.className} ${fraunces.variable} font-sans antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <VisitTracker />
+          {children}
+        </Providers>
         <Analytics />
       </body>
     </html>

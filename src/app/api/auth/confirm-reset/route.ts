@@ -4,7 +4,7 @@ import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request)
-  const { allowed } = rateLimit(`confirm-reset:${ip}`, 5, 15 * 60 * 1000)
+  const { allowed } = await rateLimit(`confirm-reset:${ip}`, 5, 15 * 60 * 1000)
   if (!allowed) {
     return NextResponse.json(
       { message: 'Trop de tentatives. Réessayez dans 15 minutes.' },

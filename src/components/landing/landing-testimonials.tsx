@@ -29,7 +29,7 @@ const TESTIMONIALS = [
     role: "Nutritionist",
     rating: 5,
     quote:
-      "As a nutritionist, I'm extremely picky about what I recommend. Zero added sugar, 22g plant protein, and MCT oil — this is the one I tell all my clients about.",
+      "As a nutritionist, I'm extremely picky about what I recommend. Zero added sugar, 22g plant protein per serving, and MCT oil — this is the one I tell all my clients about.",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&q=80&fit=crop&crop=face",
     rotate: "1.2deg",
   },

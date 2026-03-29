@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 
 import { OrderNotificationsListener } from '@/components/admin/order-notifications'
 import Sidebar from '@/components/admin/sidebar'
 import { requireAdmin } from '@/lib/auth'
 
-const geist = Geist({ subsets: ['latin'] })
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] })
 
 export const metadata: Metadata = {
-  title: 'Chia Charged | Admin Dashboard',
+  title: 'Admin Dashboard',
 }
 
 export default async function AdminLayout({
@@ -20,7 +20,7 @@ export default async function AdminLayout({
   await requireAdmin()
 
   return (
-    <div className={`${geist.className} flex h-screen overflow-hidden bg-background`}>
+    <div className={`${jakarta.className} flex h-screen overflow-hidden`} style={{ background: '#F4F6FB' }}>
       <OrderNotificationsListener />
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">

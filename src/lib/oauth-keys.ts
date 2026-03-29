@@ -10,6 +10,8 @@ export interface OAuthKeys {
   googleClientSecret: string
   stripePublishableKey?: string
   stripeSecretKey?: string
+  stripeWebhookSecret?: string
+  metaPixelId?: string
 }
 
 function getEncryptionKey(): Buffer {

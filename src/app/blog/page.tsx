@@ -86,6 +86,7 @@ export default async function BlogPage() {
                     className="grid overflow-hidden bg-white transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 shadow-[8px_8px_0_#111] hover:shadow-[12px_12px_0_#111] md:grid-cols-2"
                     style={{
                       border: '4px solid #111',
+                      borderRadius: '8px',
                     }}
                   >
                     <div className="relative aspect-[4/3] overflow-hidden md:aspect-auto">
@@ -168,6 +169,7 @@ export default async function BlogPage() {
                         style={
                           {
                             border: '4px solid #111',
+                            borderRadius: '8px',
                             '--card-rotate': rotations[i % rotations.length],
                           } as CSSProperties & { ['--card-rotate']?: string }
                         }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { ArrowRight } from "lucide-react"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
@@ -88,7 +89,7 @@ export default function LandingHero() {
             >
               <Link
                 href="#flavors"
-                className="shimmer-btn inline-flex h-[50px] items-center justify-center px-10 text-sm font-black uppercase tracking-[0.15em] text-white"
+                className="shimmer-btn inline-flex h-[50px] items-center justify-center px-12 text-xs font-black uppercase tracking-[0.12em] text-white"
                 style={{
                   fontFamily: FONT,
                   fontWeight: 900,
@@ -96,22 +97,21 @@ export default function LandingHero() {
                   borderRadius: "4px",
                 }}
               >
-                Our Flavors &#8594;
+                SHOP NOW &#8594;
               </Link>
             </span>
             <Link
               href="#story"
-              className="inline-flex h-[56px] items-center justify-center px-8 text-sm font-black uppercase tracking-[0.12em] text-white transition-all duration-200 ease-out hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0"
+              className="shimmer-btn relative isolate inline-flex h-[56px] items-center gap-2.5 overflow-hidden rounded-sm border-3 border-black px-12 text-xs font-black uppercase tracking-[0.12em] text-black transition-all duration-200 ease-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_rgba(0,0,0,0.6)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0px_rgba(0,0,0,0.6)]"
               style={{
                 fontFamily: FONT,
                 fontWeight: 900,
-                border: "4px solid white",
-                backgroundColor: "transparent",
-                borderRadius: "4px",
-                boxShadow: "4px 4px 0 rgba(0,0,0,0.2)",
+                background: "white",
+                boxShadow: "4px 4px 0 rgba(0,0,0,0.6)",
               }}
             >
               Our Story
+              <ArrowRight size={14} />
             </Link>
           </motion.div>
 
@@ -177,10 +177,10 @@ export default function LandingHero() {
           >
             <Image
               src="/product1.webp"
-              alt="Chia Charged Pudding Fraises et Creme â€” 22g proteine par pot"
+              alt="Chia Charged Pudding Fraises et Creme â€” 22g proteine par portion"
               fill
               priority
-              className="relative z-10 object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-[1.04]"
+              className="relative z-10 object-contain drop-shadow-2xl"
               style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.25))" }}
             />
           </motion.div>
@@ -197,7 +197,7 @@ export default function LandingHero() {
               alt="Chia Charged Pudding Chocolat â€” riche en proteine et fibre"
               fill
               priority
-              className="relative z-10 object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-[1.04]"
+              className="relative z-10 object-contain drop-shadow-2xl"
               style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.25))" }}
             />
           </motion.div>
@@ -216,7 +216,7 @@ export default function LandingHero() {
               color: "#111",
             }}
           >
-            22g Protein
+            22g Protein/Serving
           </div>
           <div
             className="badge-float-b absolute left-[4%] bottom-[28%] z-20 flex items-center gap-1.5 rounded-sm border-3 border-black px-3 py-1.5"

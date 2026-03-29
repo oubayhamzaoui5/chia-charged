@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { CheckCircle, AlertCircle, Eye, EyeOff, Key, Trash2, ExternalLink, ShieldCheck } from 'lucide-react'
-import { saveKeysAction, deleteKeysAction, saveStripeKeysAction, deleteStripeKeysAction } from './actions'
+import { saveKeysAction, deleteKeysAction, saveStripeKeysAction, deleteStripeKeysAction, saveMetaPixelAction, deleteMetaPixelAction } from './actions'
 
 interface Props {
   googleConfigured: boolean
   googleClientIdMasked: string | null
   stripeConfigured: boolean
   stripePublishableKeyMasked: string | null
+  metaConfigured: boolean
+  metaPixelIdMasked: string | null
 }
 
 export default function KeysClient({
@@ -16,6 +18,8 @@ export default function KeysClient({
   googleClientIdMasked,
   stripeConfigured,
   stripePublishableKeyMasked,
+  metaConfigured,
+  metaPixelIdMasked,
 }: Props) {
   // Google OAuth state
   const [clientId, setClientId] = useState('')
@@ -36,6 +40,14 @@ export default function KeysClient({
   const [stripeStatus, setStripeStatus] = useState<{ type: 'success' | 'warning' | 'error'; msg: string } | null>(null)
   const [isStripeConfigured, setIsStripeConfigured] = useState(stripeConfigured)
   const [maskedStripePk, setMaskedStripePk] = useState(stripePublishableKeyMasked)
+
+  // Meta Pixel state
+  const [metaPixelId, setMetaPixelId] = useState('')
+  const [metaSaving, setMetaSaving] = useState(false)
+  const [metaDeleting, setMetaDeleting] = useState(false)
+  const [metaStatus, setMetaStatus] = useState<{ type: 'success' | 'warning' | 'error'; msg: string } | null>(null)
+  const [isMetaConfigured, setIsMetaConfigured] = useState(metaConfigured)
+  const [maskedMetaId, setMaskedMetaId] = useState(metaPixelIdMasked)
 
   async function handleGoogleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -126,6 +138,48 @@ export default function KeysClient({
     }
   }
 
+  async function handleMetaSave(e: React.FormEvent) {
+    e.preventDefault()
+    setMetaStatus(null)
+    setMetaSaving(true)
+    try {
+      const result = await saveMetaPixelAction(metaPixelId)
+      if (result.success) {
+        setIsMetaConfigured(true)
+        const id = metaPixelId.trim()
+        setMaskedMetaId(id.length > 8 ? `${id.slice(0, 4)}••••${id.slice(-4)}` : '••••••••••••')
+        setMetaPixelId('')
+        setMetaStatus({ type: 'success', msg: 'Meta Pixel ID saved successfully.' })
+      } else {
+        setMetaStatus({ type: 'error', msg: result.error ?? 'Failed to save Pixel ID.' })
+      }
+    } catch {
+      setMetaStatus({ type: 'error', msg: 'An unexpected error occurred.' })
+    } finally {
+      setMetaSaving(false)
+    }
+  }
+
+  async function handleMetaDelete() {
+    if (!confirm('Remove Meta Pixel? Event tracking will stop immediately.')) return
+    setMetaStatus(null)
+    setMetaDeleting(true)
+    try {
+      const result = await deleteMetaPixelAction()
+      if (result.success) {
+        setIsMetaConfigured(false)
+        setMaskedMetaId(null)
+        setMetaStatus({ type: 'success', msg: 'Meta Pixel removed.' })
+      } else {
+        setMetaStatus({ type: 'error', msg: result.error ?? 'Failed to remove Pixel.' })
+      }
+    } catch {
+      setMetaStatus({ type: 'error', msg: 'An unexpected error occurred.' })
+    } finally {
+      setMetaDeleting(false)
+    }
+  }
+
   const inputCls =
     'w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 placeholder:text-slate-400 font-mono'
 
@@ -158,12 +212,15 @@ export default function KeysClient({
         {/* Page header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">API Keys</h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#9CA3AF' }}>
+              System
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>API Keys</h1>
+            <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
               Manage OAuth provider credentials. Keys are encrypted at rest and never exposed in git.
             </p>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500">
+          <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold" style={{ background: '#EEF2FF', color: '#4F46E5' }}>
             <ShieldCheck size={13} />
             AES-256-GCM encrypted
           </div>
@@ -420,6 +477,106 @@ export default function KeysClient({
               <li>2. Copy your Publishable Key and Secret Key</li>
               <li>3. For testing, use test mode keys (pk_test_ and sk_test_)</li>
             </ol>
+          </div>
+        </div>
+
+        {/* Meta Pixel card */}
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg shadow-sm" style={{ background: '#1877F2' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Meta Pixel</p>
+                <p className="text-xs text-slate-500">Track product views and add-to-cart events via Facebook/Meta Pixel</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {isMetaConfigured ? (
+                <>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    Active
+                  </span>
+                  <button
+                    onClick={handleMetaDelete}
+                    disabled={metaDeleting}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                  >
+                    <Trash2 size={12} />
+                    {metaDeleting ? 'Removing...' : 'Remove'}
+                  </button>
+                </>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">
+                  <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                  Not configured
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="px-6 py-5">
+            <StatusBanner status={metaStatus} />
+
+            {isMetaConfigured && maskedMetaId && (
+              <div className="mb-5 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Current Pixel ID</p>
+                <p className="mt-1 font-mono text-sm text-slate-700">{maskedMetaId}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleMetaSave} className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-slate-700">
+                  Pixel ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={metaPixelId}
+                  onChange={e => setMetaPixelId(e.target.value)}
+                  className={inputCls}
+                  placeholder="1234567890123456"
+                  autoComplete="off"
+                />
+                <p className="mt-1.5 text-xs text-slate-400">The numeric ID found in your Meta Events Manager (10–20 digits).</p>
+              </div>
+
+              <div className="flex items-center justify-between pt-1">
+                <a
+                  href="https://business.facebook.com/events_manager"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-violet-600 transition hover:text-violet-800 hover:underline"
+                >
+                  <ExternalLink size={12} />
+                  Meta Events Manager
+                </a>
+
+                <button
+                  type="submit"
+                  disabled={metaSaving}
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+                  style={{ background: '#1877F2' }}
+                >
+                  <Key size={14} />
+                  {metaSaving ? 'Saving...' : isMetaConfigured ? 'Update Pixel' : 'Save & Enable'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="rounded-b-2xl border-t border-slate-100 bg-slate-50 px-6 py-4">
+            <p className="text-xs font-semibold text-slate-500">Events tracked</p>
+            <ul className="mt-2 space-y-1 text-xs text-slate-400">
+              <li>• <strong className="text-slate-500">ViewContent</strong> — fires when a visitor opens a product page</li>
+              <li>• <strong className="text-slate-500">AddToCart</strong> — fires when a visitor clicks &quot;Add to cart&quot;</li>
+            </ul>
           </div>
         </div>
 

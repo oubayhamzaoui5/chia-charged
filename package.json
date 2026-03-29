@@ -50,6 +50,7 @@
     "framer-motion": "^12.23.24",
     "gsap": "^3.13.0",
     "input-otp": "^1.4.2",
+    "ioredis": "^5.10.1",
     "isomorphic-dompurify": "^2.36.0",
     "lexical": "^0.40.0",
     "lucide-react": "^0.553.0",

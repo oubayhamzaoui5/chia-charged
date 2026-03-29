@@ -10,7 +10,6 @@ type Item = {
   productId?: unknown
   name?: unknown
   sku?: unknown
-  unitPrice?: unknown
   quantity?: unknown
 }
 
@@ -41,23 +40,55 @@ export async function POST(req: NextRequest) {
     }
 
     const rawItems = Array.isArray(body.items) ? (body.items as Item[]) : []
-    const items = rawItems.map(item => ({
+    const parsedItems = rawItems.map(item => ({
       productId: asText(item.productId),
       name: asText(item.name) || 'Product',
       sku: asText(item.sku),
-      unitPrice: Math.max(0, asNumber(item.unitPrice, 0)),
       quantity: Math.max(1, Math.floor(asNumber(item.quantity, 1))),
-    })).filter(item => item.name && item.quantity > 0)
+    })).filter(item => item.quantity > 0)
 
-    if (items.length === 0) {
+    if (parsedItems.length === 0) {
       return NextResponse.json({ message: 'Cart is empty.' }, { status: 400 })
     }
 
-    const subtotal = Number(items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0).toFixed(2))
-    const total = Number((subtotal + shipping).toFixed(2))
-
     const pb = createServerPb()
     if (user?.id && token) pb.authStore.save(token, user as any)
+
+    // Fetch real prices from PocketBase — never trust client-sent prices
+    const productIds = [...new Set(parsedItems.map(i => i.productId).filter(id => /^[a-zA-Z0-9]{15}$/.test(id)))]
+    if (productIds.length !== parsedItems.length) {
+      return NextResponse.json({ message: 'Invalid product in cart.' }, { status: 400 })
+    }
+
+    const filter = productIds.map(id => `id = '${id}'`).join(' || ')
+    const productRecords = await pb.collection('products').getFullList({
+      filter,
+      fields: 'id,name,sku,price,promoPrice,isActive,inView',
+      requestKey: null,
+    })
+
+    const productMap = new Map(productRecords.map(p => [p.id, p]))
+
+    const items = parsedItems.map(item => {
+      const product = productMap.get(item.productId)
+      if (!product || product.isActive === false) {
+        throw Object.assign(new Error(`Product unavailable: ${item.productId}`), { status: 400 })
+      }
+      const serverPrice =
+        product.promoPrice != null && Number.isFinite(Number(product.promoPrice)) && Number(product.promoPrice) > 0
+          ? Number(product.promoPrice)
+          : Number(product.price)
+      return {
+        productId: item.productId,
+        name: String(product.name) || item.name,
+        sku: String(product.sku || item.sku),
+        unitPrice: serverPrice,
+        quantity: item.quantity,
+      }
+    })
+
+    const subtotal = Number(items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0).toFixed(2))
+    const total = Number((subtotal + shipping).toFixed(2))
 
     // Create order with pending_payment status
     const created = await pb.collection('orders').create({
