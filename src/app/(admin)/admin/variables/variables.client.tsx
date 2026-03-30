@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Image, Palette, Trash2 } from 'lucide-react'
+import { Image, Trash2 } from 'lucide-react'
 
 import { deleteVariableAction } from './actions'
 import CreateVariable from './create-variable'
@@ -10,8 +10,7 @@ import { useAdminToast } from '@/components/admin/AdminToast'
 type VariableRecord = {
   id: string
   name: string
-  type: 'color' | 'image'
-  color?: string
+  type: 'image'
   image?: string
 }
 
@@ -24,13 +23,9 @@ export default function VariablesClient({
   const [query, setQuery] = useState('')
   const { toast, ToastContainer } = useAdminToast()
 
-  const { filteredColors, filteredImages } = useMemo(() => {
+  const filteredImages = useMemo(() => {
     const lower = query.toLowerCase()
-    const filtered = variables.filter((v) => v.name.toLowerCase().includes(lower))
-    return {
-      filteredColors: filtered.filter((v) => v.type === 'color'),
-      filteredImages: filtered.filter((v) => v.type === 'image'),
-    }
+    return variables.filter((v) => v.name.toLowerCase().includes(lower))
   }, [query, variables])
 
   async function deleteVariable(id: string) {
@@ -55,7 +50,7 @@ export default function VariablesClient({
         </p>
         <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#111827' }}>Variables</h1>
         <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
-          Manage the colors and images used in your products.
+          Manage the images used in your products.
         </p>
       </div>
 
@@ -93,8 +88,6 @@ export default function VariablesClient({
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {filteredImages.map((v) => (
-              // Inside both filteredImages.map and filteredColors.map:
-
 <div
   key={v.id}
   className="group relative aspect-square flex flex-col items-center justify-center rounded-lg border border-slate-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-md"
@@ -108,71 +101,12 @@ export default function VariablesClient({
   </button>
 
   <div className="flex flex-col items-center gap-3 text-center w-full">
-    {/* Image or Color Circle */}
-    <div 
-      className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-full bg-slate-100 ring-2 ring-slate-200"
-      style={v.type === 'color' ? { backgroundColor: v.color } : {}}
-    >
-      {v.type === 'image' && (
-        <img
-          src={v.image || '/aboutimg.webp'}
-          alt={v.name}
-          className="h-full w-full object-cover"
-        />
-      )}
-    </div>
-    <p className="w-full truncate text-sm font-medium text-slate-800 px-2">
-      {v.name}
-    </p>
-  </div>
-</div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section>
-        <div className="mb-4 flex items-center gap-2">
-          <Palette className="h-5 w-5 text-blue-600" />
-          <h2 className="text-xl font-semibold text-slate-800">Colors</h2>
-          <span className="text-sm text-slate-500">({filteredColors.length})</span>
-        </div>
-
-        {filteredColors.length === 0 ? (
-          <div className="rounded-lg border border-slate-200 bg-slate-50 py-12 text-center">
-            <Palette className="mx-auto mb-3 h-12 w-12 text-slate-300" />
-            <p className="text-sm text-slate-600">No colors found</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {filteredColors.map((v) => (
-              // Inside both filteredImages.map and filteredColors.map:
-
-<div
-  key={v.id}
-  className="group relative aspect-square flex flex-col items-center justify-center rounded-lg border border-slate-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-md"
->
-  <button
-    onClick={() => deleteVariable(v.id)}
-    className="absolute right-2 top-2 z-10 rounded-lg p-1.5 text-red-600 opacity-0 transition group-hover:opacity-100 hover:bg-red-50"
-    aria-label="Delete"
-  >
-    <Trash2 className="h-4 w-4" />
-  </button>
-
-  <div className="flex flex-col items-center gap-3 text-center w-full">
-    {/* Image or Color Circle */}
-    <div 
-      className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-full bg-slate-100 ring-2 ring-slate-200"
-      style={v.type === 'color' ? { backgroundColor: v.color } : {}}
-    >
-      {v.type === 'image' && (
-        <img
-          src={v.image || '/aboutimg.webp'}
-          alt={v.name}
-          className="h-full w-full object-cover"
-        />
-      )}
+    <div className="h-16 w-16 overflow-visible rounded-none bg-transparent sm:h-20 sm:w-20">
+      <img
+        src={v.image || '/aboutimg.webp'}
+        alt={v.name}
+        className="h-full w-full object-contain"
+      />
     </div>
     <p className="w-full truncate text-sm font-medium text-slate-800 px-2">
       {v.name}

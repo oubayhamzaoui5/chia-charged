@@ -60,7 +60,7 @@ export default function StatsGrid() {
           accentBg="#ECFDF5"
         />
         <StatCard
-          label="Returned Orders"
+          label="Refunded Orders"
           value={data.returned.count}
           growth={data.returned.countGrowth}
           isReverseTrend
@@ -81,7 +81,7 @@ export default function StatsGrid() {
           accentBg="#ECFDF5"
         />
         <StatCard
-          label="Total Returns"
+          label="Total Refunded"
           value={data.returned.sales}
           growth={data.returned.salesGrowth}
           isCurrency

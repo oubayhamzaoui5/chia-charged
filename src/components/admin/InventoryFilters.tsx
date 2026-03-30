@@ -25,7 +25,7 @@ export default function InventoryFilters({
       <div className="relative w-full flex-1">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#9CA3AF' }} />
         <input
-          placeholder="Search by product name or reference..."
+          placeholder="Search by product name, count, or flavor..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all"
@@ -55,7 +55,7 @@ export default function InventoryFilters({
         className="rounded-xl px-4 py-2.5 text-sm outline-none"
         style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
       >
-        <option value="sku">Sort by reference</option>
+        <option value="sku">Sort by count + flavor</option>
         <option value="stock-asc">Stock: low to high</option>
         <option value="stock-desc">Stock: high to low</option>
       </select>

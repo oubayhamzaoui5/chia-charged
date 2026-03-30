@@ -90,15 +90,15 @@ export default function ProductsClient({
     return m
   }, [allCategories])
 
-  const relatedProductOptions = useMemo(() => {
-    return products
-      .filter((product) => product.isParent || !product.isVariant)
-      .map((product) => ({
+  const productOptions = useMemo(
+    () =>
+      products.map((product) => ({
         id: product.id,
         name: product.name,
         sku: product.sku,
-      }))
-  }, [products])
+      })),
+    [products]
+  )
 
   return (
     <div className="space-y-6 p-6 md:p-8">
@@ -131,7 +131,7 @@ export default function ProductsClient({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#9CA3AF' }} />
           <input
             type="text"
-            placeholder="Search by reference or name..."
+            placeholder="Search by SKU or name..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value)
@@ -306,7 +306,7 @@ export default function ProductsClient({
           hideCollectionToggle={Boolean(parent)}
           submitProduct={submitProduct}
           adding={adding}
-          relatedProductOptions={relatedProductOptions}
+          productOptions={productOptions}
           parentSku={parent?.sku}
         />
       )}

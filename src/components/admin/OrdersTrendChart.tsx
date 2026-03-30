@@ -116,15 +116,15 @@ export default function OrdersTrendChart() {
               </div>
             </button>
 
-            {/* Returned Toggle */}
+            {/* Refunded Toggle */}
             <button 
               onClick={() => setShowReturned(!showReturned)}
               className={`cursor-pointer group flex items-center gap-3 px-3 py-1 rounded-lg transition-all duration-200 active:scale-95 hover:bg-red-50 
                 ${showReturned ? 'opacity-100' : 'opacity-40 grayscale'}`}
-              title={showReturned ? "Hide returns" : "Show returns"}
+              title={showReturned ? "Hide refunded" : "Show refunded"}
             >
               <div className="text-right">
-                <p className="text-[10px] text-red-600 uppercase font-black tracking-wider">Returns</p>
+                <p className="text-[10px] text-red-600 uppercase font-black tracking-wider">Refunded</p>
                 <p className="text-base font-black text-red-700 leading-tight">{totals.returned}</p>
               </div>
             </button>
@@ -175,7 +175,7 @@ export default function OrdersTrendChart() {
               <Area 
                 type="monotone" 
                 dataKey="returned" 
-                name="Returns" 
+                name="Refunded" 
                 stroke="#ef4444" 
                 strokeWidth={3} 
                 fillOpacity={1} 

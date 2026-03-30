@@ -23,6 +23,15 @@ export default function InventoryClient({
     await updateProductStockAction(id, stock)
   })
 
+  function formatCountFlavor(count?: string | null, flavor?: string | null) {
+    const c = typeof count === 'string' ? count.trim() : ''
+    const f = typeof flavor === 'string' ? flavor.trim() : ''
+    if (c && f) return `${c} / ${f}`
+    if (c) return c
+    if (f) return f
+    return ''
+  }
+
   async function commitStock(productId: string, fallbackStock: number) {
     if (savingId) return
     const next = inv.draftStock ?? fallbackStock
@@ -119,7 +128,7 @@ export default function InventoryClient({
                           <div className="flex flex-col">
                             <span className="text-slate-800 font-medium text-sm">{p.name}</span>
                             <span className="text-slate-500 text-xs font-mono">
-                              {p.sku || '-'}
+                              {formatCountFlavor(p.count, p.flavor) || p.sku || '-'}
                             </span>
                           </div>
                         </div>
@@ -184,4 +193,3 @@ export default function InventoryClient({
     </div>
   )
 }
-

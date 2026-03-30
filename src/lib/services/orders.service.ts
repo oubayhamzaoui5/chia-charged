@@ -2,7 +2,6 @@ import 'server-only'
 
 import { getSession } from '@/lib/auth/server'
 import { createServerPb } from '@/lib/pb'
-import type { ProductListItem } from '@/lib/services/product.service'
 
 export type CustomerOrderStatus =
   | 'paid'
@@ -59,13 +58,6 @@ function escapePbString(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
 }
 
-function normalizeCategoryIds(record: Record<string, unknown>): string[] {
-  const raw = (record.categories ?? record.category ?? []) as unknown
-  if (Array.isArray(raw)) return raw.map(String).filter((id) => PB_ID_REGEX.test(id))
-  if (typeof raw === 'string' && PB_ID_REGEX.test(raw)) return [raw]
-  return []
-}
-
 function isOwnedByUser(record: Record<string, unknown>, userId: string): boolean {
   const ownerByUser = typeof record.user === 'string' ? record.user : ''
   return ownerByUser === userId
@@ -97,144 +89,6 @@ function productImageUrl(productId: string, filename: string): string {
     process.env.POCKETBASE_URL ??
     'http://127.0.0.1:8090'
   return `${base}/api/files/products/${productId}/${encodeURIComponent(filename)}`
-}
-
-function mapRecommendedProduct(record: Record<string, unknown>): ProductListItem {
-  const id = typeof record.id === 'string' ? record.id : ''
-  const price = Number(record.price ?? 0)
-  const rawPromo =
-    record.promoPrice === null || record.promoPrice === undefined
-      ? null
-      : Number(record.promoPrice)
-  const promoPrice =
-    rawPromo != null && Number.isFinite(rawPromo) && rawPromo > 0 && rawPromo < price ? rawPromo : null
-  const images = Array.isArray(record.images) ? record.images.filter((img): img is string => typeof img === 'string') : []
-  const stock = Number(record.stock ?? 0)
-
-  return {
-    id,
-    slug: String(record.slug ?? ''),
-    sku: String(record.sku ?? ''),
-    name: String(record.name ?? ''),
-    price,
-    promoPrice,
-    isActive: Boolean(record.isActive),
-    inView: record.inView === undefined || record.inView === null ? true : Boolean(record.inView),
-    description: String(record.description ?? ''),
-    images,
-    imageUrls: images.map((filename) => productImageUrl(id, filename)),
-    currency: String(record.currency ?? 'DT'),
-    categories: normalizeCategoryIds(record),
-    isNew: Boolean(record.isNew),
-    isVariant: Boolean(record.isVariant),
-    isParent: Boolean(record.isParent),
-    variantKey: (record.variantKey as Record<string, string> | undefined) ?? {},
-    stock,
-    inStock: stock > 0,
-  }
-}
-
-export async function getRecommendedProductsFromOrders(
-  orders: CustomerOrder[],
-  limit = 8
-): Promise<ProductListItem[]> {
-  if (limit <= 0) return []
-
-  const pb = createServerPb()
-  const orderedProductIds = Array.from(
-    new Set(
-      orders
-        .flatMap((order) => order.items)
-        .map((item) => item.productId)
-        .filter((id): id is string => typeof id === 'string' && PB_ID_REGEX.test(id))
-    )
-  )
-
-  const excludedFilter = orderedProductIds
-    .map((id) => `id != "${escapePbString(id)}"`)
-    .join(' && ')
-  const baseFilter =
-    `isActive = true && (inView = true || inView = null) && stock > 0` +
-    (excludedFilter ? ` && ${excludedFilter}` : '')
-
-  const pushUnique = (
-    target: ProductListItem[],
-    incoming: Array<Record<string, unknown>>
-  ) => {
-    const seen = new Set(target.map((item) => item.id))
-    for (const raw of incoming) {
-      const mapped = mapRecommendedProduct(raw)
-      if (!mapped.id || seen.has(mapped.id)) continue
-      target.push(mapped)
-      seen.add(mapped.id)
-      if (target.length >= limit) break
-    }
-  }
-
-  const recommended: ProductListItem[] = []
-
-  if (orderedProductIds.length > 0) {
-    try {
-      const orderedFilter = orderedProductIds
-        .map((id) => `id = "${escapePbString(id)}"`)
-        .join(' || ')
-
-      const orderedProducts = await pb.collection('products').getFullList(200, {
-        filter: orderedFilter,
-        fields: 'id,categories,category',
-        requestKey: null,
-      })
-
-      const preferredCategoryIds = Array.from(
-        new Set(
-          orderedProducts.flatMap((record) => normalizeCategoryIds(record as unknown as Record<string, unknown>))
-        )
-      )
-
-      if (preferredCategoryIds.length > 0) {
-        const categoryFilter = preferredCategoryIds
-          .map((id) => `categories ~ "${escapePbString(id)}" || category ~ "${escapePbString(id)}"`)
-          .join(' || ')
-
-        const byCategory = await pb.collection('products').getList(1, Math.max(limit * 3, 16), {
-          filter: `${baseFilter} && (${categoryFilter})`,
-          sort: '-created',
-          fields:
-            'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,variantKey,stock',
-          requestKey: null,
-        })
-
-        pushUnique(recommended, byCategory.items as unknown as Array<Record<string, unknown>>)
-      }
-    } catch {
-      // Keep fallback path responsive even if relation schema differs.
-    }
-  }
-
-  if (recommended.length < limit) {
-    const latest = await pb.collection('products').getList(1, Math.max(limit * 2, 16), {
-      filter: baseFilter,
-      sort: '-created',
-      fields:
-        'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,variantKey,stock',
-      requestKey: null,
-    })
-    pushUnique(recommended, latest.items as unknown as Array<Record<string, unknown>>)
-  }
-
-  // Final fallback: if strict exclusion leaves too few products, allow previously ordered items.
-  if (recommended.length < limit) {
-    const broadLatest = await pb.collection('products').getList(1, Math.max(limit * 3, 24), {
-      filter: 'isActive = true && (inView = true || inView = null) && stock > 0',
-      sort: '-created',
-      fields:
-        'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,variantKey,stock',
-      requestKey: null,
-    })
-    pushUnique(recommended, broadLatest.items as unknown as Array<Record<string, unknown>>)
-  }
-
-  return recommended.slice(0, limit)
 }
 
 async function resolvePreviewProduct(

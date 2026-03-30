@@ -16,12 +16,12 @@ export default function OrdersAuthRecoveryClient() {
       const pb = getClientPb(true)
 
       if (!pb.authStore.isValid || !pb.authStore.token || !pb.authStore.model?.id) {
-        router.replace('/login?next=%2Fcommandes')
+        router.replace('/login?next=%2Forders')
         return
       }
 
       if (attempted) {
-        router.replace('/login?next=%2Fcommandes')
+        router.replace('/login?next=%2Forders')
         return
       }
 
@@ -44,7 +44,7 @@ export default function OrdersAuthRecoveryClient() {
       }
 
       if (!cancelled) {
-        router.replace('/login?next=%2Fcommandes')
+        router.replace('/login?next=%2Forders')
       }
     }
 
@@ -57,7 +57,8 @@ export default function OrdersAuthRecoveryClient() {
 
   return (
     <div className="mx-auto flex min-h-[50vh] w-full max-w-4xl items-center justify-center px-4">
-      <p className="text-sm text-slate-500">Vérification de votre session...</p>
+      <p className="text-sm text-slate-500">Verifying your session...</p>
     </div>
   )
 }
+

@@ -6,9 +6,8 @@ import { Navbar } from '@/components/navbar'
 import Footer from '@/components/footer'
 import OrdersListClient from '@/app/orders/_components/orders-list.client'
 import type { CustomerOrder } from '@/lib/services/orders.service'
-import { getCurrentUserOrders, getRecommendedProductsFromOrders, OrdersServiceError } from '@/lib/services/orders.service'
+import { getCurrentUserOrders, OrdersServiceError } from '@/lib/services/orders.service'
 import OrdersAuthRecoveryClient from '@/app/orders/_components/orders-auth-recovery.client'
-import ShopProductCard from '@/app/shop/_components/shop-product-card'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
@@ -17,9 +16,8 @@ export const metadata: Metadata = {
   title: 'Chia Charged | My Orders',
 }
 
-export default async function CommandesPage() {
+export default async function OrdersPage() {
   let orders: CustomerOrder[] = []
-  let recommendedProducts: Awaited<ReturnType<typeof getRecommendedProductsFromOrders>> = []
   let unauthenticated = false
 
   try {
@@ -30,10 +28,6 @@ export default async function CommandesPage() {
     } else {
       throw error
     }
-  }
-
-  if (!unauthenticated) {
-    recommendedProducts = await getRecommendedProductsFromOrders(orders, 6)
   }
 
   return (
@@ -127,63 +121,6 @@ export default async function CommandesPage() {
               </div>
             ) : (
               <OrdersListClient orders={orders} />
-            )}
-
-            {recommendedProducts.length > 0 && (
-              <section className="mt-16">
-                <div className="mb-8 flex items-end justify-between">
-                  <div>
-                    <h2
-                      className="text-[1.8rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[2.5rem]"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                    >
-                      You Might{' '}
-                      <span
-                        style={{
-                          background: GRADIENT,
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                        }}
-                      >
-                        Like.
-                      </span>
-                    </h2>
-                    <p
-                      className="mt-2 text-xs font-black uppercase tracking-[0.12em]"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
-                    >
-                      Recommended based on your orders.
-                    </p>
-                  </div>
-                  <Link
-                    href="/shop"
-                    className="text-xs font-black uppercase tracking-wider"
-                    style={{
-                      fontFamily: FONT,
-                      fontWeight: 900,
-                      background: GRADIENT,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
-                    View more &#8594;
-                  </Link>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6 lg:grid-cols-3">
-                  {recommendedProducts.map((product, idx) => (
-                    <div key={product.id}>
-                      <ShopProductCard
-                        product={product}
-                        productHref={`/product/${product.slug}`}
-                        prioritizeImage={idx < 2}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
             )}
           </>
         )}

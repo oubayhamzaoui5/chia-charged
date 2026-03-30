@@ -11,17 +11,18 @@ const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50
 type Props = { orders: CustomerOrder[] }
 
 const statusConfig: Record<CustomerOrderStatus, { label: string; bg: string; text: string; icon: any }> = {
-  paid: { label: 'Payee', bg: '#E8F5E9', text: '#2E7D32', icon: CreditCard },
-  delivering: { label: 'En Livraison', bg: '#EDE7F6', text: '#6A1B9A', icon: Truck },
-  delivered: { label: 'Livree', bg: '#E3F2FD', text: '#1565C0', icon: PackageCheck },
-  refunded: { label: 'Remboursee', bg: '#FCE4EC', text: '#AD1457', icon: RotateCcw },
-  'on hold': { label: 'En Pause', bg: '#ECEFF1', text: '#37474F', icon: Pause },
+  paid: { label: 'Paid', bg: '#E8F5E9', text: '#2E7D32', icon: CreditCard },
+  delivering: { label: 'Out for delivery', bg: '#EDE7F6', text: '#6A1B9A', icon: Truck },
+  delivered: { label: 'Delivered', bg: '#E3F2FD', text: '#1565C0', icon: PackageCheck },
+  refunded: { label: 'Refunded', bg: '#FCE4EC', text: '#AD1457', icon: RotateCcw },
+  'on hold': { label: 'On hold', bg: '#ECEFF1', text: '#37474F', icon: Pause },
 }
 
 const rotations = ['-0.6deg', '0.4deg', '-0.3deg', '0.5deg', '-0.4deg']
 
 export default function OrdersListClient({ orders }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null)
+  const formatMoney = (value: number) => `$${value.toFixed(2)}`
 
   async function addAllToCart(order: CustomerOrder) {
     setBusyId(order.id)
@@ -46,8 +47,10 @@ export default function OrdersListClient({ orders }: Props) {
       {orders.map((order, i) => {
         const config = statusConfig[order.status]
         const totalQty = order.items.reduce((sum, item) => sum + item.quantity, 0)
+        const subtotal = order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
+        const deliveryFee = Math.max(0, order.totalAmount - subtotal)
         const primaryDate = order.status === 'delivered' ? order.updatedAt : order.createdAt
-        const dateLabel = order.status === 'delivered' ? 'Livree le' : 'Commandee le'
+        const dateLabel = order.status === 'delivered' ? 'Delivered on' : 'Ordered on'
         const rot = rotations[i % rotations.length]
 
         return (
@@ -109,7 +112,7 @@ export default function OrdersListClient({ orders }: Props) {
                     className="text-sm font-black"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    {new Date(primaryDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    {new Date(primaryDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
               </div>
@@ -119,14 +122,13 @@ export default function OrdersListClient({ orders }: Props) {
                   className="text-lg font-black"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  {order.totalAmount.toFixed(2)}
-                  <span className="ml-1 text-xs opacity-50">DT</span>
+                  {formatMoney(order.totalAmount)}
                 </p>
                 <p
                   className="text-[10px] font-black uppercase tracking-wider"
                   style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                 >
-                  {totalQty} article{totalQty > 1 ? 's' : ''}
+                  {totalQty} item{totalQty > 1 ? 's' : ''}
                 </p>
               </div>
             </div>
@@ -161,7 +163,7 @@ export default function OrdersListClient({ orders }: Props) {
                       className="text-[10px] font-bold uppercase tracking-wider"
                       style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}
                     >
-                      Ref: {item.sku || '-'}
+                      SKU: {item.sku || '-'}
                     </p>
                   </div>
                   <div className="flex items-center gap-4 pr-2">
@@ -175,8 +177,7 @@ export default function OrdersListClient({ orders }: Props) {
                       className="text-sm font-black"
                       style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                     >
-                      {item.unitPrice.toFixed(2)}
-                      <span className="ml-0.5 text-[9px] opacity-50">DT</span>
+                      {formatMoney(item.unitPrice)}
                     </span>
                   </div>
                 </div>
@@ -193,14 +194,13 @@ export default function OrdersListClient({ orders }: Props) {
                   className="text-[10px] font-black uppercase tracking-wider"
                   style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
                 >
-                  Livraison: <span style={{ color: '#111' }}>8.00 DT</span>
+                  Delivery: <span style={{ color: '#111' }}>{formatMoney(deliveryFee)}</span>
                 </p>
                 <p
                   className="mt-1 text-xl font-black"
                   style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                 >
-                  Total: {order.totalAmount.toFixed(2)}
-                  <span className="ml-1 text-sm opacity-50">DT</span>
+                  Total: {formatMoney(order.totalAmount)}
                 </p>
               </div>
               <button
@@ -215,7 +215,7 @@ export default function OrdersListClient({ orders }: Props) {
                 }}
               >
                 <ShoppingBag className="h-4 w-4" />
-                {busyId === order.id ? 'Ajout...' : 'Commander a nouveau'}
+                {busyId === order.id ? 'Adding...' : 'Order again'}
               </button>
             </div>
           </div>

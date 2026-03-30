@@ -48,47 +48,22 @@ export const fetchChartRowData = async () => {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  const sevenDaysAgo = new Date(now);
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-  
   const fourteenDaysAgo = new Date(now);
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 13);
-  
-  const pbDateLimit = fourteenDaysAgo.toISOString().replace('T', ' ').split('.')[0];
-  const pbSevenDayLimit = sevenDaysAgo.toISOString().replace('T', ' ').split('.')[0];
 
-  const [deliveredOrders, currentWeekOrders, totalCount, allProducts] = await Promise.all([
+  const pbDateLimit = fourteenDaysAgo.toISOString().replace('T', ' ').split('.')[0];
+
+  const [deliveredOrders, totalCount] = await Promise.all([
     pb.collection('orders').getFullList({
       filter: `(status = "paid" || status = "delivering" || status = "delivered") && created >= "${pbDateLimit}"`,
       fields: 'total,created',
     }),
-    pb.collection('orders').getFullList({
-      filter: `updated >= "${pbSevenDayLimit}"`,
-      fields: 'items,updated',
-    }),
     pb.collection('orders').getList(1, 1),
-    pb.collection('products').getFullList({
-      expand: 'category', 
-      fields: 'id,expand.category.name',
-    })
   ]);
-
-  const productToCategoriesMap: Record<string, string[]> = {};
-  allProducts.forEach(p => {
-    const expandedCats = p.expand?.category;
-    if (expandedCats) {
-      productToCategoriesMap[p.id] = Array.isArray(expandedCats) 
-        ? expandedCats.map((c: any) => c.name) 
-        : [expandedCats.name];
-    } else {
-      productToCategoriesMap[p.id] = ['Autre'];
-    }
-  });
 
   let currentWeekTotal = 0;
   let previousWeekTotal = 0;
   const salesByDay = new Array(7).fill(0);
-  const categoryCounts: Record<string, number> = {};
 
   deliveredOrders.forEach(order => {
     const orderDate = new Date(order.created);
@@ -103,59 +78,6 @@ export const fetchChartRowData = async () => {
     }
   });
 
-  currentWeekOrders.forEach(order => {
-    order.items?.forEach((item: any) => {
-      const pId = item.id || item.productId;
-      const cats = productToCategoriesMap[pId] || ['Inconnu'];
-      const quantity = Number(item.quantity) || 1;
-      cats.forEach(catName => {
-        categoryCounts[catName] = (categoryCounts[catName] || 0) + quantity;
-      });
-    });
-  });
-
-  const totalCategoryWeight = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
-  const sortedCats = Object.entries(categoryCounts).sort(([, a], [, b]) => b - a);
-  const colors = ['#3b82f6', '#22d3ee', '#f97316', '#94a3b8'];
-
-  const top3Raw = sortedCats.slice(0, 3);
-  const othersRaw = sortedCats.slice(3);
-
-  // 1. Prepare the final list of categories
-  const topCategories = top3Raw.map(([name, count], index) => ({
-    name,
-    count,
-    value: 0,
-    color: colors[index]
-  }));
-
-  if (othersRaw.length > 0) {
-    topCategories.push({
-      name: 'Autres',
-      count: othersRaw.reduce((sum, [, count]) => sum + count, 0),
-      value: 0,
-      color: colors[3]
-    });
-  }
-
-  // 2. Calculate percentages with 100% total correction
-  if (totalCategoryWeight > 0 && topCategories.length > 0) {
-    let runningSum = 0;
-    
-    topCategories.forEach(cat => {
-      cat.value = Math.round((cat.count / totalCategoryWeight) * 100);
-      runningSum += cat.value;
-    });
-
-    const difference = 100 - runningSum;
-    
-    if (difference !== 0) {
-      // Adjust the category with the highest count (first in the list)
-      // to make the total exactly 100.
-      topCategories[0].value += difference;
-    }
-  }
-
   let growth = 0;
   if (previousWeekTotal > 0) growth = ((currentWeekTotal - previousWeekTotal) / previousWeekTotal) * 100;
   else if (currentWeekTotal > 0) growth = 100;
@@ -165,10 +87,8 @@ export const fetchChartRowData = async () => {
     weeklySalesData: salesByDay,
     totalOrders: totalCount.totalItems,
     salesGrowth: parseFloat(growth.toFixed(1)),
-    topCategories 
   };
 };
-
 export const fetchExtendedStats = async () => {
   const pb = getPb();
   const now = new Date();
@@ -207,8 +127,11 @@ export const fetchExtendedStats = async () => {
     const target = isCurrentMonth ? stats.current : stats.previous;
     
     target.total++;
-    if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') {
+    if (order.status === 'delivered') {
       target.delCount++;
+    }
+
+    if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') {
       target.delSales += amount;
     } else if (order.status === 'refunded') {
       target.retCount++;
@@ -264,7 +187,7 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
   try {
     const orders = await pb.collection('orders').getFullList({
-      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && (status = "paid" || status = "delivering" || status = "delivered" || status = "refunded")`,
+      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && (status = "delivered" || status = "refunded")`,
       fields: 'status,created',
       sort: 'updated'
     });
@@ -283,7 +206,7 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
       orders.forEach(order => {
         const dayIndex = new Date(order.created).getDate() - 1;
-        if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') deliveredData[dayIndex]++;
+        if (order.status === 'delivered') deliveredData[dayIndex]++;
         else if (order.status === 'refunded') returnedData[dayIndex]++;
       });
     } else {
@@ -294,7 +217,7 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
       orders.forEach(order => {
         const monthIndex = new Date(order.created).getMonth();
-        if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') deliveredData[monthIndex]++;
+        if (order.status === 'delivered') deliveredData[monthIndex]++;
         else if (order.status === 'refunded') returnedData[monthIndex]++;
       });
     }

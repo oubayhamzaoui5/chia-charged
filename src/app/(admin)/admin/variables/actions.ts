@@ -13,31 +13,23 @@ export async function createVariableAction(formData: FormData) {
   const type = String(formData.get('type') ?? '').trim()
 
   if (!name) throw new Error('Variable name is required')
-  if (type !== 'color' && type !== 'image') throw new Error('Invalid variable type')
+  if (type !== 'image') throw new Error('Only image variables are supported')
 
   const safe = new FormData()
   safe.set('name', name)
-  safe.set('type', type)
+  safe.set('type', 'image')
 
-  if (type === 'color') {
-    const color = String(formData.get('color') ?? '').trim()
-    if (!color) throw new Error('Color value is required')
-    safe.set('color', color)
+  const image = formData.get('image')
+  if (!(image instanceof File) || image.size === 0) {
+    throw new Error('Image file is required')
   }
-
-  if (type === 'image') {
-    const image = formData.get('image')
-    if (!(image instanceof File) || image.size === 0) {
-      throw new Error('Image file is required')
-    }
-    if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
-      throw new Error('File type not allowed. Use JPEG, PNG, WEBP, or GIF.')
-    }
-    if (image.size > MAX_IMAGE_BYTES) {
-      throw new Error('File is too large. Maximum size: 5 MB.')
-    }
-    safe.set('image', image)
+  if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
+    throw new Error('File type not allowed. Use JPEG, PNG, WEBP, or GIF.')
   }
+  if (image.size > MAX_IMAGE_BYTES) {
+    throw new Error('File is too large. Maximum size: 5 MB.')
+  }
+  safe.set('image', image)
 
   const { pb } = await getAdminPbForAction()
   const created = await pb.collection('variables').create(safe)

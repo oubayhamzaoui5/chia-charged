@@ -3,7 +3,7 @@ import { Navbar } from '@/components/navbar'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 
-export default function CommandesLoading() {
+export default function OrdersLoading() {
   return (
     <div
       className="min-h-screen"

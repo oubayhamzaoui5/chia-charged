@@ -13,7 +13,6 @@ import type {
   CategoryOption,
   EditState,
   ID,
-  ProductDetail,
 } from '@/types/product.types'
 
 function parseNumericInput(value: string): number | null {
@@ -150,8 +149,6 @@ export function useProducts({
     existing: [] as string[],
     files: [] as File[],
     categories: [] as string[],
-    details: [] as ProductDetail[],
-    relatedProducts: [] as string[],
   })
 
   const [isVariant, setIsVariant] = useState(false)
@@ -174,8 +171,6 @@ export function useProducts({
       existing: [],
       files: [],
       categories: [],
-      details: [],
-      relatedProducts: [],
     })
     setIsVariant(false)
     setIsParent(false)
@@ -204,10 +199,6 @@ export function useProducts({
         categories: Array.isArray(parent.categories)
           ? parent.categories.slice()
           : normalizeRelationIds(parent.expand?.category),
-        details: Array.isArray(parent.details)
-          ? parent.details.map((item) => ({ label: item.label ?? '', value: item.value ?? '' }))
-          : [],
-        relatedProducts: Array.isArray(parent.relatedProducts) ? parent.relatedProducts.slice() : [],
       })
       setParentId(parent.id)
       setIsVariant(true)
@@ -215,7 +206,7 @@ export function useProducts({
       setVariantKey({})
     } else {
       resetForm()
-      setIsParent(true)
+      setIsParent(false)
     }
 
     setOpen(true)
@@ -237,10 +228,6 @@ export function useProducts({
       existing: Array.isArray(p.images) ? p.images.slice() : [],
       files: [],
       categories: Array.isArray(p.categories) ? p.categories.slice() : [],
-      details: Array.isArray(p.details)
-        ? p.details.map((item) => ({ label: item.label ?? '', value: item.value ?? '' }))
-        : [],
-      relatedProducts: Array.isArray(p.relatedProducts) ? p.relatedProducts.slice() : [],
     })
     setIsVariant(p.isVariant ?? false)
     setIsParent(p.isParent ?? (!p.isVariant && !p.parent))
@@ -251,7 +238,7 @@ export function useProducts({
 
   // Create product
   const create = useCallback(
-    async (fd: FormData, categories: string[], relatedProducts: string[]) => {
+    async (fd: FormData, categories: string[]) => {
       setAdding(true)
       try {
         const rec = await createProductAction(fd)
@@ -260,7 +247,6 @@ export function useProducts({
         const normalized: Product = {
           ...rec,
           categories,
-          relatedProducts,
         }
 
         setProducts((prev) => [normalized, ...prev])
@@ -279,7 +265,7 @@ export function useProducts({
 
   // Update product
   const update = useCallback(
-    async (id: ID, fd: FormData, updatedCategories: string[], updatedRelatedProducts: string[]) => {
+    async (id: ID, fd: FormData, updatedCategories: string[]) => {
       setAdding(true)
       try {
         const rec = await updateProductAction(id, fd)
@@ -290,7 +276,6 @@ export function useProducts({
               ? {
                   ...rec,
                   categories: updatedCategories,
-                  relatedProducts: updatedRelatedProducts,
                 }
               : p
           )
@@ -397,30 +382,11 @@ export function useProducts({
     fd.set('isActive', String(form.isActive))
     fd.set('inView', String(form.inView))
     fd.set('currency', form.currency || 'DT')
-    fd.set(
-      'details',
-      JSON.stringify(
-        form.details
-          .map((item) => ({
-            label: item.label.trim(),
-            value: item.value.trim(),
-          }))
-          .filter((item) => item.label || item.value)
-      )
-    )
     if (form.categories.length === 0) {
       fd.set('category', '')
     } else {
       for (const categoryId of form.categories) {
         fd.append('category', categoryId)
-      }
-    }
-    fd.delete('related_products')
-    if (form.relatedProducts.length === 0) {
-      fd.set('related_products', '')
-    } else {
-      for (const relatedId of form.relatedProducts) {
-        fd.append('related_products', relatedId)
       }
     }
 
@@ -433,16 +399,30 @@ export function useProducts({
     fd.set('parent', parentId ?? '')
     fd.set('variantKey', JSON.stringify(sanitizeVariantKey(variantKey)))
 
-    for (const file of form.files) {
-      fd.append('images', file)
-    }
-
     if (editState.mode === 'create') {
-      await create(fd, form.categories, form.relatedProducts)
+      for (const file of form.files) {
+        fd.append('images', file)
+      }
+      await create(fd, form.categories)
       return
     }
 
-    await update(editState.id, fd, form.categories, form.relatedProducts)
+    // For edit, send the full desired image state:
+    // - keep existing filenames that remain
+    // - append newly uploaded files
+    // This prevents PocketBase from replacing images with only the new files.
+    if (form.existing.length === 0 && form.files.length === 0) {
+      fd.set('images', '')
+    } else {
+      for (const existingFilename of form.existing) {
+        fd.append('images', existingFilename)
+      }
+      for (const file of form.files) {
+        fd.append('images', file)
+      }
+    }
+
+    await update(editState.id, fd, form.categories)
   }, [
     create,
     editState,

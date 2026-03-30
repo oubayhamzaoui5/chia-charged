@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Pencil, Trash2,Eye, EyeOff  } from "lucide-react"
+import { Pencil, Trash2, Eye, EyeOff, Plus } from "lucide-react"
 
 import Card from "@/components/admin/card"
 import ProductVariantField from "./ProductVariantField"
@@ -84,10 +84,10 @@ export default function ProductCard({
       <div className="mt-3 flex flex-1 flex-col">
         <h3 className="truncate text-base font-semibold">{p.name}</h3>
 
-        {/* Reference + Actions */}
+        {/* SKU + Actions */}
         <div className="flex items-center justify-between">
           <p className="text-xs font-mono text-foreground/60">
-            Reference: {p.sku}
+            SKU: {p.sku}
           </p>
 
           <div className="flex gap-1">
@@ -176,12 +176,13 @@ export default function ProductCard({
       </div>
 
       {/* VARIANTS PAGE LINK */}
-      {p.isParent && (
+      {p.isParent && p.isVariant && (
         <Link
           href={`/admin/products/${p.id}/variants`}
-          className="absolute top-2 right-2 h-6 w-6 flex items-center justify-center rounded-full bg-blue-600 text-white"
+          aria-label="Open variants"
+          className="absolute top-2 right-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white"
         >
-          +
+          <Plus className="h-3.5 w-3.5" />
         </Link>
       )}
     </Card>

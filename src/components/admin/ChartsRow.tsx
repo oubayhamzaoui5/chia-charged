@@ -6,7 +6,6 @@ import { getChartRowDataAction } from '@/app/(admin)/admin/dashboard/actions';
 export default function ChartsRow() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
   // 1. Generate dynamic labels based on today's date
@@ -60,28 +59,8 @@ export default function ChartsRow() {
 
   const maxSale = Math.max(...(data.weeklySalesData || [1]), 1);
 
-  const getSegmentPath = (startAngle: number, endAngle: number, innerRadius: number, outerRadius: number) => {
-    const startX = 18 + outerRadius * Math.cos(startAngle);
-    const startY = 18 + outerRadius * Math.sin(startAngle);
-    const endX = 18 + outerRadius * Math.cos(endAngle);
-    const endY = 18 + outerRadius * Math.sin(endAngle);
-    const innerStartX = 18 + innerRadius * Math.cos(startAngle);
-    const innerStartY = 18 + innerRadius * Math.sin(startAngle);
-    const innerEndX = 18 + innerRadius * Math.cos(endAngle);
-    const innerEndY = 18 + innerRadius * Math.sin(endAngle);
-    const largeArcFlag = endAngle - startAngle > Math.PI ? 1 : 0;
-    
-    return `
-      M ${startX} ${startY}
-      A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${endX} ${endY}
-      L ${innerEndX} ${innerEndY}
-      A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStartX} ${innerStartY}
-      Z
-    `;
-  };
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div className="mb-8">
       {/* Weekly Sales */}
       <div className="rounded-2xl bg-white p-6" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
         <div className="flex items-center gap-2 mb-4">
@@ -131,74 +110,6 @@ export default function ChartsRow() {
                 </div>
               );
             })}
-          </div>
-        </div>
-      </div>
-
-      {/* Top Categories */}
-      <div className="rounded-2xl bg-white p-6" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-        <h3 className="font-semibold mb-6" style={{ color: '#111827' }}>Top Categories</h3>
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-3 w-full max-w-[220px]">
-            {data.topCategories.map((item: any) => (
-              <div 
-                key={item.name} 
-                className="flex items-center justify-between cursor-pointer transition-opacity duration-200 hover:opacity-70"
-                onMouseEnter={() => setHoveredCategory(item.name)}
-                onMouseLeave={() => setHoveredCategory(null)}
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                  <span className="text-slate-600 text-sm font-medium truncate">{item.name}</span>
-                </div>
-                <span className="text-slate-400 text-sm font-semibold">{item.value}%</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="relative w-32 h-32 mr-4">
-            {hoveredCategory && (
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 py-1.5 rounded-lg text-sm font-bold border border-slate-100 whitespace-nowrap pointer-events-none z-10 shadow-md">
-                {hoveredCategory}: {data.topCategories.find((c: any) => c.name === hoveredCategory)?.count}
-              </div>
-            )}
-            
-            <svg 
-              className="w-full h-full transform -rotate-90" 
-              viewBox="0 0 36 36"
-              onMouseLeave={() => setHoveredCategory(null)}
-            >
-              <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="transparent" strokeWidth="3.8" pointerEvents="all" />
-              {(() => {
-                let cumulativeAngle = 0;
-                return data.topCategories.map((item: any, index: number) => {
-                  const percentage = item.value / 100;
-                  const startAngle = (cumulativeAngle * 2 * Math.PI);
-                  const endAngle = ((cumulativeAngle + percentage) * 2 * Math.PI);
-                  cumulativeAngle += percentage;
-                  
-                  const isHovered = hoveredCategory === item.name;
-                  const path = getSegmentPath(startAngle, endAngle, 12.1, 15.9);
-                  
-                  return (
-                    <g key={index}>
-                      <path d={getSegmentPath(startAngle, endAngle, 10, 18)} fill="transparent" className="cursor-pointer" onMouseEnter={() => setHoveredCategory(item.name)} pointerEvents="all" />
-                      <path
-                        d={path}
-                        fill={item.color}
-                        className="transition-all duration-200 pointer-events-none"
-                        style={{ 
-                          opacity: hoveredCategory && !isHovered ? 0.4 : 1,
-                          filter: isHovered ? 'brightness(1.15)' : 'none',
-                          transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                          transformOrigin: 'center'
-                        }}
-                      />
-                    </g>
-                  );
-                });
-              })()}
-            </svg>
           </div>
         </div>
       </div>

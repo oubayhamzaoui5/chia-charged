@@ -113,8 +113,8 @@ export async function POST(request: NextRequest) {
           : Number(product.price)
       return {
         productId: item.productId,
-        name: String(product.name) || item.name,
-        sku: String(product.sku || item.sku),
+        name: item.name || String(product.name) || 'Product',
+        sku: item.sku || String(product.sku || ''),
         unitPrice: serverPrice,
         quantity: item.quantity,
       }

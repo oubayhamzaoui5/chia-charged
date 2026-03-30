@@ -25,8 +25,10 @@ export function useInventory(initialProducts: ProductStock[], updateStockOnServe
     const q = query.toLowerCase()
 
     const result = items.filter((p) => {
+      const countFlavor = [p.count, p.flavor].filter(Boolean).join(' ').toLowerCase()
       const matchSearch =
         p.name.toLowerCase().includes(q) ||
+        countFlavor.includes(q) ||
         (p.sku ?? '').toLowerCase().includes(q)
 
       const matchCategory =
@@ -44,7 +46,11 @@ export function useInventory(initialProducts: ProductStock[], updateStockOnServe
 
       default:
         return [...result].sort((a, b) =>
-          (a.sku ?? '').localeCompare(b.sku ?? '', undefined, { numeric: true })
+          [a.count, a.flavor, a.sku].filter(Boolean).join(' ').localeCompare(
+            [b.count, b.flavor, b.sku].filter(Boolean).join(' '),
+            undefined,
+            { numeric: true }
+          )
         )
     }
   }, [items, query, sortBy, categoryFilter])
