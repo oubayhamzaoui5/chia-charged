@@ -28,7 +28,7 @@ function getAppUrl(req: NextRequest) {
 
   if (!envUrl) return normalizedRequestOrigin || 'http://localhost:3000'
 
-  if (isLocalHostLike(envUrl) && normalizedRequestOrigin && !isLocalHostLike(normalizedRequestOrigin)) {
+  if (normalizedRequestOrigin && isLocalHostLike(normalizedRequestOrigin)) {
     return normalizedRequestOrigin
   }
 
@@ -100,8 +100,8 @@ export async function POST(req: NextRequest) {
           : Number(product.price)
       return {
         productId: item.productId,
-        name: String(product.name) || item.name,
-        sku: String(product.sku || item.sku),
+        name: item.name || String(product.name) || 'Product',
+        sku: item.sku || String(product.sku || ''),
         unitPrice: serverPrice,
         quantity: item.quantity,
       }

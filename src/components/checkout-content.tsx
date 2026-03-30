@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import {
@@ -214,6 +214,9 @@ export function CheckoutContent() {
   const [postalCode, setPostalCode] = useState("")
   const [notes, setNotes] = useState("")
 
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true)
+  const lastScrollYRef = useRef(0)
+
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [authUserId, setAuthUserId] = useState<string | null>(null)
   const [addresses, setAddresses] = useState<UserAddress[]>([])
@@ -226,6 +229,19 @@ export function CheckoutContent() {
   const [isPromoBannerVisible, setIsPromoBannerVisible] = useState(false)
   const [orderFlowStage, setOrderFlowStage] = useState<"idle" | "loading" | "success">("idle")
   const [stripeConfigured, setStripeConfigured] = useState(false)
+
+  useEffect(() => {
+    const threshold = 8
+    const onScroll = () => {
+      const currentY = window.scrollY
+      const delta = currentY - lastScrollYRef.current
+      if (delta > threshold) setIsNavbarVisible(false)
+      else if (delta < -threshold) setIsNavbarVisible(true)
+      lastScrollYRef.current = currentY
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   // Load Stripe config
   useEffect(() => {
@@ -510,11 +526,13 @@ export function CheckoutContent() {
       Boolean(
         firstName.trim() &&
         lastName.trim() &&
+        country.trim() &&
         address.trim() &&
         city.trim() &&
-        country.trim()
+        isPostalCodeValid &&
+        (country !== "US" || state.trim())
       ),
-    [firstName, lastName, address, city, country]
+    [firstName, lastName, country, address, city, isPostalCodeValid, state]
   )
 
   const syncEmailToProfile = async (showError = true) => {
@@ -972,6 +990,21 @@ export function CheckoutContent() {
                   <input type="text" className={inputCls} style={inputStyle} placeholder="Suite, unit, building, floor..." value={address2} onChange={(e) => setAddress2(e.target.value)} />
                 </div>
 
+                <div>
+                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                    {country === "US" ? "State" : "State / Province / Region"}
+                    {country === "US" && <span style={{ color: '#C62828' }}> *</span>}
+                  </label>
+                  {country === "US" ? (
+                    <select className={inputCls} style={inputStyle} value={state} onChange={(e) => setState(e.target.value)}>
+                      <option value="">Select state...</option>
+                      {US_STATES.map((s) => (<option key={s.code} value={s.code}>{s.name}</option>))}
+                    </select>
+                  ) : (
+                    <input type="text" className={inputCls} style={inputStyle} placeholder="State / Province / Region" value={state} onChange={(e) => setState(e.target.value)} />
+                  )}
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
@@ -996,21 +1029,6 @@ export function CheckoutContent() {
                       }}
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
-                    {country === "US" ? "State" : "State / Province / Region"}
-                    {country === "US" && <span style={{ color: '#C62828' }}> *</span>}
-                  </label>
-                  {country === "US" ? (
-                    <select className={inputCls} style={inputStyle} value={state} onChange={(e) => setState(e.target.value)}>
-                      <option value="">Select state...</option>
-                      {US_STATES.map((s) => (<option key={s.code} value={s.code}>{s.name}</option>))}
-                    </select>
-                  ) : (
-                    <input type="text" className={inputCls} style={inputStyle} placeholder="State / Province / Region" value={state} onChange={(e) => setState(e.target.value)} />
-                  )}
                 </div>
 
                 <div>
@@ -1062,7 +1080,7 @@ export function CheckoutContent() {
                       <div className="m-auto mt-[2px] h-1.5 w-1.5 bg-white" style={{ borderRadius: '50%' }} />
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>
-                      Credit / Debit Card
+                      Credit Card
                     </span>
                     <span className="ml-auto flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider" style={{ background: '#635BFF', color: '#fff', fontFamily: FONT }}>
                       <svg width="10" height="10" viewBox="0 0 32 32" fill="none"><path d="M14.2 12.6c0-1.1.9-1.5 2.3-1.5 2.1 0 4.7.6 6.8 1.7V7.3C21.1 6.5 18.8 6 16.5 6 11.2 6 7.7 8.7 7.7 13c0 6.5 9 5.5 9 8.3 0 1.3-1.1 1.7-2.6 1.7-2.3 0-5.2-.9-7.5-2.2v5.6c2.6 1.1 5.2 1.6 7.5 1.6 5.4 0 9.2-2.7 9.2-7.1-.1-7-9.1-5.8-9.1-8.3z" fill="white"/></svg>
@@ -1098,7 +1116,14 @@ export function CheckoutContent() {
           </div>
 
           {/* RIGHT COLUMN — Order Summary */}
-          <aside className={`lg:sticky ${isPromoBannerVisible ? "lg:top-32" : "lg:top-28"} space-y-5`}>
+          <aside
+            className="lg:sticky space-y-5 transition-[top] duration-300"
+            style={{
+              top: isNavbarVisible
+                ? isPromoBannerVisible ? '8rem' : '7rem'
+                : '1rem',
+            }}
+          >
             <div
               className="overflow-hidden"
               style={{ border: '4px solid #111', borderRadius: '2px', boxShadow: '6px 6px 0 #111' }}

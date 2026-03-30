@@ -22,6 +22,9 @@ export type OrderItem = {
   sku?: string
   unitPrice?: number
   quantity?: number
+  imageUrl?: string
+  count?: string
+  flavor?: string
 }
 
 export type OrderRecord = {
@@ -36,8 +39,13 @@ export type OrderRecord = {
   isGuest: boolean
   location: string
   userName: string
+  firstName?: string
+  lastName?: string
   address?: string
   city?: string
+  state?: string
+  country?: string
+  email?: string
   phone?: string
   postalCode?: string
   notes?: string

@@ -2,9 +2,8 @@
 
 import { useMemo, useState, useRef, useEffect, Fragment } from 'react'
 import { createPortal } from 'react-dom'
-import Link from 'next/link'
 import EmptyState from '@/components/admin/empty-state'
-import { Trash2, ChevronDown, ChevronUp, Pause, ShoppingCart, CheckCircle2, Truck, Search, ExternalLink, Download } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronUp, Pause, ShoppingCart, CheckCircle2, Truck, Search, Download } from 'lucide-react'
 import type { OrderRecord, OrderStatus } from '@/types/order.types'
 import { deleteOrderAction, updateOrderStatusAction } from './actions'
 import { useAdminToast } from '@/components/admin/AdminToast'
@@ -93,6 +92,94 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
     'on hold': 'On hold',
   }
 
+  function extractCountAndFlavor(name?: string, sku?: string) {
+    const raw = `${name ?? ''} ${sku ?? ''}`.trim()
+    const normalized = raw
+      .toLowerCase()
+      .replace(/[_|/\\-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    const countPatterns = [
+      /(\d+\s*(?:servings?|srv|capsules?|sachets?|packs?|ct|count|pcs?|units?|g|kg|ml|l|oz|lb))/i,
+      /(\d+)(?=(?:servings?|srv|capsules?|sachets?|packs?|ct|count|pcs?|units?|g|kg|ml|l|oz|lb)\b)/i,
+      /\b(x\s*\d+|\d+\s*x)\b/i,
+    ]
+
+    let count: string | undefined
+    for (const pattern of countPatterns) {
+      const match = normalized.match(pattern)
+      if (match?.[1]) {
+        const value = match[1].replace(/\s+/g, ' ').trim()
+        count = /^\d+$/.test(value) ? `${value} count` : value
+        break
+      }
+    }
+
+    const flavorCandidates = [
+      'chocolate chip',
+      'cookies and cream',
+      'strawberry',
+      'vanilla',
+      'banana',
+      'mango',
+      'berry',
+      'chocolate',
+      'chocolat',
+      'choco',
+      'fraise',
+      'framboise',
+      'vanille',
+    ]
+
+    let flavor = flavorCandidates.find((candidate) => normalized.includes(candidate))
+
+    if (!flavor) {
+      const tokens = normalized.split(' ')
+      const stopWords = new Set([
+        'chia',
+        'charged',
+        'protein',
+        'pudding',
+        'pack',
+        'count',
+        'serving',
+        'servings',
+        'ct',
+        'sku',
+      ])
+
+      for (const token of tokens) {
+        if (
+          token.length >= 4 &&
+          !/\d/.test(token) &&
+          !stopWords.has(token) &&
+          !count?.includes(token)
+        ) {
+          flavor = token
+          break
+        }
+      }
+    }
+
+    return { count, flavor }
+  }
+
+  function formatCountFlavor(count?: string, flavor?: string) {
+    const normalizedFlavor = flavor
+      ? flavor
+          .split(' ')
+          .filter(Boolean)
+          .map((part) => part[0]!.toUpperCase() + part.slice(1))
+          .join(' ')
+      : ''
+
+    if (count && normalizedFlavor) return `Count: ${count} | Flavor: ${normalizedFlavor}`
+    if (count) return `Count: ${count}`
+    if (normalizedFlavor) return `Flavor: ${normalizedFlavor}`
+    return ''
+  }
+
   function exportOrdersCsv() {
     if (sortedOrders.length === 0) {
       toast('No orders to export.', 'error')
@@ -103,7 +190,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
       'Order ID',
       'Date',
       'Customer',
-      'Phone',
+      'Email',
       'Address',
       'City',
       'Postal Code',
@@ -124,7 +211,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
         order.id,
         new Date(order.created).toISOString(),
         order.userName || 'Guest',
-        order.phone || '',
+        order.email || '',
         order.address || '',
         order.city || '',
         order.postalCode || '',
@@ -334,9 +421,9 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
                   <span className="font-semibold" style={{ color: '#4F46E5' }}>
                     {order.userName || 'Guest'}
                   </span>
-                  {order.phone && (
+                  {order.email && (
                     <span className="text-xs text-slate-500 mt-0.5">
-                      {order.phone}
+                      {order.email}
                     </span>
                   )}
                 </div>
@@ -390,131 +477,134 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
             </tr>
 
             {expandedId === order.id && (
-              <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #F0F2F5' }}>
-                <td colSpan={8} className="px-6 py-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <tr style={{ borderBottom: '1px solid #F0F2F5' }}>
+                <td colSpan={8} className="px-6 py-6" style={{ background: '#FAFBFF' }}>
+                  <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EAED', background: '#FFFFFF', boxShadow: '0 2px 12px rgba(79,70,229,0.06)' }}>
 
-                    <div>
-                      <span className="text-slate-500 block mb-1 text-xs font-medium">
-                        Customer
-                      </span>
-                      <span className="text-slate-800">
-                        {order.userName || 'Guest'}
-                        <span className="ml-1 text-slate-600">
-                          ({order.user ? 'Account' : 'Guest'}
-                          {verifiedIcon(order.user?.verif)})
-                        </span>
-                      </span>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <span className="text-slate-500 block mb-1 text-xs font-medium">
-                        Phone
-                      </span>
-                      <span className="text-slate-800">
-                        {order.phone || '-'}
-                      </span>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <span className="text-slate-500 block mb-1 text-xs font-medium">
-                        Date
-                      </span>
-                      <span className="text-slate-800">
-                        {new Date(order.created).toLocaleString('en-US')}
-                      </span>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <span className="text-slate-500 block mb-1 text-xs font-medium">
-                        Address
-                      </span>
-                      <span className="text-slate-800">
-                        {order.address}, {order.city} {order.postalCode}
-                      </span>
-                    </div>
-
-                    {order.notes && (
-                      <div className="md:col-span-2">
-                        <span className="text-slate-500 block mb-1 text-xs font-medium">
-                          Note
-                        </span>
-                        <span className="text-slate-800">
-                          {order.notes}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="md:col-span-2">
-                      <span className="text-slate-500 block mb-1 text-xs font-medium">
-                        Payment
-                      </span>
-                      <span className="text-slate-800 uppercase">
-                        {order.paymentMode || '-'}
-                      </span>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <span className="text-slate-500 block mb-2 text-xs font-medium">
-                        Items
-                      </span>
-                      <div className="space-y-2">
-                        {order.items?.map((item, i) => (
-                          <div
-                            key={i}
-                            className="flex justify-between text-slate-700 bg-white px-3 py-2 rounded-lg"
-                          >
-                            <span>
-                              {item.quantity ?? 1} x {item.name}{' '}
-                              <span className="text-slate-500">
-                                ({item.sku})
-                              </span>
-                            </span>
-                            <span className="font-medium">
-                              ${(Number(item.unitPrice ?? 0) *
-                                (item.quantity ?? 1)
-                              ).toFixed(2)}
-                            </span>
+                    {/* Top band: customer + meta */}
+                    <div className="flex flex-wrap items-start gap-6 px-6 py-5" style={{ borderBottom: '1px solid #F0F2F5' }}>
+                      {/* Avatar + name */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center justify-center rounded-full text-sm font-bold shrink-0"
+                          style={{ width: 40, height: 40, background: 'linear-gradient(135deg,#EEF2FF,#E0E7FF)', color: '#4F46E5' }}>
+                          {(order.userName || 'G').charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-semibold text-sm" style={{ color: '#111827' }}>
+                            {order.userName || 'Guest'}
+                            {verifiedIcon(order.user?.verif)}
                           </div>
-                        ))}
+                          <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>{order.email || '—'}</div>
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="hidden md:block self-stretch" style={{ width: 1, background: '#F0F2F5' }} />
+
+                      {/* Meta chips */}
+                      <div className="flex flex-wrap gap-16 text-xs">
+                        <div className="flex flex-col gap-1">
+                          <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Date</span>
+                          <span style={{ color: '#374151', fontWeight: 500 }}>{new Date(order.created).toLocaleString('en-US')}</span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Account type</span>
+                          <span style={{ color: '#374151', fontWeight: 500 }}>{order.user ? 'Registered' : 'Guest'}</span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Payment</span>
+                          <span style={{ color: '#374151', fontWeight: 500, textTransform: 'uppercase' }}>{order.paymentMode || '—'}</span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Address</span>
+                          <span style={{ color: '#374151', fontWeight: 500 }}>
+                            {[order.address, order.city, order.postalCode, order.state, order.country].filter(Boolean).join(', ')}
+                          </span>
+                        </div>
+                        {order.phone && (
+                          <div className="flex flex-col gap-1">
+                            <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Phone</span>
+                            <span style={{ color: '#374151', fontWeight: 500 }}>{order.phone}</span>
+                          </div>
+                        )}
+                        {order.notes && (
+                          <div className="flex flex-col gap-1">
+                            <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Note</span>
+                            <span style={{ color: '#374151', fontWeight: 500 }}>{order.notes}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="md:col-span-2 pt-3 border-t border-slate-200">
-                      {(() => {
-                        const subtotal = order.items?.reduce((sum, item) => sum + (Number(item.unitPrice ?? 0) * (item.quantity ?? 1)), 0) ?? 0
-                        const shipping = order.total - subtotal
-                        return (
-                          <>
-                            {shipping > 0 && (
-                              <div className="flex justify-between text-slate-700 mb-2">
-                                <span>Shipping</span>
-                                <span className="font-medium">
-                                  ${shipping.toFixed(2)}
-                                </span>
+                    {/* Items list */}
+                    <div className="px-6 py-4">
+                      <div className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9CA3AF' }}>Items</div>
+                      <div className="space-y-2">
+                        {order.items?.map((item, i) => {
+                          const parsed = extractCountAndFlavor(item.name, item.sku)
+                          const countFlavor =
+                            formatCountFlavor(item.count, item.flavor) ||
+                            formatCountFlavor(parsed.count, parsed.flavor)
+                          return (
+                            <div
+                              key={i}
+                              className="flex items-center justify-between gap-4"
+                              style={{
+                                background: '#F9FAFB',
+                                border: '1px solid #F0F2F5',
+                                borderRadius: 12,
+                                padding: '10px 14px',
+                              }}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="shrink-0 rounded-lg overflow-hidden" style={{ width: 44, height: 44, border: '1px solid #E8EAED' }}>
+                                  <img
+                                    src={item.imageUrl || '/placeholder-square.webp'}
+                                    alt={item.name || 'Product'}
+                                    className="w-full h-full object-cover"
+                                    onError={e => { e.currentTarget.src = '/placeholder-square.webp' }}
+                                  />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="text-sm font-medium truncate" style={{ color: '#111827' }}>
+                                    <span style={{ color: '#6B7280', marginRight: 6 }}>{item.quantity ?? 1}×</span>
+                                    {item.name}
+                                  </div>
+                                  {(countFlavor || item.sku) && (
+                                    <div className="text-xs truncate mt-0.5" style={{ color: '#9CA3AF' }}>
+                                      {countFlavor || item.sku}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            )}
-                            <div className="flex justify-between text-slate-800 font-semibold text-base">
-                              <span>Total</span>
-                              <span>
-                                ${order.total.toFixed(2)}
-                              </span>
+                              <div className="text-sm font-semibold shrink-0" style={{ color: '#111827' }}>
+                                ${(Number(item.unitPrice ?? 0) * (item.quantity ?? 1)).toFixed(2)}
+                              </div>
                             </div>
-                          </>
-                        )
-                      })()}
-
-                      <div className="mt-3">
-                        <Link
-                          href={`/admin/orders/${order.id}`}
-                          className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <ExternalLink size={13} />
-                          View order details
-                        </Link>
+                          )
+                        })}
                       </div>
                     </div>
+
+                    {/* Totals footer */}
+                    {(() => {
+                      const subtotal = order.items?.reduce((sum, item) => sum + (Number(item.unitPrice ?? 0) * (item.quantity ?? 1)), 0) ?? 0
+                      const shipping = order.total - subtotal
+                      return (
+                        <div className="px-6 py-4 flex flex-col items-end gap-1.5" style={{ borderTop: '1px solid #F0F2F5' }}>
+                          {shipping > 0 && (
+                            <div className="flex items-center gap-8 text-sm" style={{ color: '#6B7280' }}>
+                              <span>Shipping</span>
+                              <span className="font-medium">${shipping.toFixed(2)}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-8">
+                            <span className="text-sm font-semibold" style={{ color: '#111827' }}>Total</span>
+                            <span className="text-lg font-bold" style={{ color: '#4F46E5' }}>${order.total.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      )
+                    })()}
 
                   </div>
                 </td>

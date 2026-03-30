@@ -87,19 +87,23 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
 
   useEffect(() => {
     if (typeof document === "undefined") return
-    const originalOverflow = document.body.style.overflow
+    const originalBodyOverflow = document.body.style.overflow
+    const originalHtmlOverflow = document.documentElement.style.overflow
     const originalPadding = document.body.style.paddingRight
     if (isCartOpen) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
       document.body.style.paddingRight = `${scrollbarWidth}px`
       document.body.style.overflow = "hidden"
+      document.documentElement.style.overflow = "hidden"
     } else {
       window.dispatchEvent(new Event("cart:drawer:close"))
-      document.body.style.overflow = originalOverflow
+      document.body.style.overflow = originalBodyOverflow
+      document.documentElement.style.overflow = originalHtmlOverflow
       document.body.style.paddingRight = originalPadding
     }
     return () => {
-      document.body.style.overflow = originalOverflow
+      document.body.style.overflow = originalBodyOverflow
+      document.documentElement.style.overflow = originalHtmlOverflow
       document.body.style.paddingRight = originalPadding
     }
   }, [isCartOpen])
@@ -335,26 +339,22 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {cartItems.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-5 text-center">
-              <div
-                className="flex h-24 w-24 items-center justify-center border-4 border-black bg-white"
-                style={{ boxShadow: '6px 6px 0 #111' }}
-              >
-                <ShoppingCart className="h-10 w-10" strokeWidth={2} style={{ color: 'rgba(0,0,0,0.25)' }} />
-              </div>
+              <ShoppingCart className="h-14 w-14" strokeWidth={1.75} style={{ color: 'rgb(124,58,237)' }} />
               <div>
                 <p
                   className="text-2xl font-black uppercase"
                   style={{
                     fontFamily: FONT, fontWeight: 900,
-                    color: 'rgb(232,68,106)',
-                    WebkitTextStroke: '2px #111',
-                    paintOrder: 'stroke fill',
+                    background: GRADIENT,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
                   }}
                 >
-                  YOUR BAG IS EMPTY
+                  Your Bag Is Empty
                 </p>
-                <p className="mt-1.5 text-sm font-semibold" style={{ color: 'rgba(0,0,0,0.4)' }}>
-                  Add products to get started.
+                <p className="mt-1.5 text-[11px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}>
+                  Add products to get started
                 </p>
               </div>
               <Link

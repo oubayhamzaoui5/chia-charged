@@ -7,9 +7,12 @@ const ADDRESSES_COLLECTION = "adresses"
 type AddressPayload = {
   address?: unknown
   adress?: unknown
+  address2?: unknown
   city?: unknown
   postalCode?: unknown
   notes?: unknown
+  country?: unknown
+  state?: unknown
   id?: unknown
 }
 
@@ -40,9 +43,12 @@ export async function GET() {
     const items = rows.map((row: any) => ({
       id: String(row.id),
       address: asText(row.adress ?? row.address),
+      address2: asText(row.address2),
       city: asText(row.city),
       postalCode: asText(row.postalCode),
       notes: asText(row.notes),
+      country: asText(row.country),
+      state: asText(row.state),
     }))
 
     return NextResponse.json({ items })
@@ -60,15 +66,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json()) as AddressPayload
+    const addressValue = pickAddress(body)
     const payload = {
       user: session.user.id,
-      adress: pickAddress(body),
+      address: addressValue,
+      address2: asText(body.address2),
       city: asText(body.city),
       postalCode: asText(body.postalCode),
       notes: asText(body.notes),
+      country: asText(body.country),
+      state: asText(body.state),
     }
 
-    if (!payload.adress || !payload.city) {
+    if (!addressValue || !payload.city) {
       return NextResponse.json(
         { message: "Address and city are required" },
         { status: 400 }
@@ -83,9 +93,12 @@ export async function POST(request: NextRequest) {
       item: {
         id: String(created.id),
         address: asText(created.adress ?? created.address),
+        address2: asText(created.address2),
         city: asText(created.city),
         postalCode: asText(created.postalCode),
         notes: asText(created.notes),
+        country: asText(created.country),
+        state: asText(created.state),
       },
     })
   } catch (error: any) {
@@ -107,15 +120,19 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ message: "Address id is required" }, { status: 400 })
     }
 
+    const addressValue = pickAddress(body)
     const payload = {
       user: session.user.id,
-      adress: pickAddress(body),
+      address: addressValue,
+      address2: asText(body.address2),
       city: asText(body.city),
       postalCode: asText(body.postalCode),
       notes: asText(body.notes),
+      country: asText(body.country),
+      state: asText(body.state),
     }
 
-    if (!payload.adress || !payload.city) {
+    if (!addressValue || !payload.city) {
       return NextResponse.json(
         { message: "Address and city are required" },
         { status: 400 }
@@ -135,9 +152,12 @@ export async function PATCH(request: NextRequest) {
       item: {
         id: String(updated.id),
         address: asText(updated.adress ?? updated.address),
+        address2: asText(updated.address2),
         city: asText(updated.city),
         postalCode: asText(updated.postalCode),
         notes: asText(updated.notes),
+        country: asText(updated.country),
+        state: asText(updated.state),
       },
     })
   } catch (error: any) {

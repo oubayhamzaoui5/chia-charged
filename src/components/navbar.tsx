@@ -187,8 +187,10 @@ export function Navbar(props: NavbarProps) {
   useEffect(() => {
     if (!isAuthModalOpen) return
 
-    const originalOverflow = document.body.style.overflow
+    const originalBodyOverflow = document.body.style.overflow
+    const originalHtmlOverflow = document.documentElement.style.overflow
     document.body.style.overflow = "hidden"
+    document.documentElement.style.overflow = "hidden"
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -199,7 +201,8 @@ export function Navbar(props: NavbarProps) {
 
     window.addEventListener("keydown", onKeyDown)
     return () => {
-      document.body.style.overflow = originalOverflow
+      document.body.style.overflow = originalBodyOverflow
+      document.documentElement.style.overflow = originalHtmlOverflow
       window.removeEventListener("keydown", onKeyDown)
     }
   }, [isAuthModalOpen])
@@ -1309,10 +1312,10 @@ export function Navbar(props: NavbarProps) {
                 <button
                   type="button"
                   onClick={closeAuthModal}
-                  className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-sm border-2 border-black bg-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#111]"
+                  className="absolute right-1 top-1 z-10 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-sm transition-all hover:scale-[0.92]"
                   aria-label="Close"
                 >
-                  <X size={14} strokeWidth={3} />
+                  <X size={18} strokeWidth={3} />
                 </button>
 
                 {/* Mode tabs */}
