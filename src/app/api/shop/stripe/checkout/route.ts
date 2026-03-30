@@ -4,8 +4,6 @@ import { getSession } from '@/lib/auth/server'
 import { createServerPb } from '@/lib/pb'
 import { sendAdminOrderPushNotification } from '@/lib/push/admin-order-push'
 
-const APP_URL = process.env.APP_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-
 type Item = {
   productId?: unknown
   name?: unknown
@@ -15,9 +13,31 @@ type Item = {
 
 function asText(v: unknown) { return typeof v === 'string' ? v.trim() : '' }
 function asNumber(v: unknown, fb = 0) { const n = Number(v); return Number.isFinite(n) ? n : fb }
+function stripTrailingSlash(url: string) { return url.replace(/\/+$/, '') }
+function isLocalHostLike(url: string) { return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(url) }
+function getAppUrl(req: NextRequest) {
+  const envUrlRaw = process.env.APP_URL ?? process.env.NEXT_PUBLIC_SITE_URL
+  const envUrl = envUrlRaw ? stripTrailingSlash(envUrlRaw.trim()) : ''
+
+  const forwardedProto = req.headers.get('x-forwarded-proto')
+  const forwardedHost = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
+  const requestOrigin = forwardedHost
+    ? `${forwardedProto ?? 'https'}://${forwardedHost}`
+    : stripTrailingSlash(req.nextUrl.origin)
+  const normalizedRequestOrigin = stripTrailingSlash(requestOrigin)
+
+  if (!envUrl) return normalizedRequestOrigin || 'http://localhost:3000'
+
+  if (isLocalHostLike(envUrl) && normalizedRequestOrigin && !isLocalHostLike(normalizedRequestOrigin)) {
+    return normalizedRequestOrigin
+  }
+
+  return envUrl
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const appUrl = getAppUrl(req)
     const body = await req.json()
     const session = await getSession()
     const user = session?.user ?? null
@@ -122,8 +142,8 @@ export async function POST(req: NextRequest) {
     if (stripeSecretKey) {
       const lineItemsParams: Record<string, string> = {
         'mode': 'payment',
-        'success_url': `${APP_URL}/checkout/confirmation?id=${orderId}`,
-        'cancel_url': `${APP_URL}/checkout?cancelled=1`,
+        'success_url': `${appUrl}/checkout/confirmation?id=${orderId}`,
+        'cancel_url': `${appUrl}/checkout?cancelled=1`,
         'line_items[0][price_data][currency]': 'usd',
         'line_items[0][price_data][product_data][name]': `Chia Charged Order #${orderId.slice(-6).toUpperCase()}`,
         'line_items[0][price_data][unit_amount]': String(Math.round(total * 100)),
