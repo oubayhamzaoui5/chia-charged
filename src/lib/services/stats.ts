@@ -10,14 +10,10 @@ export const fetchTodaySales = async (): Promise<number> => {
   const pad = (n: number) => n.toString().padStart(2, '0');
   const pbDate = `${startOfDay.getFullYear()}-${pad(startOfDay.getMonth() + 1)}-${pad(startOfDay.getDate())} 00:00:00`;
 
-  // We fetch only delivered. If an order status changes, 
-  // it will naturally disappear from this list on the next fetch.
   const records = await pb.collection('orders').getFullList({
-    filter: `status = "delivered" && updated >= "${pbDate}"`,
+    filter: `(status = "paid" || status = "delivering" || status = "delivered") && created >= "${pbDate}"`,
     fields: 'total',
-    // 'requestKey: null' is CRITICAL here. It allows multiple 
-    // simultaneous requests without auto-cancelling the previous one.
-    requestKey: null, 
+    requestKey: null,
   });
 
   return records.reduce((sum, order) => sum + (order.total || 0), 0);
@@ -31,7 +27,7 @@ export const fetchAlertCounts = async () => {
       pb.collection('products').getList(1, 1, { filter: 'stock = 0', requestKey: null }),
       pb.collection('products').getList(1, 1, { filter: 'stock > 0 && stock < 10', requestKey: null }),
       pb.collection('orders').getList(1, 50, { // Increased limit to see the data
-        filter: 'status = "pending"', 
+        filter: 'status = "paid"',
         requestKey: null 
       })
     ]);
@@ -63,8 +59,8 @@ export const fetchChartRowData = async () => {
 
   const [deliveredOrders, currentWeekOrders, totalCount, allProducts] = await Promise.all([
     pb.collection('orders').getFullList({
-      filter: `status = "delivered" && updated >= "${pbDateLimit}"`,
-      fields: 'total,updated',
+      filter: `(status = "paid" || status = "delivering" || status = "delivered") && created >= "${pbDateLimit}"`,
+      fields: 'total,created',
     }),
     pb.collection('orders').getFullList({
       filter: `updated >= "${pbSevenDayLimit}"`,
@@ -95,7 +91,7 @@ export const fetchChartRowData = async () => {
   const categoryCounts: Record<string, number> = {};
 
   deliveredOrders.forEach(order => {
-    const orderDate = new Date(order.updated);
+    const orderDate = new Date(order.created);
     orderDate.setHours(0, 0, 0, 0);
     const diffDays = Math.floor((now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -211,10 +207,10 @@ export const fetchExtendedStats = async () => {
     const target = isCurrentMonth ? stats.current : stats.previous;
     
     target.total++;
-    if (order.status === 'delivered') {
+    if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') {
       target.delCount++;
       target.delSales += amount;
-    } else if (order.status === 'returned') {
+    } else if (order.status === 'refunded') {
       target.retCount++;
       target.retSales += amount;
     }
@@ -268,8 +264,8 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
   try {
     const orders = await pb.collection('orders').getFullList({
-      filter: `updated >= "${pbStartDate}" && updated <= "${pbEndDate}" && (status = "delivered" || status = "returned")`,
-      fields: 'status,updated',
+      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && (status = "paid" || status = "delivering" || status = "delivered" || status = "refunded")`,
+      fields: 'status,created',
       sort: 'updated'
     });
 
@@ -286,9 +282,9 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
       labels = Array.from({ length: daysInMonth }, (_, i) => `${monthNamesFr[month]} ${i + 1}`);
 
       orders.forEach(order => {
-        const dayIndex = new Date(order.updated).getDate() - 1;
-        if (order.status === 'delivered') deliveredData[dayIndex]++;
-        else if (order.status === 'returned') returnedData[dayIndex]++;
+        const dayIndex = new Date(order.created).getDate() - 1;
+        if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') deliveredData[dayIndex]++;
+        else if (order.status === 'refunded') returnedData[dayIndex]++;
       });
     } else {
       // Annual view: Group by month
@@ -297,9 +293,9 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
       labels = monthNamesFr;
 
       orders.forEach(order => {
-        const monthIndex = new Date(order.updated).getMonth();
-        if (order.status === 'delivered') deliveredData[monthIndex]++;
-        else if (order.status === 'returned') returnedData[monthIndex]++;
+        const monthIndex = new Date(order.created).getMonth();
+        if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') deliveredData[monthIndex]++;
+        else if (order.status === 'refunded') returnedData[monthIndex]++;
       });
     }
 
@@ -333,9 +329,8 @@ export const fetchMonthlySalesTrend = async (viewMode: 'month' | 'year', month: 
 
   try {
     const orders = await pb.collection('orders').getFullList({
-      // We only want delivered orders for sales totals
-      filter: `updated >= "${pbStartDate}" && updated <= "${pbEndDate}" && status = "delivered"`,
-      fields: 'total,updated',
+      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && (status = "paid" || status = "delivering" || status = "delivered")`,
+      fields: 'total,created',
       sort: 'updated'
     });
 
@@ -349,7 +344,7 @@ export const fetchMonthlySalesTrend = async (viewMode: 'month' | 'year', month: 
       labels = Array.from({ length: daysInMonth }, (_, i) => `${monthNamesFr[month]} ${i + 1}`);
 
       orders.forEach(order => {
-        const dayIndex = new Date(order.updated).getDate() - 1;
+        const dayIndex = new Date(order.created).getDate() - 1;
         salesData[dayIndex] += (order.total || 0);
       });
     } else {
@@ -357,7 +352,7 @@ export const fetchMonthlySalesTrend = async (viewMode: 'month' | 'year', month: 
       labels = monthNamesFr;
 
       orders.forEach(order => {
-        const monthIndex = new Date(order.updated).getMonth();
+        const monthIndex = new Date(order.created).getMonth();
         salesData[monthIndex] += (order.total || 0);
       });
     }
@@ -431,7 +426,7 @@ export const fetchBestSellingProducts = async () => {
 
   try {
     const orders = await pb.collection('orders').getFullList({
-      filter: `status = "delivered" && updated >= "${pbDate}"`,
+      filter: `(status = "paid" || status = "delivering" || status = "delivered") && created >= "${pbDate}"`,
       fields: 'items',
       requestKey: null,
     });

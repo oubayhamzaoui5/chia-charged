@@ -1,0 +1,19 @@
+
+> ecommerce-scaffold@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.56.1:3000
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+✓ Starting...
+Creating turbopack project {
+  dir: 'C:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold',
+  testMode: true
+}
+✓ Ready in 3.8s
+○ Compiling / ...
+[?25h

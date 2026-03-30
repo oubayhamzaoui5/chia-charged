@@ -11,8 +11,6 @@ import {
   ShoppingBag,
   Truck,
   ShieldCheck,
-  Plus,
-  Minus,
   Loader2,
   CheckCircle2,
 } from "lucide-react"
@@ -803,15 +801,19 @@ export function CheckoutContent() {
 
   const inputStyle: React.CSSProperties = {
     fontFamily: FONT,
-    fontWeight: 900,
+    fontWeight: 700,
     fontSize: '13px',
     border: '3px solid #111',
+    borderRadius: '2px',
     background: '#fff',
-    padding: '12px 16px',
+    padding: '10px 14px',
     outline: 'none',
     width: '100%',
     letterSpacing: '0.02em',
+    transition: 'box-shadow 0.15s ease',
   }
+  const inputCls = "focus:shadow-[0_0_0_3px_rgba(124,58,237,0.18)]"
+  const labelCls = "mb-1.5 block text-[9px] font-black uppercase tracking-[0.2em]"
 
   return (
     <div
@@ -848,23 +850,16 @@ export function CheckoutContent() {
             {/* Header */}
             <header className="mb-2">
               <h1
-                className="text-[2.2rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3rem]"
+                className="text-[2.4rem] font-black uppercase leading-none tracking-tighter md:text-[3.2rem]"
                 style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: '-0.03em', color: '#111' }}
               >
                 Order{' '}
-                <span
-                  style={{
-                    background: GRADIENT,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
+                <span style={{ background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   Details.
                 </span>
               </h1>
               <p
-                className="mt-3 text-xs font-black uppercase tracking-[0.15em]"
+                className="mt-2 text-[9px] font-black uppercase tracking-[0.2em]"
                 style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
               >
                 Complete your information to finalize the purchase.
@@ -873,293 +868,166 @@ export function CheckoutContent() {
 
             {/* CONTACT Section */}
             <section
-              className="overflow-hidden bg-white"
-              style={{
-                border: '4px solid #111',
-                borderRadius: '2px',
-                boxShadow: '8px 8px 0 #111',
-              }}
+              className="overflow-hidden"
+              style={{ border: '4px solid #111', borderRadius: '2px', boxShadow: '6px 6px 0 #111' }}
             >
+              {/* Gradient header — like modal */}
               <div
-                className="flex items-center gap-3 border-b-3 border-black p-5"
+                className="flex items-center gap-3 px-5 py-3"
+                style={{ background: GRADIENT, borderBottom: '4px solid #111' }}
               >
-                <div
-                  className="flex h-10 w-10 items-center justify-center border-2 border-black text-white"
-                  style={{ background: GRADIENT, boxShadow: '2px 2px 0 #111' }}
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                </div>
-                <h2
-                  className="text-base font-black uppercase tracking-tight"
-                  style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                >
+                <ShoppingBag className="h-4 w-4 text-white" />
+                <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-white" style={{ fontFamily: FONT, fontWeight: 900 }}>
                   Contact
                 </h2>
               </div>
 
-              <div className="space-y-5 p-5">
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div
+                className="space-y-4 p-5"
+                style={{ background: '#f5efe4', backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }}
+              >
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label
-                      className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                    >
+                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       First Name <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input
-                      type="text"
-                      style={inputStyle}
-                      placeholder="John"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                    />
+                    <input type="text" className={inputCls} style={inputStyle} placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                   </div>
                   <div>
-                    <label
-                      className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                    >
+                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       Last Name <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input
-                      type="text"
-                      style={inputStyle}
-                      placeholder="Smith"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                    />
+                    <input type="text" className={inputCls} style={inputStyle} placeholder="Smith" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                   </div>
                 </div>
                 <div>
-                  <label
-                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                  >
+                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Email
                   </label>
-                  <input
-                    type="email"
-                    style={inputStyle}
-                    placeholder="john.smith@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onBlur={() => { void syncEmailToProfile(false) }}
-                  />
+                  <input type="email" className={inputCls} style={inputStyle} placeholder="you@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => { void syncEmailToProfile(false) }} />
                 </div>
               </div>
             </section>
 
             {/* SHIPPING Section */}
             <section
-              className="overflow-hidden bg-white"
-              style={{
-                border: '4px solid #111',
-                borderRadius: '2px',
-                boxShadow: '8px 8px 0 #111',
-              }}
+              className="overflow-hidden"
+              style={{ border: '4px solid #111', borderRadius: '2px', boxShadow: '6px 6px 0 #111' }}
             >
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b-3 border-black p-5">
+              <div
+                className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"
+                style={{ background: GRADIENT, borderBottom: '4px solid #111' }}
+              >
                 <div className="flex items-center gap-3">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center border-2 border-black text-white"
-                    style={{ background: GRADIENT, boxShadow: '2px 2px 0 #111' }}
-                  >
-                    <Truck className="h-5 w-5" />
-                  </div>
-                  <h2
-                    className="text-base font-black uppercase tracking-tight"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
+                  <Truck className="h-4 w-4 text-white" />
+                  <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-white" style={{ fontFamily: FONT, fontWeight: 900 }}>
                     Shipping
                   </h2>
                 </div>
-
                 {isLoggedIn && addresses.length > 0 && (
                   <select
-                    className="cursor-pointer border-2 border-black px-3 py-1.5 text-[10px] font-black uppercase tracking-wider"
-                    style={{
-                      fontFamily: FONT,
-                      fontWeight: 900,
-                      background: '#fff',
-                      boxShadow: '2px 2px 0 #111',
-                    }}
+                    className="cursor-pointer border-2 border-black/40 px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-white"
+                    style={{ fontFamily: FONT, fontWeight: 900, background: 'rgba(0,0,0,0.25)', borderRadius: '2px' }}
                     value={selectedAddressId}
                     onChange={(e) => setSelectedAddressId(e.target.value)}
                   >
                     {addresses.map((a) => (
-                      <option key={a.id} value={a.id}>{a.city} - {a.address.slice(0, 26)}...</option>
+                      <option key={a.id} value={a.id} className="text-black bg-white">{a.city} - {a.address.slice(0, 26)}...</option>
                     ))}
-                    <option value="new">+ New address</option>
+                    <option value="new" className="text-black bg-white">+ New address</option>
                   </select>
                 )}
               </div>
 
-              <div className="space-y-5 p-5">
-                {/* Country selector FIRST */}
+              <div
+                className="space-y-4 p-5"
+                style={{ background: '#f5efe4', backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }}
+              >
                 <div>
-                  <label
-                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                  >
+                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Country <span style={{ color: '#C62828' }}>*</span>
                   </label>
-                  <select
-                    style={inputStyle}
-                    value={country}
-                    onChange={(e) => {
-                      setCountry(e.target.value)
-                      setState("")
-                    }}
-                  >
+                  <select className={inputCls} style={inputStyle} value={country} onChange={(e) => { setCountry(e.target.value); setState("") }}>
                     <option value="">Select country...</option>
-                    {COUNTRIES.map((c) => (
-                      <option key={c.code} value={c.code}>{c.name}</option>
-                    ))}
+                    {COUNTRIES.map((c) => (<option key={c.code} value={c.code}>{c.name}</option>))}
                   </select>
                   {country && (
-                    <p
-                      className="mt-1.5 text-[10px] font-black uppercase tracking-wider"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: country === "US" ? '#2E7D32' : 'rgba(0,0,0,0.4)' }}
-                    >
+                    <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: country === "US" ? '#2E7D32' : 'rgba(0,0,0,0.4)' }}>
                       {country === "US" ? "Shipping: $5.00" : "International shipping: $20.00"}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label
-                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                  >
+                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Address Line 1 <span style={{ color: '#C62828' }}>*</span>
                   </label>
-                  <input
-                    type="text"
-                    style={inputStyle}
-                    placeholder="Street, number, apartment..."
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
+                  <input type="text" className={inputCls} style={inputStyle} placeholder="Street, number, apartment..." value={address} onChange={(e) => setAddress(e.target.value)} />
                 </div>
 
                 <div>
-                  <label
-                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                  >
+                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Address Line 2 <span style={{ color: 'rgba(0,0,0,0.25)' }}>(optional)</span>
                   </label>
-                  <input
-                    type="text"
-                    style={inputStyle}
-                    placeholder="Suite, unit, building, floor..."
-                    value={address2}
-                    onChange={(e) => setAddress2(e.target.value)}
-                  />
+                  <input type="text" className={inputCls} style={inputStyle} placeholder="Suite, unit, building, floor..." value={address2} onChange={(e) => setAddress2(e.target.value)} />
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label
-                      className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                    >
+                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       City <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input
-                      type="text"
-                      style={inputStyle}
-                      placeholder="New York"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                    />
+                    <input type="text" className={inputCls} style={inputStyle} placeholder="New York" value={city} onChange={(e) => setCity(e.target.value)} />
                   </div>
                   <div>
-                    <label
-                      className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                    >
+                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       {country === "US" ? "ZIP Code" : "Postal Code"} <span style={{ color: '#C62828' }}>*</span>
                     </label>
                     <input
                       type="text"
                       inputMode="numeric"
+                      className={inputCls}
                       style={inputStyle}
                       placeholder={country === "US" ? "10001" : "00000"}
                       value={postalCode}
                       onChange={(e) => {
-                        if (country === "US") {
-                          setPostalCode(e.target.value.replace(/\D/g, "").slice(0, 5))
-                        } else {
-                          setPostalCode(e.target.value.slice(0, 10))
-                        }
+                        if (country === "US") setPostalCode(e.target.value.replace(/\D/g, "").slice(0, 5))
+                        else setPostalCode(e.target.value.slice(0, 10))
                       }}
                     />
                   </div>
                 </div>
 
-                {/* State — dropdown for US, text for others */}
                 <div>
-                  <label
-                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                  >
+                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     {country === "US" ? "State" : "State / Province / Region"}
                     {country === "US" && <span style={{ color: '#C62828' }}> *</span>}
                   </label>
                   {country === "US" ? (
-                    <select
-                      style={inputStyle}
-                      value={state}
-                      onChange={(e) => setState(e.target.value)}
-                    >
+                    <select className={inputCls} style={inputStyle} value={state} onChange={(e) => setState(e.target.value)}>
                       <option value="">Select state...</option>
-                      {US_STATES.map((s) => (
-                        <option key={s.code} value={s.code}>{s.name}</option>
-                      ))}
+                      {US_STATES.map((s) => (<option key={s.code} value={s.code}>{s.name}</option>))}
                     </select>
                   ) : (
-                    <input
-                      type="text"
-                      style={inputStyle}
-                      placeholder="State / Province / Region"
-                      value={state}
-                      onChange={(e) => setState(e.target.value)}
-                    />
+                    <input type="text" className={inputCls} style={inputStyle} placeholder="State / Province / Region" value={state} onChange={(e) => setState(e.target.value)} />
                   )}
                 </div>
 
                 <div>
-                  <label
-                    className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.15em]"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}
-                  >
+                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Special instructions
                   </label>
-                  <textarea
-                    rows={2}
-                    style={{ ...inputStyle, resize: 'none' }}
-                    placeholder="Door code, floor, neighbor..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                  />
+                  <textarea rows={2} className={inputCls} style={{ ...inputStyle, resize: 'none' }} placeholder="Door code, floor, neighbor..." value={notes} onChange={(e) => setNotes(e.target.value)} />
                 </div>
 
                 {isLoggedIn && (
                   <button
                     onClick={handleSaveAddress}
                     disabled={!canSaveAddress}
-                    className="flex cursor-pointer items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] transition-all hover:opacity-80 disabled:opacity-30"
-                    style={{
-                      fontFamily: FONT,
-                      fontWeight: 900,
-                      background: GRADIENT,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
+                    className="flex cursor-pointer items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] transition-all hover:opacity-80 disabled:opacity-30"
+                    style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
                   >
-                    <Save size={14} style={{ color: 'rgb(124,58,237)' }} />
+                    <Save size={13} style={{ color: 'rgb(124,58,237)' }} />
                     {isSavingAddress ? "Saving..." : "Save this address"}
                   </button>
                 )}
@@ -1168,171 +1036,132 @@ export function CheckoutContent() {
 
             {/* PAYMENT Section */}
             <section
-              className="overflow-hidden bg-white"
-              style={{
-                border: '4px solid #111',
-                borderRadius: '2px',
-                boxShadow: '8px 8px 0 #111',
-              }}
+              className="overflow-hidden"
+              style={{ border: '4px solid #111', borderRadius: '2px', boxShadow: '6px 6px 0 #111' }}
             >
-              <div className="flex items-center gap-3 border-b-3 border-black p-5">
-                <div
-                  className="flex h-10 w-10 items-center justify-center border-2 border-black text-white"
-                  style={{ background: GRADIENT, boxShadow: '2px 2px 0 #111' }}
-                >
-                  <ShieldCheck className="h-5 w-5" />
-                </div>
-                <h2
-                  className="text-base font-black uppercase tracking-tight"
-                  style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                >
+              <div
+                className="flex items-center gap-3 px-5 py-3"
+                style={{ background: GRADIENT, borderBottom: '4px solid #111' }}
+              >
+                <ShieldCheck className="h-4 w-4 text-white" />
+                <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-white" style={{ fontFamily: FONT, fontWeight: 900 }}>
                   Payment
                 </h2>
               </div>
 
-              <div className="space-y-3 p-5">
+              <div
+                className="space-y-4 p-5"
+                style={{ background: '#f5efe4', backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }}
+              >
                 {stripeConfigured ? (
                   <div
-                    className="flex items-center gap-3 border-3 border-black p-4"
-                    style={{ background: '#EDE7F6', boxShadow: '3px 3px 0 #111' }}
+                    className="flex items-center gap-3 border-[3px] border-black px-4 py-3"
+                    style={{ background: '#fff', boxShadow: '3px 3px 0 #111', borderRadius: '2px' }}
                   >
-                    <div className="h-5 w-5 border-4 border-black bg-white" style={{ borderRadius: '50%' }}>
-                      <div className="m-auto mt-[1px] h-2 w-2 bg-black" style={{ borderRadius: '50%' }} />
+                    <div className="h-4 w-4 shrink-0 border-[3px] border-black" style={{ borderRadius: '50%', background: GRADIENT }}>
+                      <div className="m-auto mt-[2px] h-1.5 w-1.5 bg-white" style={{ borderRadius: '50%' }} />
                     </div>
-                    <span
-                      className="text-xs font-black uppercase tracking-wider"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                    >
-                      Card Payment (Stripe)
+                    <span className="text-[11px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>
+                      Credit / Debit Card
                     </span>
-                    <CreditCard size={16} className="ml-auto" />
+                    <span className="ml-auto flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider" style={{ background: '#635BFF', color: '#fff', fontFamily: FONT }}>
+                      <svg width="10" height="10" viewBox="0 0 32 32" fill="none"><path d="M14.2 12.6c0-1.1.9-1.5 2.3-1.5 2.1 0 4.7.6 6.8 1.7V7.3C21.1 6.5 18.8 6 16.5 6 11.2 6 7.7 8.7 7.7 13c0 6.5 9 5.5 9 8.3 0 1.3-1.1 1.7-2.6 1.7-2.3 0-5.2-.9-7.5-2.2v5.6c2.6 1.1 5.2 1.6 7.5 1.6 5.4 0 9.2-2.7 9.2-7.1-.1-7-9.1-5.8-9.1-8.3z" fill="white"/></svg>
+                      Stripe
+                    </span>
                   </div>
                 ) : (
-                  <>
-                    <div
-                      className="flex items-center gap-3 border-3 border-black p-4"
-                      style={{ background: '#FFF8E1', boxShadow: '3px 3px 0 #111' }}
-                    >
-                      <div className="h-5 w-5 border-4 border-black bg-white" style={{ borderRadius: '50%' }}>
-                        <div className="m-auto mt-[1px] h-2 w-2 bg-black" style={{ borderRadius: '50%' }} />
-                      </div>
-                      <div className="flex flex-col gap-0.5">
-                        <span
-                          className="text-xs font-black uppercase tracking-wider"
-                          style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                        >
-                          Test Mode
-                        </span>
-                        <span
-                          className="text-[10px] font-bold"
-                          style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.45)' }}
-                        >
-                          No payment processor configured. Orders will be placed in test mode.
-                        </span>
-                      </div>
+                  <div
+                    className="flex items-start gap-3 border-[3px] border-black p-4"
+                    style={{ background: '#fff', boxShadow: '3px 3px 0 #111', borderRadius: '2px' }}
+                  >
+                    <div className="mt-0.5 h-4 w-4 shrink-0 border-[3px] border-black bg-white" style={{ borderRadius: '50%' }}>
+                      <div className="m-auto mt-[2px] h-1.5 w-1.5 bg-black" style={{ borderRadius: '50%' }} />
                     </div>
-                  </>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>Test Mode</span>
+                      <span className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.4)' }}>
+                        No payment processor configured. Orders placed in test mode.
+                      </span>
+                    </div>
+                  </div>
                 )}
+
+                {/* Security note */}
+                <div className="flex items-center gap-2">
+                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M6 0L0 2.5v4C0 9.9 2.6 13 6 14c3.4-1 6-4.1 6-7.5v-4L6 0z" fill="rgba(0,0,0,0.2)"/></svg>
+                  <span className="text-[9px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}>
+                    256-bit SSL encrypted — your data is secure
+                  </span>
+                </div>
               </div>
             </section>
           </div>
 
           {/* RIGHT COLUMN — Order Summary */}
-          <aside className={`lg:sticky ${isPromoBannerVisible ? "lg:top-32" : "lg:top-28"} space-y-6`}>
+          <aside className={`lg:sticky ${isPromoBannerVisible ? "lg:top-32" : "lg:top-28"} space-y-5`}>
             <div
-              className="overflow-hidden bg-white"
-              style={{
-                border: '4px solid #111',
-                borderRadius: '2px',
-                boxShadow: '8px 8px 0 #111',
-              }}
+              className="overflow-hidden"
+              style={{ border: '4px solid #111', borderRadius: '2px', boxShadow: '6px 6px 0 #111' }}
             >
-              {/* Summary header */}
-              <div className="flex items-center justify-between border-b-3 border-black p-5">
-                <h3
-                  className="text-base font-black uppercase tracking-tight"
-                  style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                >
-                  Summary
+              {/* Gradient header — like modal left panel */}
+              <div
+                className="flex items-center justify-between px-5 py-3"
+                style={{ background: GRADIENT, borderBottom: '4px solid #111' }}
+              >
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white" style={{ fontFamily: FONT, fontWeight: 900 }}>
+                  Your Order
                 </h3>
                 <span
-                  className="border-2 border-black px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white"
-                  style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '2px 2px 0 #111' }}
+                  className="border-[2px] border-white/40 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] text-white"
+                  style={{ fontFamily: FONT, fontWeight: 900, borderRadius: '2px' }}
                 >
                   {cartItems.length} item{cartItems.length > 1 ? 's' : ''}
                 </span>
               </div>
 
               {/* Cart items */}
-              <div className="max-h-[400px] divide-y-2 divide-black/10 overflow-y-auto p-5">
+              <div
+                className="max-h-[360px] divide-y divide-black/10 overflow-y-auto px-4 py-4"
+                style={{ background: '#f5efe4', backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }}
+              >
                 {cartItems.map((item) => (
-                  <div key={item.id} className="group flex gap-4 py-3 first:pt-0 last:pb-0">
-                    <div
-                      className="relative h-20 w-20 flex-shrink-0 overflow-hidden border-2 border-black"
-                      style={{ boxShadow: '3px 3px 0 #111' }}
-                    >
+                  <div key={item.id} className="group flex gap-3 py-3 first:pt-0 last:pb-0">
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden border-[3px] border-black">
                       {item.product?.images?.[0] && (
-                        <Image
-                          src={pbFileUrl(item.product.id, item.product.images[0])}
-                          alt={item.product.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
+                        <Image src={pbFileUrl(item.product.id, item.product.images[0])} alt={item.product.name} fill className="object-cover" />
                       )}
                       <button
                         onClick={() => handleRemoveItem(item.id)}
-                        className="absolute left-1 top-1 border-2 border-black bg-white p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                        className="absolute left-0.5 top-0.5 border-[2px] border-black bg-white p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
                       >
-                        <X size={10} />
+                        <X size={9} />
                       </button>
                     </div>
-                    <div className="flex min-w-0 flex-1 flex-col justify-center">
-                      <h4
-                        className="truncate text-sm font-black uppercase tracking-tight"
-                        style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                      >
+                    <div className="flex min-w-0 flex-1 flex-col justify-between">
+                      <h4 className="truncate text-[11px] font-black uppercase tracking-tight" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>
                         {item.product?.name}
                       </h4>
-                      <p
-                        className="text-[10px] font-bold uppercase tracking-wider"
-                        style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}
-                      >
-                        Qty: {item.quantity}
-                      </p>
-                      <div className="mt-2 flex items-center gap-3">
-                        <div
-                          className="flex items-center border-2 border-black"
-                          style={{ boxShadow: '2px 2px 0 #111' }}
-                        >
+                      <div className="mt-1.5 flex items-center justify-between">
+                        <div className="flex items-center overflow-hidden rounded-sm border-[3px] border-black bg-white">
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                            className="cursor-pointer px-2 py-1 transition-colors hover:bg-black/5"
-                          >
-                            <Minus size={12} />
-                          </button>
-                          <span
-                            className="w-6 text-center text-xs font-black"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white"
                             style={{ fontFamily: FONT, fontWeight: 900 }}
                           >
-                            {item.quantity}
-                          </span>
+                            −
+                          </button>
+                          <span className="w-6 text-center text-xs font-black" style={{ fontFamily: FONT, fontWeight: 900 }}>{item.quantity}</span>
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                            className="cursor-pointer px-2 py-1 transition-colors hover:bg-black/5"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white"
+                            style={{ fontFamily: FONT, fontWeight: 900 }}
                           >
-                            <Plus size={12} />
+                            +
                           </button>
                         </div>
                         <span
                           className="text-sm font-black"
-                          style={{
-                            fontFamily: FONT,
-                            fontWeight: 900,
-                            background: GRADIENT,
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                          }}
+                          style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
                         >
                           ${(getUnitPrice(item.product) * item.quantity).toFixed(2)}
                         </span>
@@ -1343,52 +1172,22 @@ export function CheckoutContent() {
               </div>
 
               {/* Totals */}
-              <div className="space-y-2 border-t-3 border-black p-5" style={{ background: 'rgba(0,0,0,0.02)' }}>
+              <div className="space-y-2 border-t-[3px] border-black px-5 py-4" style={{ background: 'rgba(245,239,228,0.7)' }}>
                 <div className="flex justify-between">
-                  <span
-                    className="text-[10px] font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
-                  >
-                    Subtotal
-                  </span>
-                  <span
-                    className="text-sm font-black"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
-                    ${cartSubtotal.toFixed(2)}
-                  </span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}>Subtotal</span>
+                  <span className="text-sm font-black" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>${cartSubtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span
-                    className="text-[10px] font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
-                  >
-                    Shipping
-                  </span>
-                  <span
-                    className="text-sm font-black"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}
-                  >
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}>Shipping</span>
+                  <span className="text-sm font-black" style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}>
                     {country ? `+$${shipping.toFixed(2)}` : "Select country"}
                   </span>
                 </div>
-                <div className="flex items-end justify-between border-t-2 border-black/10 pt-3">
-                  <span
-                    className="text-sm font-black uppercase"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
-                    Total
-                  </span>
+                <div className="flex items-end justify-between border-t-[2px] border-black/10 pt-3">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>Total</span>
                   <span
                     className="text-2xl font-black tracking-tighter"
-                    style={{
-                      fontFamily: FONT,
-                      fontWeight: 900,
-                      background: GRADIENT,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
+                    style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
                   >
                     ${cartTotal.toFixed(2)}
                   </span>
@@ -1396,112 +1195,87 @@ export function CheckoutContent() {
               </div>
 
               {/* Confirm button */}
-              <div className="p-5 pt-0">
+              <div className="px-5 pb-5">
                 <button
                   disabled={isPlacingOrder || cartItems.length === 0 || !isRequiredFieldsValid}
                   onClick={handleConfirmOrder}
-                  className="shimmer-btn relative w-full cursor-pointer overflow-hidden border-3 border-black py-4 text-sm font-black uppercase tracking-[0.12em] text-white transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{
-                    fontFamily: FONT,
-                    fontWeight: 900,
-                    background: GRADIENT,
-                    boxShadow: '4px 4px 0 #111',
-                  }}
+                  className="relative w-full cursor-pointer border-[3px] border-black py-3.5 text-sm font-black uppercase italic tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-40"
+                  style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '3px 3px 0 #111', borderRadius: '2px' }}
                 >
-                  {isPlacingOrder
-                    ? "Processing..."
-                    : stripeConfigured
-                    ? "Pay with Stripe \u2192"
-                    : "Place Test Order \u2192"}
+                  {isPlacingOrder ? "Processing..." : stripeConfigured ? "Pay with Stripe →" : "Place Test Order →"}
                 </button>
+                <p className="mt-2.5 text-center text-[9px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.3)' }}>
+                  *Taxes are calculated at checkout*
+                </p>
               </div>
             </div>
 
             {orderError && (
               <div
-                className="overflow-hidden bg-white"
-                style={{
-                  border: '4px solid #C62828',
-                  borderRadius: '2px',
-                  boxShadow: '6px 6px 0 #C62828',
-                }}
+                className="overflow-hidden"
+                style={{ border: '4px solid #C62828', borderRadius: '2px', boxShadow: '4px 4px 0 #C62828' }}
               >
-                <div className="flex items-start gap-3 p-4">
-                  <div
-                    className="mt-0.5 h-3 w-3 flex-shrink-0 border-2 border-[#C62828]"
-                    style={{ background: '#FFEBEE' }}
-                  />
-                  <div>
-                    <p
-                      className="text-[10px] font-black uppercase tracking-[0.15em]"
-                      style={{ fontFamily: FONT, fontWeight: 900, color: '#C62828' }}
-                    >
-                      Attention required
-                    </p>
-                    <p
-                      className="mt-1 text-xs font-bold"
-                      style={{ fontFamily: FONT, color: '#111' }}
-                    >
-                      {orderError}
-                    </p>
-                  </div>
+                <div
+                  className="px-4 py-3"
+                  style={{ background: 'rgba(198,40,40,0.9)', borderBottom: '3px solid #C62828' }}
+                >
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white" style={{ fontFamily: FONT, fontWeight: 900 }}>Attention required</p>
+                </div>
+                <div className="px-4 py-3" style={{ background: '#fff' }}>
+                  <p className="text-xs font-bold" style={{ fontFamily: FONT, color: '#111' }}>{orderError}</p>
                 </div>
               </div>
             )}
           </aside>
         </div>
+
       </div>
 
       {/* Order flow overlay */}
       {orderFlowStage !== "idle" && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div
-            className="w-[90%] max-w-sm bg-white p-8"
-            style={{
-              border: '4px solid #111',
-              boxShadow: '12px 12px 0 #111',
-            }}
+            className="w-[90%] max-w-xs overflow-hidden"
+            style={{ border: '4px solid #111', borderRadius: '2px', boxShadow: '8px 8px 0 #111' }}
           >
-            <div className="flex flex-col items-center text-center">
+            {/* Gradient header strip */}
+            <div className="px-5 py-3" style={{ background: GRADIENT, borderBottom: '4px solid #111' }}>
+              <p className="text-[9px] font-black uppercase tracking-[0.22em] text-white/80" style={{ fontFamily: FONT }}>
+                {orderFlowStage === "loading" ? "Processing order" : "Order confirmed"}
+              </p>
+            </div>
+            {/* Body */}
+            <div
+              className="flex flex-col items-center px-6 py-8 text-center"
+              style={{ background: '#f5efe4', backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }}
+            >
               {orderFlowStage === "loading" ? (
                 <>
                   <div
-                    className="flex h-16 w-16 items-center justify-center border-3 border-black text-white"
-                    style={{ background: GRADIENT, boxShadow: '4px 4px 0 #111' }}
+                    className="flex h-14 w-14 items-center justify-center border-[3px] border-black text-white"
+                    style={{ background: GRADIENT, boxShadow: '3px 3px 0 #111', borderRadius: '2px' }}
                   >
-                    <Loader2 className="h-7 w-7 animate-spin" />
+                    <Loader2 className="h-6 w-6 animate-spin" />
                   </div>
-                  <h4
-                    className="mt-5 text-lg font-black uppercase tracking-tight"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
+                  <h4 className="mt-4 text-base font-black uppercase tracking-tight" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>
                     Processing...
                   </h4>
-                  <p
-                    className="mt-2 text-[10px] font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
-                  >
+                  <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}>
                     Please wait a moment
                   </p>
                 </>
               ) : (
                 <>
                   <div
-                    className="flex h-16 w-16 items-center justify-center border-3 border-black"
-                    style={{ background: '#E8F5E9', boxShadow: '4px 4px 0 #111' }}
+                    className="flex h-14 w-14 items-center justify-center border-[3px] border-black"
+                    style={{ background: '#E8F5E9', boxShadow: '3px 3px 0 #111', borderRadius: '2px' }}
                   >
-                    <CheckCircle2 className="h-8 w-8" style={{ color: '#2E7D32' }} />
+                    <CheckCircle2 className="h-7 w-7" style={{ color: '#2E7D32' }} />
                   </div>
-                  <h4
-                    className="mt-5 text-lg font-black uppercase tracking-tight"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-                  >
+                  <h4 className="mt-4 text-base font-black uppercase tracking-tight" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>
                     Order Confirmed
                   </h4>
-                  <p
-                    className="mt-2 text-[10px] font-black uppercase tracking-wider"
-                    style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
-                  >
+                  <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}>
                     Redirecting...
                   </p>
                 </>

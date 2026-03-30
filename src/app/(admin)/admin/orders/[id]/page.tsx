@@ -11,23 +11,19 @@ import type { OrderStatus } from '@/types/order.types'
 export const dynamic = 'force-dynamic'
 
 const statusOptions: { value: OrderStatus; label: string }[] = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'confirmed', label: 'Confirmed' },
-  { value: 'delevering', label: 'Out for delivery' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'delivering', label: 'Delivering' },
   { value: 'delivered', label: 'Delivered' },
+  { value: 'refunded', label: 'Refunded' },
   { value: 'on hold', label: 'On hold' },
-  { value: 'cancelled', label: 'Cancelled' },
-  { value: 'returned', label: 'Returned' },
 ]
 
 const statusColors: Record<OrderStatus, string> = {
-  pending: 'bg-amber-100 text-amber-800',
-  confirmed: 'bg-blue-100 text-blue-800',
-  delevering: 'bg-indigo-100 text-indigo-800',
-  delivered: 'bg-emerald-100 text-emerald-800',
-  cancelled: 'bg-red-100 text-red-800',
+  paid: 'bg-emerald-100 text-emerald-800',
+  delivering: 'bg-indigo-100 text-indigo-800',
+  delivered: 'bg-blue-100 text-blue-800',
+  refunded: 'bg-rose-100 text-rose-800',
   'on hold': 'bg-slate-100 text-slate-800',
-  returned: 'bg-rose-100 text-rose-800',
 }
 
 function productImageUrl(productId: string, filename: string) {
@@ -80,7 +76,7 @@ async function getOrderDetail(id: string) {
     return {
       id: String(record.id),
       created: String(record.created ?? ''),
-      status: String(record.status ?? 'pending') as OrderStatus,
+      status: String(record.status ?? 'paid') as OrderStatus,
       firstName: String(record.firstName ?? ''),
       lastName: String(record.lastName ?? ''),
       email: String(record.email ?? ''),

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { Check, Clock3, PackageCheck, Truck, ShoppingBag, ArrowLeft, RotateCcw } from 'lucide-react'
+import { CreditCard, PackageCheck, Truck, ShoppingBag, RotateCcw, Pause } from 'lucide-react'
 import type { CustomerOrder, CustomerOrderStatus } from '@/lib/services/orders.service'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
@@ -11,13 +11,11 @@ const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50
 type Props = { orders: CustomerOrder[] }
 
 const statusConfig: Record<CustomerOrderStatus, { label: string; bg: string; text: string; icon: any }> = {
-  pending: { label: 'En Attente', bg: '#FFF8E1', text: '#F57F17', icon: Clock3 },
-  confirmed: { label: 'Confirmee', bg: '#E3F2FD', text: '#1565C0', icon: Check },
-  delevering: { label: 'En Livraison', bg: '#EDE7F6', text: '#6A1B9A', icon: Truck },
-  delivered: { label: 'Livree', bg: '#E8F5E9', text: '#2E7D32', icon: PackageCheck },
-  cancelled: { label: 'Annulee', bg: '#FFEBEE', text: '#C62828', icon: Check },
-  'on hold': { label: 'En Pause', bg: '#ECEFF1', text: '#37474F', icon: Clock3 },
-  returned: { label: 'Retournee', bg: '#FCE4EC', text: '#AD1457', icon: RotateCcw },
+  paid: { label: 'Payee', bg: '#E8F5E9', text: '#2E7D32', icon: CreditCard },
+  delivering: { label: 'En Livraison', bg: '#EDE7F6', text: '#6A1B9A', icon: Truck },
+  delivered: { label: 'Livree', bg: '#E3F2FD', text: '#1565C0', icon: PackageCheck },
+  refunded: { label: 'Remboursee', bg: '#FCE4EC', text: '#AD1457', icon: RotateCcw },
+  'on hold': { label: 'En Pause', bg: '#ECEFF1', text: '#37474F', icon: Pause },
 }
 
 const rotations = ['-0.6deg', '0.4deg', '-0.3deg', '0.5deg', '-0.4deg']

@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     const filter = productIds.map((id) => `id = '${id}'`).join(" || ")
     const productRecords = await pb.collection("products").getFullList({
       filter,
-      fields: "id,name,sku,price,promoPrice,isActive,inView",
+      fields: "id,name,sku,price,promoPrice,isActive,inView,stock",
       requestKey: null,
     })
 
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
         country,
         state,
         paymentMode: "cash_on_delivery",
-        status: "pending",
+        status: "paid",
         items,
         total,
         currency,
@@ -148,6 +148,15 @@ export async function POST(request: NextRequest) {
       },
       { requestKey: null }
     )
+
+    // Reduce stock for each ordered item
+    for (const item of items) {
+      const product = productMap.get(item.productId)
+      if (product && typeof product.stock === 'number') {
+        const newStock = Math.max(0, product.stock - item.quantity)
+        await pb.collection('products').update(item.productId, { stock: newStock }, { requestKey: null })
+      }
+    }
 
     void sendAdminOrderPushNotification({
       id: String(created.id ?? ''),

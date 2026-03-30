@@ -5,13 +5,11 @@ import { createServerPb } from '@/lib/pb'
 import type { ProductListItem } from '@/lib/services/product.service'
 
 export type CustomerOrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'delevering'
+  | 'paid'
+  | 'delivering'
   | 'delivered'
-  | 'cancelled'
+  | 'refunded'
   | 'on hold'
-  | 'returned'
 
 export type CustomerOrder = {
   id: string
@@ -42,21 +40,19 @@ export class OrdersServiceError extends Error {
 }
 
 const allowedStatuses: CustomerOrderStatus[] = [
-  'pending',
-  'confirmed',
-  'delevering',
+  'paid',
+  'delivering',
   'delivered',
-  'cancelled',
+  'refunded',
   'on hold',
-  'returned',
 ]
 const PB_ID_REGEX = /^[a-zA-Z0-9]{15}$/
 
 function normalizeStatus(value: unknown): CustomerOrderStatus {
-  if (typeof value !== 'string') return 'pending'
+  if (typeof value !== 'string') return 'paid'
   return allowedStatuses.includes(value as CustomerOrderStatus)
     ? (value as CustomerOrderStatus)
-    : 'pending'
+    : 'paid'
 }
 
 function escapePbString(value: string): string {

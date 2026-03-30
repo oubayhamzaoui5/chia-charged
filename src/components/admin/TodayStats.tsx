@@ -26,7 +26,7 @@ export default function TodayStats() {
   } = useQuery({
     queryKey: ['today-visits'],
     queryFn: getTodayVisitsAction,
-    refetchInterval: 30_000,
+    refetchInterval: 60_000,
     retry: 2,
   })
 
@@ -42,7 +42,7 @@ export default function TodayStats() {
             className="text-[10px] font-semibold uppercase tracking-widest"
             style={{ color: '#9CA3AF' }}
           >
-            Visits today
+            Visitors today
           </span>
           <div className="rounded-lg p-1.5" style={{ background: '#EEF2FF' }}>
             <Eye className="w-4 h-4" style={{ color: '#4F46E5' }} />
@@ -74,7 +74,7 @@ export default function TodayStats() {
             </button>
           </div>
         ) : (
-          <p className="text-xs" style={{ color: '#9CA3AF' }}>Page views since midnight</p>
+          <p className="text-xs" style={{ color: '#9CA3AF' }}>Unique visitors since midnight</p>
         )}
       </div>
 

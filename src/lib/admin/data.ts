@@ -223,20 +223,18 @@ export async function getAdminVedettesData(): Promise<{
 }
 
 const allowedStatuses: OrderStatus[] = [
-  'pending',
-  'confirmed',
-  'delevering',
+  'paid',
+  'delivering',
   'delivered',
-  'cancelled',
+  'refunded',
   'on hold',
-  'returned',
 ]
 
 function normalizeStatus(value: unknown): OrderStatus {
-  if (typeof value !== 'string') return 'pending'
+  if (typeof value !== 'string') return 'paid'
   return allowedStatuses.includes(value as OrderStatus)
     ? (value as OrderStatus)
-    : 'pending'
+    : 'paid'
 }
 
 export async function getAdminOrders(): Promise<OrderRecord[]> {

@@ -729,6 +729,25 @@ export default function ProductClient({
     setQuantity((prev) => Math.max(1, Math.min(prev, maxSelectableQuantity)))
   }, [maxSelectableQuantity])
 
+  // Pin left panel when cart drawer opens (same fix as nutrition modal scroll-lock)
+  useEffect(() => {
+    const onCartOpen = () => {
+      if (leftPanelRef.current) {
+        const { top, left, width } = leftPanelRef.current.getBoundingClientRect()
+        setPanelFixedStyle({ top, left, width })
+      }
+    }
+    const onCartClose = () => {
+      requestAnimationFrame(() => setPanelFixedStyle(null))
+    }
+    window.addEventListener("cart:drawer:open", onCartOpen)
+    window.addEventListener("cart:drawer:close", onCartClose)
+    return () => {
+      window.removeEventListener("cart:drawer:open", onCartOpen)
+      window.removeEventListener("cart:drawer:close", onCartClose)
+    }
+  }, [])
+
   const handleAlsoLikeScroll = () => {
     const container = alsoLikeScrollRef.current
     if (!container) return
@@ -918,7 +937,7 @@ export default function ProductClient({
         {/* LEFT: Sticky image panel */}
         <div
           ref={leftPanelRef}
-          className="relative flex flex-col items-center justify-center lg:w-[55%] lg:sticky lg:top-0 lg:h-screen"
+          className="relative z-[1] flex flex-col items-center justify-center lg:w-[55%] lg:sticky lg:top-0 lg:h-screen"
           style={{
             height: '100vh',
             background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)",
@@ -1130,7 +1149,7 @@ export default function ProductClient({
               )}
 
               {/* Badge */}
-              <div className="flex items-center justify-end relative top-8 z-99">
+              <div className="flex items-center justify-end relative top-8 z-[1]">
                 <span
                   className="inline-flex flex-col items-center justify-center rounded-sm border-[3px] border-black px-4 py-2 text-center"
                   style={{
@@ -1155,17 +1174,17 @@ export default function ProductClient({
                 <button onClick={() => setQuantity((prev) => Math.min(prev + 1, maxSelectableQuantity))} disabled={!isInStock || quantity >= maxSelectableQuantity} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity >= maxSelectableQuantity ? 'not-allowed' : 'pointer' }}>+</button>
               </div>
               {!isMainCartStatusReady ? (
-                <button disabled className="flex flex-1 items-center justify-center rounded-md font-black uppercase tracking-widest text-white/70 opacity-80" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>Loading...</button>
+                <button disabled className="flex flex-1 items-center justify-center border-[3px] border-black font-black uppercase italic tracking-[0.08em] text-white/60 disabled:opacity-70" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, boxShadow: '3px 3px 0 #111' }}>Loading...</button>
               ) : isInCart ? (
-                <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new Event('cart:open'))} className="flex flex-1 items-center justify-center gap-2 rounded-md font-black uppercase tracking-widest text-white transition-opacity hover:opacity-90 cursor-pointer" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>
+                <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new Event('cart:open'))} className="flex flex-1 cursor-pointer items-center justify-center gap-2 border-[3px] border-black font-black uppercase italic tracking-[0.08em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111]" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, boxShadow: '3px 3px 0 #111' }}>
                   <ShoppingCart size={16} />View Cart
                 </button>
               ) : isInStock ? (
-                <button onClick={handleAddToCart} disabled={!isMainCartStatusReady || isAdding} className="shimmer-btn flex flex-1 cursor-pointer items-center justify-center rounded-md border-3 border-black font-black uppercase tracking-widest text-white transition-all duration-200 ease-out hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:brightness-105 active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0px_rgba(0,0,0,1)] disabled:opacity-50" style={{ background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 100%)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>
+                <button onClick={handleAddToCart} disabled={!isMainCartStatusReady || isAdding} className="flex flex-1 cursor-pointer items-center justify-center border-[3px] border-black font-black uppercase italic tracking-[0.08em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:opacity-50 disabled:cursor-not-allowed" style={{ background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, boxShadow: '3px 3px 0 #111' }}>
                   {isAdding ? 'Adding...' : 'Add to Bag'}
                 </button>
               ) : (
-                <button disabled className="flex flex-1 items-center justify-center gap-2 rounded-md font-black uppercase tracking-widest text-white" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: 'not-allowed', opacity: 0.85 }}>
+                <button disabled className="flex flex-1 items-center justify-center border-[3px] border-black font-black uppercase italic tracking-[0.08em] text-white" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, boxShadow: '3px 3px 0 #111', cursor: 'not-allowed', opacity: 0.7 }}>
                   Unavailable
                 </button>
               )}

@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     const filter = productIds.map(id => `id = '${id}'`).join(' || ')
     const productRecords = await pb.collection('products').getFullList({
       filter,
-      fields: 'id,name,sku,price,promoPrice,isActive,inView',
+      fields: 'id,name,sku,price,promoPrice,isActive,inView,stock',
       requestKey: null,
     })
 
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     const subtotal = Number(items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0).toFixed(2))
     const total = Number((subtotal + shipping).toFixed(2))
 
-    // Create order with pending_payment status
+    // Create order with paid status
     const created = await pb.collection('orders').create({
       user: user?.id ?? null,
       isGuest: !user?.id,
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       country,
       state,
       paymentMode: 'stripe',
-      status: 'pending_payment',
+      status: 'paid',
       items,
       total,
       currency: 'USD',
@@ -152,7 +152,16 @@ export async function POST(req: NextRequest) {
     }
 
     // No Stripe keys — test mode, mark as pending directly
-    await pb.collection('orders').update(orderId, { status: 'pending', paymentMode: 'test_mode' })
+    await pb.collection('orders').update(orderId, { status: 'paid', paymentMode: 'test_mode' })
+
+    // Reduce stock for each ordered item
+    for (const item of items) {
+      const product = productMap.get(item.productId)
+      if (product && typeof product.stock === 'number') {
+        const newStock = Math.max(0, product.stock - item.quantity)
+        await pb.collection('products').update(item.productId, { stock: newStock }, { requestKey: null })
+      }
+    }
 
     void sendAdminOrderPushNotification({ id: orderId, total, currency: 'USD', customerName: `${firstName} ${lastName}`.trim() || 'Customer' })
 

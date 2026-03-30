@@ -979,8 +979,8 @@ export function Navbar(props: NavbarProps) {
                   initial={{ opacity: 0, y: -8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  className="space-y-2 rounded-2xl px-3 py-3 text-black overflow-hidden bg-accent"
+                  transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
+                  className="overflow-hidden rounded-sm text-black"
                   style={{
                     transformOrigin: "top center",
                     border: '4px solid #111',
@@ -988,23 +988,38 @@ export function Navbar(props: NavbarProps) {
                     fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
                   }}
                 >
+                  {/* Gradient header — mirrors the modal's left panel */}
                   <div
-                    className="mb-1 text-[11px] font-black uppercase tracking-[0.18em] pb-2 text-white"
-                    style={{ borderBottom: '4px solid #111' }}
+                    className="px-4 py-2"
+                    style={{
+                      background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)',
+                      borderBottom: '4px solid #111',
+                    }}
                   >
-                    My account
+                    <div
+                      className="truncate text-[13px] font-black uppercase tracking-[0.1em] text-white"
+                    >
+                      {displayName}
+                    </div>
+                    <div className="text-[9px] font-black uppercase tracking-[0.14em] text-white/60 mt-0.5 truncate">
+                      {currentUser?.email}
+                    </div>
                   </div>
 
-                  <div className="space-y-1">
+                  {/* Menu items — cream background like modal's right panel */}
+                  <div
+                    className="space-y-2 px-3 py-3"
+                    style={{ background: '#f5efe4', backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }}
+                  >
                       {/* Full name / Profile */}
 <Link
   href={currentUser?.role === "admin" ? "/admin" : "/orders"}
-  className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold tracking-wide bg-white border-2 border-black transition-all hover:shadow-[2px_2px_0_#111] hover:-translate-x-px hover:-translate-y-px"
+  className="flex items-center justify-between rounded-sm px-3 py-2.5 text-sm font-black uppercase tracking-wide bg-white border-[3px] border-black transition-all hover:shadow-[3px_3px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5"
   onClick={() => setIsProfileOpen(false)}
 >
   <div className="flex items-center gap-2">
     <CircleUser className="h-4 w-4" />
-    <span className="truncate">{displayName}</span>
+    <span className="truncate text-[11px]">{currentUser?.role === "admin" ? "Admin panel" : "My profile"}</span>
   </div>
   <ChevronRight className="h-3 w-3 opacity-60" />
 </Link>
@@ -1013,12 +1028,12 @@ export function Navbar(props: NavbarProps) {
                     {currentUser?.role !== "admin" && (
   <Link
     href="/orders"
-    className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold tracking-wide bg-white border-2 border-black transition-all hover:shadow-[2px_2px_0_#111] hover:-translate-x-px hover:-translate-y-px"
+    className="flex items-center justify-between rounded-sm px-3 py-2.5 text-sm font-black uppercase tracking-wide bg-white border-[3px] border-black transition-all hover:shadow-[3px_3px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5"
     onClick={() => setIsProfileOpen(false)}
   >
     <div className="flex items-center gap-2">
       <ClipboardList className="h-4 w-4" />
-      <span>My orders</span>
+      <span className="text-[11px]">My orders</span>
     </div>
     <ChevronRight className="h-3 w-3 opacity-60" />
   </Link>
@@ -1028,12 +1043,12 @@ export function Navbar(props: NavbarProps) {
                       {currentUser?.role !== "admin" && (
                         <Link
                           href="/account"
-                          className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold tracking-wide bg-white border-2 border-black transition-all hover:shadow-[2px_2px_0_#111] hover:-translate-x-px hover:-translate-y-px"
+                          className="flex items-center justify-between rounded-sm px-3 py-2.5 text-sm font-black uppercase tracking-wide bg-white border-[3px] border-black transition-all hover:shadow-[3px_3px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5"
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <div className="flex items-center gap-2">
                             <SlidersHorizontal className="h-4 w-4" />
-                            <span>Account settings</span>
+                            <span className="text-[11px]">Account settings</span>
                           </div>
                           <ChevronRight className="h-3 w-3 opacity-60" />
                         </Link>
@@ -1043,11 +1058,11 @@ export function Navbar(props: NavbarProps) {
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold tracking-wide bg-white border-2 border-black transition-all hover:shadow-[2px_2px_0_#111] hover:-translate-x-px hover:-translate-y-px"
+                        className="flex w-full cursor-pointer items-center justify-between rounded-sm px-3 py-2.5 text-sm font-black uppercase tracking-wide bg-white border-[3px] border-black transition-all hover:shadow-[3px_3px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5"
                       >
                         <div className="flex items-center gap-2">
                           <LogOut className="h-4 w-4 text-red-600" />
-                          <span className="text-red-600">Sign out</span>
+                          <span className="text-[11px] text-red-600">Sign out</span>
                         </div>
                       </button>
                     </div>

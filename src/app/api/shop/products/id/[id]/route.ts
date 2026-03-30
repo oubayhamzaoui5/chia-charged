@@ -49,6 +49,7 @@ function normalizeProduct(record: any) {
         ? null
         : Number(record.promoPrice),
     currency: String(record?.currency ?? "DT"),
+    stock: typeof record?.stock === "number" ? record.stock : Number(record?.stock ?? 0),
   }
 }
 
@@ -65,7 +66,7 @@ export async function GET(
 
     const pb = createServerPb()
     const record = await pb.collection("products").getOne(safeId, {
-      fields: "id,slug,name,sku,images,price,promoPrice,currency,isActive,inView",
+      fields: "id,slug,name,sku,images,price,promoPrice,currency,stock,isActive,inView",
       requestKey: null,
     })
 

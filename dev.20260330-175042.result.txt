@@ -1,0 +1,5 @@
+pid=16264
+out=c:\Users\oubay\Documents\chia charged\ecommerce-scaffold\dev.20260330-175042.out.log
+err=c:\Users\oubay\Documents\chia charged\ecommerce-scaffold\dev.20260330-175042.err.log
+api_status=200 ms=10888 len=14229
+root_error=The operation has timed out.

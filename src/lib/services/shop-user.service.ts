@@ -24,6 +24,7 @@ export type CartProductSummary = {
   price: number
   promoPrice: number | null
   currency: string
+  stock: number
 }
 
 export type CartEntry = {
@@ -224,6 +225,7 @@ export async function getCartItems(auth: AuthContext): Promise<CartEntry[]> {
               ? null
               : Number(prod.promoPrice),
           currency: String(prod.currency ?? 'DT'),
+          stock: Number(prod.stock ?? 0),
         }
       : null
 

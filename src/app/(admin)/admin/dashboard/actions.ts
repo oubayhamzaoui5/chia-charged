@@ -18,18 +18,79 @@ export async function getTodaySalesAction() {
 
 export async function getTodayVisitsAction(): Promise<number> {
   await requireAdmin()
-  const { pb } = await getAdminPbForAction()
+
+  const PB_URL = process.env.POCKETBASE_URL ?? process.env.NEXT_PUBLIC_PB_URL ?? 'http://127.0.0.1:8090'
+  const email = process.env.PB_ADMIN_EMAIL ?? ''
+  const password = process.env.PB_ADMIN_PASSWORD ?? ''
+
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const toPb = (d: Date) =>
-    d.toISOString().replace('T', ' ').split('.')[0]
+
   try {
-    const result = await pb.collection('visits').getList(1, 1, {
-      filter: `created >= "${toPb(start)}"`,
-      requestKey: null,
+    const PocketBase = (await import('pocketbase')).default
+    const pb = new PocketBase(PB_URL)
+    pb.autoCancellation(false)
+    await pb.collection('_superusers').authWithPassword(email, password)
+
+    try {
+      const records = await pb.collection('visits').getFullList({
+        filter: pb.filter('created >= {:start}', { start }),
+        fields: 'visitorId',
+        requestKey: null,
+      })
+
+      const uniqueVisitors = new Set(
+        records.map((r: any) => r.visitorId).filter(Boolean)
+      )
+      return uniqueVisitors.size
+    } catch (filterErr: any) {
+      if (filterErr?.status !== 400) throw filterErr
+
+      // Fallback for PocketBase instances that reject date filter parsing.
+      const uniqueVisitors = new Set<string>()
+      const perPage = 200
+      let page = 1
+
+      while (true) {
+        const batch = await pb.collection('visits').getList(page, perPage, {
+          sort: '-created',
+          fields: 'visitorId,created',
+          requestKey: null,
+          skipTotal: true,
+        })
+
+        if (!batch.items.length) break
+
+        let reachedOlderRecords = false
+        for (const record of batch.items as any[]) {
+          const createdAt = record?.created ? new Date(record.created) : null
+          if (!createdAt || Number.isNaN(createdAt.getTime())) continue
+
+          if (createdAt >= start) {
+            if (typeof record.visitorId === 'string' && record.visitorId) {
+              uniqueVisitors.add(record.visitorId)
+            }
+            continue
+          }
+
+          reachedOlderRecords = true
+          break
+        }
+
+        if (reachedOlderRecords || batch.items.length < perPage) break
+        page += 1
+      }
+
+      return uniqueVisitors.size
+    }
+  } catch (err) {
+    const e = err as any
+    console.error('[getTodayVisitsAction]', {
+      status: e?.status,
+      url: e?.url,
+      response: e?.response,
+      message: e?.message,
     })
-    return result.totalItems
-  } catch {
     return 0
   }
 }
@@ -84,16 +145,16 @@ export async function getOrdersKpisAction() {
 
   const [pendingToday, deliveredToday, pendingAll, confirmedAll] = await Promise.all([
     pb.collection('orders').getList(1, 1, {
-      filter: `status = "pending" && updated >= "${pbDate}"`,
+      filter: `status = "paid" && updated >= "${pbDate}"`,
     }),
     pb.collection('orders').getList(1, 1, {
       filter: `status = "delivered" && updated >= "${pbDate}"`,
     }),
     pb.collection('orders').getList(1, 1, {
-      filter: 'status = "pending"',
+      filter: 'status = "paid"',
     }),
     pb.collection('orders').getList(1, 1, {
-      filter: 'status = "confirmed"',
+      filter: 'status = "delivering"',
     }),
   ])
 

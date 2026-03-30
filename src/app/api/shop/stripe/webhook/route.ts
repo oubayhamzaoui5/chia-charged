@@ -79,6 +79,29 @@ export async function POST(req: NextRequest) {
       const order = await pb.collection('orders').getOne(orderId, { requestKey: null })
       await pb.collection('orders').update(orderId, { status: 'paid' }, { requestKey: null })
 
+      // Reduce stock for each ordered item
+      const orderItems: Array<{ productId: string; quantity: number }> =
+        Array.isArray(order.items) ? order.items : []
+      const productIds = orderItems
+        .map((i) => i.productId)
+        .filter((id) => typeof id === 'string' && /^[a-zA-Z0-9]{15}$/.test(id))
+      if (productIds.length > 0) {
+        const productFilter = productIds.map((id) => `id = '${id}'`).join(' || ')
+        const products = await pb.collection('products').getFullList({
+          filter: productFilter,
+          fields: 'id,stock',
+          requestKey: null,
+        })
+        const stockMap = new Map(products.map((p: any) => [p.id as string, p.stock as number]))
+        for (const item of orderItems) {
+          const currentStock = stockMap.get(item.productId)
+          if (typeof currentStock === 'number') {
+            const newStock = Math.max(0, currentStock - (item.quantity || 1))
+            await pb.collection('products').update(item.productId, { stock: newStock }, { requestKey: null })
+          }
+        }
+      }
+
       void sendAdminOrderPushNotification({
         id: orderId,
         total: Number(order.total ?? 0),

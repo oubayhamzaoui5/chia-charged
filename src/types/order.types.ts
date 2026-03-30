@@ -9,13 +9,11 @@ export type UserRecord = {
 }
 
 export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'delevering'
+  | 'paid'
+  | 'delivering'
   | 'delivered'
-  | 'cancelled'
+  | 'refunded'
   | 'on hold'
-  | 'returned'
 
 export type OrderItem = {
   id?: string

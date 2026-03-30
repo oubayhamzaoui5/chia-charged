@@ -7,13 +7,11 @@ import { assertPocketBaseId } from '@/lib/admin/validation'
 import type { OrderStatus } from '@/types/order.types'
 
 const allowedStatuses: OrderStatus[] = [
-  'pending',
-  'confirmed',
-  'delevering',
+  'paid',
+  'delivering',
   'delivered',
-  'cancelled',
+  'refunded',
   'on hold',
-  'returned',
 ]
 
 function normalizeStatus(value: string): OrderStatus {

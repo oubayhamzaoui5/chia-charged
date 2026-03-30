@@ -1,0 +1,24 @@
+
+> ecommerce-scaffold@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.56.1:3000
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+✓ Starting...
+Creating turbopack project {
+  dir: 'C:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold',
+  testMode: true
+}
+✓ Ready in 3.5s
+ GET /api/shop/products/strawberries-n-cream-cc-str-4 200 in 9.6s (compile: 7.2s, render: 2.4s)
+ GET /api/shop/products/chocolate-chip-cc-chklt-4 200 in 4.1s (compile: 22ms, render: 4.1s)
+ GET /api/products?category=lighting&limit=8 200 in 467ms (compile: 134ms, render: 333ms)
+○ Compiling /blog ...
+ GET /blog 200 in 8.7s (compile: 5.7s, proxy.ts: 164ms, render: 2.9s)
+○ Compiling / ...
+[?25h

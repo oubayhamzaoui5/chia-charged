@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
+    "dev:turbo": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -52,6 +53,7 @@
     "input-otp": "^1.4.2",
     "ioredis": "^5.10.1",
     "isomorphic-dompurify": "^2.36.0",
+    "jspdf": "^4.2.1",
     "lexical": "^0.40.0",
     "lucide-react": "^0.553.0",
     "next": "^16.1.6",

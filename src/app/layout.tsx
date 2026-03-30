@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Manrope, Fraunces } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Providers from './providers'
-import VisitTracker from '@/components/VisitTracker'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -46,7 +45,6 @@ export default function RootLayout({
     <html lang="fr">
       <body suppressHydrationWarning className={`${manrope.className} ${fraunces.variable} font-sans antialiased`}>
         <Providers>
-          <VisitTracker />
           {children}
         </Providers>
         <Analytics />

@@ -23,6 +23,22 @@ const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://chiacharged.com'
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race<T>([
+      promise,
+      new Promise<T>((resolve) => {
+        timeoutId = setTimeout(() => resolve(fallback), timeoutMs)
+      }),
+    ])
+  } catch {
+    return fallback
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId)
+  }
+}
+
 export const metadata: Metadata = {
   title: 'Chia Charged | Pudding Proteine aux Graines de Chia — 22g Protein Per Serving, Zero Junk',
   description:
@@ -61,9 +77,9 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const [posts, strawberryData, chocolateData] = await Promise.all([
-    getAllPublishedPosts(),
-    getProductDetailsBySlug('strawberries-n-cream-cc-str-4'),
-    getProductDetailsBySlug('chocolate-chip-cc-chklt-4'),
+    withTimeout(getAllPublishedPosts(), 8_000, []),
+    withTimeout(getProductDetailsBySlug('strawberries-n-cream-cc-str-4'), 8_000, null),
+    withTimeout(getProductDetailsBySlug('chocolate-chip-cc-chklt-4'), 8_000, null),
   ])
 
   const flavorPriceBySlug: Record<

@@ -4,7 +4,7 @@ import { useMemo, useState, useRef, useEffect, Fragment } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import EmptyState from '@/components/admin/empty-state'
-import { Trash2, ChevronDown, ChevronUp, Pause, ShoppingCart, CheckCircle2, Clock, Truck, Search, ExternalLink, Download } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronUp, Pause, ShoppingCart, CheckCircle2, Truck, Search, ExternalLink, Download } from 'lucide-react'
 import type { OrderRecord, OrderStatus } from '@/types/order.types'
 import { deleteOrderAction, updateOrderStatusAction } from './actions'
 import { useAdminToast } from '@/components/admin/AdminToast'
@@ -67,36 +67,30 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
 
   const statusIcon = (status: OrderStatus) => {
     switch (status) {
-      case 'pending': return <Clock className="w-3 h-3" />
-      case 'confirmed': return <CheckCircle2 className="w-3 h-3" />
-      case 'delevering': return <Truck className="w-3 h-3" />
+      case 'paid': return <CheckCircle2 className="w-3 h-3" />
+      case 'delivering': return <Truck className="w-3 h-3" />
       case 'delivered': return <ShoppingCart className="w-3 h-3" />
-      case 'cancelled': return <Trash2 className="w-3 h-3" />
+      case 'refunded': return <Trash2 className="w-3 h-3" />
       case 'on hold': return <Pause className="w-3 h-3" />
-      case 'returned': return <Truck className="w-3 h-3" />
     }
   }
 
   const statusBadgeClass = (status: OrderStatus) => {
     switch (status) {
-      case 'pending': return 'bg-orange-50 text-orange-700'
-      case 'confirmed': return 'bg-blue-50 text-blue-700'
-      case 'delevering': return 'bg-purple-50 text-purple-700'
-      case 'delivered': return 'bg-emerald-50 text-emerald-700'
-      case 'cancelled': return 'bg-red-50 text-red-700'
+      case 'paid': return 'bg-emerald-50 text-emerald-700'
+      case 'delivering': return 'bg-purple-50 text-purple-700'
+      case 'delivered': return 'bg-blue-50 text-blue-700'
+      case 'refunded': return 'bg-red-50 text-red-700'
       case 'on hold': return 'bg-slate-100 text-slate-600'
-      case 'returned': return 'bg-red-50 text-red-700'
     }
   }
 
   const statusLabels: Record<OrderStatus, string> = {
-    pending: 'Pending',
-    confirmed: 'Confirmed',
-    delevering: 'Out for delivery',
+    paid: 'Paid',
+    delivering: 'Delivering',
     delivered: 'Delivered',
-    cancelled: 'Cancelled',
+    refunded: 'Refunded',
     'on hold': 'On hold',
-    returned: 'Returned',
   }
 
   function exportOrdersCsv() {
@@ -538,7 +532,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
 
       {openMenuId && dropdownPos && createPortal(
         <div id="order-dropdown" className="absolute w-44 rounded-xl z-50 overflow-hidden" style={{ top: dropdownPos.top + 4, left: dropdownPos.left, background: '#FFFFFF', border: '1px solid #E8EAED', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
-          {['pending', 'confirmed', 'delevering', 'delivered', 'cancelled', 'on hold', 'returned'].map(s => (
+          {['paid', 'delivering', 'delivered', 'refunded', 'on hold'].map(s => (
             <button
               key={s}
               onClick={() => updateStatus(openMenuId, s as OrderStatus)}
