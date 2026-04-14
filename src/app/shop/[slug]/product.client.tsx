@@ -119,10 +119,10 @@ function NutritionModal({
     zIndex: 9999,
     background: 'rgba(0,0,0,0.5)',
     display: 'flex',
-alignItems: 'flex-start',
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    padding: '32px 15%',
-        overflowY: 'auto',
+    padding: 'clamp(12px, 4vw, 32px) clamp(8px, 5vw, 15%)',
+    overflowY: 'auto',
   }}
 >
       <style>{`
@@ -311,6 +311,29 @@ alignItems: 'flex-start',
         .nf-section.allergen { background: rgba(255,246,235,0.95); }
         .nf-section.allergen .contains { font-weight: 800; color: #111; font-size: 0.79rem; margin-bottom: 4px; }
         .nf-section.allergen .maycontain { font-weight: 600; color: #111; font-size: 0.79rem; }
+
+        @media (max-width: 1023px) {
+          .nf-title { font-size: 2.4rem; padding: 0; }
+          .nf-label h2 { font-size: 1.1rem; }
+          .nf-small { font-size: 0.62rem; }
+          .nf-rowline { font-size: 0.65rem; }
+          .nf-calories .label { font-size: 0.85rem; }
+          .nf-calories .value { font-size: 1.4rem; }
+          .nf-dv { font-size: 0.6rem; }
+          .nf-foot { font-size: 0.55rem; }
+          .nf-box-head h2 { font-size: 1.1rem; }
+          .nf-box-head p { font-size: 0.62rem; }
+          .nf-col-hdr { font-size: 0.58rem; padding: 4px 10px; }
+          .nf-row { font-size: 0.65rem; padding: 3px 10px; }
+          .nf-row.calories .val { font-size: 1.3rem; }
+          .nf-pct-note { font-size: 0.56rem; padding: 3px 10px 5px; }
+          .nf-section h3 { font-size: 0.75rem; }
+          .nf-section p { font-size: 0.65rem; line-height: 1.5; }
+          .nf-section.allergen .contains,
+          .nf-section.allergen .maycontain { font-size: 0.65rem; }
+          .nf-label { padding: 6px 8px 8px; }
+          .nf-section { padding: 10px 12px; margin-bottom: 10px; }
+        }
       `}</style>
 
     <div className={`nf-modal${isClosing ? ' closing' : ''}`}>
@@ -323,8 +346,8 @@ alignItems: 'flex-start',
       onScroll={handleModalScroll}
       className="nf-body"
       style={{
-        padding: '48px 20% 0',
-        paddingBottom: atBottom ? '48px' : '0',
+        padding: 'clamp(20px, 5vw, 48px) clamp(12px, 8vw, 20%) 0',
+        paddingBottom: atBottom ? 'clamp(20px, 5vw, 48px)' : '0',
         transition: 'padding-bottom 120ms ease'
       }}
     >          {/* Header */}
@@ -552,6 +575,7 @@ export default function ProductClient({
   const [displayImageIdx, setDisplayImageIdx] = useState(0)
   const [isImageFading, setIsImageFading] = useState(false)
   const leftPanelRef = useRef<HTMLDivElement | null>(null)
+  const mobileCarouselRef = useRef<HTMLDivElement | null>(null)
   const [panelFixedStyle, setPanelFixedStyle] = useState<{ top: number; left: number; width: number } | null>(null)
 
   const defaultVariant = useMemo<ProductWithDetails | null>(() => {
@@ -725,6 +749,16 @@ export default function ProductClient({
     }, 140)
     return () => window.clearTimeout(t)
   }, [currentImageIdx, displayImageIdx])
+
+  useEffect(() => {
+    const el = mobileCarouselRef.current
+    if (!el) return
+    const W = el.clientWidth
+    const itemWidth = W * 0.8
+    const gap = 12
+    const scrollLeft = currentImageIdx * (itemWidth + gap)
+    el.scrollTo({ left: scrollLeft, behavior: 'smooth' })
+  }, [currentImageIdx])
 
   useEffect(() => {
     setQuantity((prev) => Math.max(1, Math.min(prev, maxSelectableQuantity)))
@@ -938,18 +972,93 @@ export default function ProductClient({
         {/* LEFT: Sticky image panel */}
         <div
           ref={leftPanelRef}
-          className="relative z-[1] flex flex-col items-center justify-center lg:w-[55%] lg:sticky lg:top-0 lg:h-screen"
+          className="relative z-[1] flex flex-col items-center justify-center lg:w-[55%] lg:sticky lg:top-0 lg:h-screen product-left-panel"
           style={{
-            background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)",
+            backgroundColor: '#f7f3ed',
+            backgroundImage: "url('/texture.webp')",
+            backgroundRepeat: 'repeat',
+            backgroundSize: '280px 280px',
             ...(panelFixedStyle ? { position: 'fixed', top: panelFixedStyle.top, left: panelFixedStyle.left, width: panelFixedStyle.width } : {}),
           }}
         >
-          <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,0.14) 0%, transparent 65%)" }} />
+          <style>{`
+            @media (min-width: 1024px) {
+              .product-left-panel {
+                background: linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%) !important;
+                background-image: linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%) !important;
+              }
+            }
+          `}</style>
+          <div className="pointer-events-none absolute inset-0 hidden lg:block" style={{ background: "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,0.14) 0%, transparent 65%)" }} />
 
           {/* Mobile: navbar spacer */}
           <div className="block lg:hidden" style={{ height: 'var(--navbar-offset-mobile, 60px)' }} />
 
-          <div className="relative z-10 flex w-full lg:flex-1 items-center justify-center px-6 py-6 lg:px-2 lg:py-2">
+          {/* Mobile: category + product name */}
+          <div className="block lg:hidden w-full px-6 pt-4 pb-1 z-10 relative">
+            {categoryName && (
+              <p className="text-xs font-black uppercase tracking-[0.15em] mb-1" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, color: '#888' }}>{categoryName}</p>
+            )}
+            <h1 className="text-[2rem] font-black uppercase leading-[0.9] tracking-tighter" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, letterSpacing: '-0.03em' }}>
+              <span style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                {product.name}
+              </span>
+            </h1>
+          </div>
+
+          {/* Mobile: peek carousel */}
+          <div className="block lg:hidden w-full z-10 relative pt-2 pb-2">
+            <div
+              ref={mobileCarouselRef}
+              className="flex"
+              style={{
+                overflowX: 'scroll',
+                scrollSnapType: 'x mandatory',
+                scrollbarWidth: 'none',
+                WebkitOverflowScrolling: 'touch',
+                paddingLeft: '6%',
+                paddingRight: '6%',
+                gap: '10px',
+              } as React.CSSProperties}
+              onScroll={(e) => {
+                const el = e.currentTarget
+                const W = el.clientWidth
+                const itemWidth = W * 0.88
+                const gap = 10
+                const idx = Math.round(el.scrollLeft / (itemWidth + gap))
+                const clamped = Math.max(0, Math.min(idx, imageUrls.length - 1))
+                if (clamped !== currentImageIdx) setCurrentImageIdx(clamped)
+              }}
+            >
+              {imageUrls.map((url, i) => (
+                <div
+                  key={url + i}
+                  style={{ flexShrink: 0, width: '88%', scrollSnapAlign: 'center' }}
+                >
+                  <div
+                    style={{
+                      borderRadius: '20px',
+                      background: 'linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)',
+                      aspectRatio: '1',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Image
+                      src={url}
+                      alt={`${product.name} ${i + 1}`}
+                      fill
+                      unoptimized
+                      className="object-contain p-6 drop-shadow-2xl"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop: single image with fade */}
+          <div className="hidden lg:flex relative z-10 w-full flex-1 items-center justify-center px-2 py-2">
             <div className="relative w-full max-w-[520px] aspect-square">
               <Image
                 key={imageUrls[displayImageIdx] ?? '/aboutimg.webp'}
@@ -962,47 +1071,6 @@ export default function ProductClient({
               />
             </div>
           </div>
-
-          {/* Mobile navigation: prev/next arrows + dots */}
-          {imageUrls.length > 1 && (
-            <div className="flex lg:hidden items-center justify-center gap-4 pb-6 z-10 relative w-full px-8">
-              <button
-                type="button"
-                onClick={() => setCurrentImageIdx(i => i === 0 ? imageUrls.length - 1 : i - 1)}
-                className="flex h-9 w-9 items-center justify-center rounded-full cursor-pointer transition-all active:scale-90"
-                style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.3)' }}
-                aria-label="Previous image"
-              >
-                <ChevronLeft size={18} strokeWidth={2.5} className="text-white" />
-              </button>
-
-              <div className="flex items-center gap-2">
-                {imageUrls.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setCurrentImageIdx(i)}
-                    aria-label={`Image ${i + 1}`}
-                    className="h-2.5 rounded-full transition-all duration-300 cursor-pointer"
-                    style={{
-                      width: i === currentImageIdx ? '2rem' : '0.625rem',
-                      background: i === currentImageIdx ? 'white' : 'rgba(255,255,255,0.35)',
-                    }}
-                  />
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setCurrentImageIdx(i => (i + 1) % imageUrls.length)}
-                className="flex h-9 w-9 items-center justify-center rounded-full cursor-pointer transition-all active:scale-90"
-                style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.3)' }}
-                aria-label="Next image"
-              >
-                <ChevronRight size={18} strokeWidth={2.5} className="text-white" />
-              </button>
-            </div>
-          )}
 
           {/* Desktop thumbnails */}
           {imageUrls.length > 1 && (
@@ -1038,22 +1106,21 @@ export default function ProductClient({
 
         {/* RIGHT: Cream bg */}
         <div
-          className="nav-offset-top-desktop flex flex-col px-6 pb-12 pt-24 lg:w-[45%] lg:px-10 xl:px-14"
+          className="nav-offset-top-desktop flex flex-col px-4 pb-8 pt-4 lg:w-[45%] lg:px-10 xl:px-14"
           style={{
             backgroundColor: '#f7f3ed',
             backgroundImage: "url('/texture.webp')",
             backgroundRepeat: 'repeat',
             backgroundSize: '280px 280px',
-            paddingTop: 'calc(var(--navbar-offset-desktop, 112px) + 22px)',
           }}
         >
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             {categoryName && (
               <p className="text-[1.4rem] font-black uppercase tracking-[0.1em]" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>{categoryName}</p>
             )}
           </div>
 
-          <h1 className="mb-6 text-[2.1rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.1rem] lg:text-[4.1rem]" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, letterSpacing: '-0.03em' }}>
+          <h1 className="mb-6 hidden lg:block text-[2.1rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.1rem] lg:text-[4.1rem]" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, letterSpacing: '-0.03em' }}>
             <span style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               {product.name}
             </span>
