@@ -5,7 +5,7 @@ import { Plus, Minus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 const faqItems = [
   {
@@ -73,7 +73,7 @@ export default function LandingFaq() {
   return (
     <section
       id="faq"
-      className="border-t-3 border-black px-6 py-20 md:py-28"
+      className="border-t-3 border-black px-3 py-12 md:px-6 md:py-24"
       style={{
         backgroundColor: "#f5efe4",
         backgroundImage: "url('/texture.webp')",
@@ -86,10 +86,10 @@ export default function LandingFaq() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14 text-center"
+          className="mb-8 text-center md:mb-14"
         >
           <h2
-            className="text-[2.5rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.5rem]"
+            className="text-[1.8rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3rem]"
             style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em", color: "#111" }}
           >
             Got{" "}
@@ -135,7 +135,7 @@ export default function LandingFaq() {
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-200"
+                  className="flex w-full items-center justify-between gap-3 px-4 py-5 text-left transition-colors duration-200 md:px-6"
                   style={{ background: isOpen ? "rgba(124,58,237,0.05)" : "transparent" }}
                 >
                   <span
@@ -172,7 +172,7 @@ export default function LandingFaq() {
                       style={{ overflow: "hidden" }}
                     >
                       <p
-                        className="px-6 pb-5 pt-1 text-sm font-semibold leading-relaxed md:text-base"
+                        className="px-4 pb-5 pt-1 text-sm font-semibold leading-relaxed md:px-6 md:text-base"
                         style={{ color: "#111" }}
                       >
                         {item.answer}

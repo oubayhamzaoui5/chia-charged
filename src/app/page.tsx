@@ -133,7 +133,7 @@ export default async function HomePage() {
         `}</style>
         <div
           className="nav-offset-cover"
-          style={{ background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)" }}
+          style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)" }}
         >
           <LandingHero />
           <LandingStats />

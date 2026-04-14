@@ -82,6 +82,19 @@ export function Navbar(props: NavbarProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
   )
+
+  // Mobile panel state
+  const [mobileShopOpen, setMobileShopOpen] = useState(false)
+  const [mobileActiveCat, setMobileActiveCat] = useState<string | null>(null)
+  const [mobileProducts, setMobileProducts] = useState<Record<string, { id: string; slug: string; name: string; imageUrls: string[]; price: number; promoPrice?: number | null }[]>>({})
+  const [mobileLoadingCat, setMobileLoadingCat] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      setMobileShopOpen(false)
+      setMobileActiveCat(null)
+    }
+  }, [isMenuOpen])
   const [isLangOpen, setIsLangOpen] = useState(false)
   const [language, setLanguage] = useState("EN")
 
@@ -773,7 +786,7 @@ export function Navbar(props: NavbarProps) {
         </span>
         <span
           style={{
-            background: 'linear-gradient(135deg, rgb(185,58,210) 20%, rgb(232,68,106) 100%)',
+            background: 'linear-gradient(135deg, rgb(158,38,182) 20%, rgb(232,68,106) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -795,7 +808,7 @@ export function Navbar(props: NavbarProps) {
   const profileLabel = currentUser
     ? (fullName || currentUser.email || "Account")
     : "Log in"
-  const NAVBAR_GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+  const NAVBAR_GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
   const shouldShowSignupPromo = showSignupPromo
   const navSpacerClass = reserveSpace
     ? shouldShowSignupPromo
@@ -934,7 +947,7 @@ export function Navbar(props: NavbarProps) {
               {cartCount > 0 && (
                 <span
                   className="absolute top-0 right-0 inline-flex items-center justify-center h-5 min-w-[1.25rem] rounded-full text-white text-[10px] font-black px-1"
-                  style={{ background: 'linear-gradient(135deg, rgb(124,58,237), rgb(232,68,106))', fontFamily: "'Arial Black', sans-serif" }}
+                  style={{ background: 'linear-gradient(135deg, rgb(68,15,195), rgb(232,68,106))', fontFamily: "'Arial Black', sans-serif" }}
                 >
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
@@ -995,7 +1008,7 @@ export function Navbar(props: NavbarProps) {
                   <div
                     className="px-4 py-2"
                     style={{
-                      background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)',
+                      background: 'linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)',
                       borderBottom: '4px solid #111',
                     }}
                   >
@@ -1081,7 +1094,7 @@ export function Navbar(props: NavbarProps) {
           <div className="flex items-center gap-1.5 px-2 py-2">
             <div className="flex flex-1 items-center justify-center">
               <Link href="/" className="flex items-center" aria-label="Home">
-                <LogoSwap size={32} />
+                <LogoSwap size={90} />
               </Link>
             </div>
 
@@ -1115,7 +1128,7 @@ export function Navbar(props: NavbarProps) {
                 {cartCount > 0 && (
                   <span
                     className="absolute -top-2 -right-2 inline-flex items-center justify-center h-5 min-w-[1.25rem] rounded-full text-white text-[10px] font-black px-1"
-                    style={{ background: 'linear-gradient(135deg, rgb(124,58,237), rgb(232,68,106))', fontFamily: "'Arial Black', sans-serif" }}
+                    style={{ background: 'linear-gradient(135deg, rgb(68,15,195), rgb(232,68,106))', fontFamily: "'Arial Black', sans-serif" }}
                   >
                     {cartCount > 99 ? "99+" : cartCount}
                   </span>
@@ -1137,53 +1150,214 @@ export function Navbar(props: NavbarProps) {
         </div>
         {/* Mobile panel */}
         <div
-          className={`text-white transition-all duration-300 ease-out md:hidden ${
-            isMenuOpen ? "max-h-[calc(100vh-80px)] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+          className={`text-white transition-all duration-300 ease-out md:hidden overflow-hidden ${
+            isMenuOpen ? "max-h-[calc(100vh-60px)] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
           }`}
           style={{
-            background: 'rgba(30,8,60,0.97)',
-            backdropFilter: 'blur(20px)',
-            borderTop: '1px solid rgba(255,255,255,0.15)',
+            background: 'linear-gradient(160deg, rgb(44,10,130) 0%, rgb(120,28,160) 45%, rgb(180,48,100) 100%)',
+            borderTop: '2px solid rgba(255,255,255,0.18)',
           }}
           aria-hidden={!isMenuOpen}
         >
-          <div className="overflow-y-auto p-4">
+          {/* Subtle noise overlay */}
+          <div className="pointer-events-none absolute inset-0" style={{ background: "url('/texture.webp')", backgroundSize: '280px', opacity: 0.07 }} />
 
-            {/* Mobile links */}
-            <div className="space-y-4">
-              <Link
-                href="/shop"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm font-semibold text-white hover:text-white tracking-wide transition-colors py-1"
-              >
-                SHOP
-              </Link>
+          <div className="relative overflow-y-auto" style={{ maxHeight: 'calc(100vh - 60px)' }}>
 
-              <Link
-                href="/#story"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm font-semibold text-white hover:text-white tracking-wide transition-colors py-1"
+            {/* ── SHOP accordion ── */}
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+              <button
+                type="button"
+                onClick={() => setMobileShopOpen(v => !v)}
+                className="flex w-full items-center justify-between px-5 py-4 cursor-pointer"
+                style={{ fontFamily: "'Arial Black', 'Impact', sans-serif", fontWeight: 900, fontSize: '1rem', letterSpacing: '0.12em', textTransform: 'uppercase' }}
               >
-                OUR STORY
-              </Link>
+                <span>SHOP</span>
+                <ChevronRight
+                  size={18}
+                  strokeWidth={3}
+                  className="transition-transform duration-300"
+                  style={{ transform: mobileShopOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                />
+              </button>
 
-              <Link
-                href="/#contact"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm font-semibold text-white hover:text-white tracking-wide transition-colors py-1"
+              {/* Categories list */}
+              <div
+                className="overflow-hidden transition-all duration-300 ease-out"
+                style={{ maxHeight: mobileShopOpen ? '2000px' : '0px' }}
               >
-                CONTACT
-              </Link>
+{internalCategories
+                  .filter(cat => {
+                    if (Array.isArray(cat.parent)) return cat.parent.length === 0
+                    return !cat.parent
+                  })
+                  .sort((a, b) => {
+                    const aO = typeof a.order === 'number' ? a.order : 0
+                    const bO = typeof b.order === 'number' ? b.order : 0
+                    return aO !== bO ? aO - bO : a.name.localeCompare(b.name)
+                  })
+                  .map(cat => {
+                    const isExpanded = mobileActiveCat === cat.id
+                    const catProducts = mobileProducts[cat.id] ?? []
+                    const isLoading = mobileLoadingCat === cat.id
 
-              <Link
-                href="/blog"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm font-semibold text-white hover:text-white tracking-wide transition-colors py-1"
-              >
-                BLOG
-              </Link>
+                    const toggleCat = async () => {
+                      if (isExpanded) {
+                        setMobileActiveCat(null)
+                        return
+                      }
+                      setMobileActiveCat(cat.id)
+                      if (!mobileProducts[cat.id]) {
+                        setMobileLoadingCat(cat.id)
+                        try {
+                          const res = await fetch(`/api/products?category=${encodeURIComponent(cat.slug)}&limit=6`)
+                          const data = await res.json()
+                          setMobileProducts(prev => ({
+                            ...prev,
+                            [cat.id]: (data.products ?? []).slice(0, 6).map((p: any) => ({
+                              id: p.id,
+                              slug: p.slug,
+                              name: p.name,
+                              price: p.price,
+                              promoPrice: p.promoPrice,
+                              imageUrls: p.imageUrls ?? (p.imageUrl ? [p.imageUrl] : []),
+                            }))
+                          }))
+                        } catch { /* silent */ } finally {
+                          setMobileLoadingCat(null)
+                        }
+                      }
+                    }
+
+                    return (
+                      <div key={cat.id} className="mx-4 mb-2">
+                        {/* Category row */}
+                        <button
+                          type="button"
+                          onClick={toggleCat}
+                          className="flex w-full items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer"
+                          style={{
+                            background: isExpanded
+                              ? 'linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.1) 100%)'
+                              : 'rgba(255,255,255,0.07)',
+                            border: isExpanded ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: isExpanded ? '0 4px 20px rgba(0,0,0,0.25)' : 'none',
+                          }}
+                        >
+                          <span
+                            className="text-white text-[13px] uppercase tracking-[0.1em]"
+                            style={{ fontFamily: "'Arial Black', sans-serif", fontWeight: 900 }}
+                          >
+                            {cat.name}
+                          </span>
+                          <ChevronRight
+                            size={16}
+                            strokeWidth={2.5}
+                            className="text-white/70 transition-transform duration-300"
+                            style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                          />
+                        </button>
+
+                        {/* Products grid */}
+                        <div
+                          className="overflow-hidden transition-all duration-400 ease-out"
+                          style={{ maxHeight: isExpanded ? '600px' : '0px' }}
+                        >
+                          <div className="pt-2 pb-1">
+{isLoading ? (
+                              <div className="flex items-center justify-center py-6">
+                                <div
+                                  className="h-6 w-6 rounded-full border-2 border-white/30 border-t-white animate-spin"
+                                />
+                              </div>
+                            ) : catProducts.length === 0 ? null : (
+                              <div className="grid grid-cols-3 gap-2">
+                                {catProducts.map(product => {
+                                  const hasPromo = product.promoPrice != null && product.promoPrice > 0 && product.promoPrice < product.price
+                                  const img = product.imageUrls[0] ?? '/aboutimg.webp'
+                                  return (
+                                    <Link
+                                      key={product.id}
+                                      href={`/product/${product.slug}`}
+                                      onClick={() => setIsMenuOpen(false)}
+                                      className="group flex flex-col overflow-hidden rounded-xl transition-all duration-200 active:scale-95"
+                                      style={{
+                                        border: '2px solid rgba(255,255,255,0.2)',
+                                        background: 'rgba(255,255,255,0.08)',
+                                        backdropFilter: 'blur(10px)',
+                                      }}
+                                    >
+                                      {/* Image */}
+                                      <div
+                                        className="relative aspect-square overflow-hidden"
+                                        style={{ background: 'linear-gradient(135deg, rgba(68,15,195,0.6) 0%, rgba(232,68,106,0.4) 100%)' }}
+                                      >
+                                        <img
+                                          src={img}
+                                          alt={product.name}
+                                          className="absolute inset-0 w-full h-full object-contain p-1.5 transition-transform duration-300 group-active:scale-105"
+                                          style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}
+                                        />
+                                        {hasPromo && (
+                                          <span
+                                            className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-white text-[8px] font-black uppercase"
+                                            style={{ fontFamily: "'Arial Black', sans-serif", background: '#e8446a', letterSpacing: '0.1em' }}
+                                          >
+                                            Sale
+                                          </span>
+                                        )}
+                                      </div>
+                                      {/* Name */}
+                                      <div className="px-1.5 py-2">
+                                        <p
+                                          className="text-white text-[9px] uppercase leading-tight line-clamp-2 text-center"
+                                          style={{ fontFamily: "'Arial Black', sans-serif", fontWeight: 900, letterSpacing: '0.05em' }}
+                                        >
+                                          {product.name}
+                                        </p>
+                                      </div>
+                                    </Link>
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                <div className="h-3" />
+              </div>
             </div>
 
+            {/* ── Static links ── */}
+            {[
+              { href: '/#story', label: 'Our Story' },
+              { href: '/#contact', label: 'Contact' },
+              { href: '/blog', label: 'Blog' },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-white/5"
+                style={{
+                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  fontFamily: "'Arial Black', 'Impact', sans-serif",
+                  fontWeight: 900,
+                  fontSize: '1rem',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {label}
+                <ChevronRight size={14} strokeWidth={2.5} className="text-white/40" />
+              </Link>
+            ))}
+
+            {/* Bottom safe area */}
+            <div className="h-6" />
           </div>
         </div>
       </nav>
@@ -1210,7 +1384,7 @@ export function Navbar(props: NavbarProps) {
 
       {(() => {
         const MODAL_FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-        const MODAL_GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+        const MODAL_GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
         const inputCls = "w-full rounded-sm border-[3px] border-black bg-white px-4 py-2.5 text-sm font-semibold text-black outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(124,58,237,0.18)] placeholder:text-black/25 placeholder:font-normal"
         const labelCls = "block text-[9px] font-black uppercase tracking-[0.2em] mb-1.5"
 

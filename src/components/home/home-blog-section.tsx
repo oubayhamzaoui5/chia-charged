@@ -31,7 +31,7 @@ export default async function HomeBlogSection() {
         <div className="mb-12 flex flex-col items-center text-center">
           <span
             className="mb-3 inline-block rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em]"
-            style={{ background: "rgba(124,58,237,0.08)", color: "rgb(124,58,237)" }}
+            style={{ background: "rgba(124,58,237,0.08)", color: "rgb(68,15,195)" }}
           >
             Le Blog
           </span>

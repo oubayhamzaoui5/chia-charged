@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 const STORAGE_KEY = 'cc_promo_dismissed_at'
 const DELAY_MS = 3500
 const COOLDOWN_MS = 2 * 60 * 60 * 1000 // 2 hours

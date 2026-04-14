@@ -8,6 +8,7 @@ import { ShoppingCart, ChevronLeft, ChevronRight, X, Beaker, GlassWater, Timer, 
 
 import Footer from '@/components/footer'
 import { Navbar } from '@/components/navbar'
+import LandingTestimonials from '@/components/landing/landing-testimonials'
 import InstallationSteps from '@/components/shop/installation-steps'
 import ShopProductCard from '@/app/shop/_components/shop-product-card'
 import { getPb } from '@/lib/pb'
@@ -186,7 +187,7 @@ alignItems: 'flex-start',
           font-size: 5.1rem;
           line-height: 0.88;
           letter-spacing: -0.02em;
-          background: linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%);
+          background: linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -461,7 +462,7 @@ function resolveVariantDisplay(
 function Price({ p }: { p: ProductWithDetails }) {
   const priceMainClass = 'text-base font-black tracking-wide'
   const priceMainStyle = {
-    color: 'rgb(124,58,237)',
+    color: 'rgb(68,15,195)',
     fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
     fontWeight: 900 as const,
   }
@@ -915,7 +916,7 @@ export default function ProductClient({
     } catch { setShareCopied(false) }
   }
 
-  const PURPLE = 'rgb(124,58,237)'
+  const PURPLE = 'rgb(68,15,195)'
 
   return (
     <div className="relative">
@@ -939,14 +940,16 @@ export default function ProductClient({
           ref={leftPanelRef}
           className="relative z-[1] flex flex-col items-center justify-center lg:w-[55%] lg:sticky lg:top-0 lg:h-screen"
           style={{
-            height: '100vh',
-            background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)",
+            background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)",
             ...(panelFixedStyle ? { position: 'fixed', top: panelFixedStyle.top, left: panelFixedStyle.left, width: panelFixedStyle.width } : {}),
           }}
         >
           <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,0.14) 0%, transparent 65%)" }} />
 
-          <div className="relative z-10 flex w-full flex-1 items-center justify-center px-2 py-2">
+          {/* Mobile: navbar spacer */}
+          <div className="block lg:hidden" style={{ height: 'var(--navbar-offset-mobile, 60px)' }} />
+
+          <div className="relative z-10 flex w-full lg:flex-1 items-center justify-center px-6 py-6 lg:px-2 lg:py-2">
             <div className="relative w-full max-w-[520px] aspect-square">
               <Image
                 key={imageUrls[displayImageIdx] ?? '/aboutimg.webp'}
@@ -960,8 +963,50 @@ export default function ProductClient({
             </div>
           </div>
 
+          {/* Mobile navigation: prev/next arrows + dots */}
           {imageUrls.length > 1 && (
-            <div className="absolute bottom-5 left-0 right-0 z-10 w-full px-8 flex justify-center gap-3 flex-wrap pointer-events-auto">
+            <div className="flex lg:hidden items-center justify-center gap-4 pb-6 z-10 relative w-full px-8">
+              <button
+                type="button"
+                onClick={() => setCurrentImageIdx(i => i === 0 ? imageUrls.length - 1 : i - 1)}
+                className="flex h-9 w-9 items-center justify-center rounded-full cursor-pointer transition-all active:scale-90"
+                style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.3)' }}
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={18} strokeWidth={2.5} className="text-white" />
+              </button>
+
+              <div className="flex items-center gap-2">
+                {imageUrls.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setCurrentImageIdx(i)}
+                    aria-label={`Image ${i + 1}`}
+                    className="h-2.5 rounded-full transition-all duration-300 cursor-pointer"
+                    style={{
+                      width: i === currentImageIdx ? '2rem' : '0.625rem',
+                      background: i === currentImageIdx ? 'white' : 'rgba(255,255,255,0.35)',
+                    }}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setCurrentImageIdx(i => (i + 1) % imageUrls.length)}
+                className="flex h-9 w-9 items-center justify-center rounded-full cursor-pointer transition-all active:scale-90"
+                style={{ background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.3)' }}
+                aria-label="Next image"
+              >
+                <ChevronRight size={18} strokeWidth={2.5} className="text-white" />
+              </button>
+            </div>
+          )}
+
+          {/* Desktop thumbnails */}
+          {imageUrls.length > 1 && (
+            <div className="hidden lg:flex absolute bottom-5 left-0 right-0 z-10 w-full px-8 justify-center gap-3 flex-wrap pointer-events-auto">
               {imageUrls.map((img, i) => (
                 <button key={img + i} type="button" onClick={() => setCurrentImageIdx(i)}
                   className="relative h-16 w-16 shrink-0 rounded-sm transition-transform duration-200 cursor-pointer"
@@ -1002,14 +1047,14 @@ export default function ProductClient({
             paddingTop: 'calc(var(--navbar-offset-desktop, 112px) + 22px)',
           }}
         >
-          <div>
+          <div className="hidden md:block">
             {categoryName && (
               <p className="text-[1.4rem] font-black uppercase tracking-[0.1em]" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>{categoryName}</p>
             )}
           </div>
 
           <h1 className="mb-6 text-[2.1rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.1rem] lg:text-[4.1rem]" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, letterSpacing: '-0.03em' }}>
-            <span style={{ background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            <span style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               {product.name}
             </span>
           </h1>
@@ -1056,7 +1101,7 @@ export default function ProductClient({
                                   <span
                                     className={`flex h-11 w-full cursor-pointer items-center justify-center text-sm font-black uppercase tracking-wide transition-all duration-150 ${vi > 0 ? 'border-l-2 border-black' : ''}`}
                                     style={isSelected
-                                      ? { background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 100%)", color: 'white', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }
+                                      ? { background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 100%)", color: 'white', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }
                                       : { background: 'transparent', color: 'black', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}
                                   >
                                     {value.resolvedValue.value ?? value.value}
@@ -1156,7 +1201,7 @@ export default function ProductClient({
                     fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
                     fontWeight: 900,
                     transform: "rotate(3deg)",
-                    background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)',
+                    background: 'linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)',
                     boxShadow: '3px 3px 0px rgba(0,0,0,1)',
                   }}
                 >
@@ -1167,11 +1212,11 @@ export default function ProductClient({
             </div>
 
             {/* Accent strip — qty + add to bag */}
-            <div className="relative flex items-stretch gap-3 px-3 py-8" style={{ background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)" }}>
+            <div className="relative flex items-stretch gap-3 px-3 py-8" style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)" }}>
               <div className="flex items-center overflow-hidden rounded-md border-3 border-black bg-white">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={!isInStock || quantity <= 1} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity <= 1 ? 'not-allowed' : 'pointer' }}>−</button>
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={!isInStock || quantity <= 1} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity <= 1 ? 'not-allowed' : 'pointer' }}>−</button>
                 <span className="w-8 text-center text-sm font-black text-black" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>{quantity}</span>
-                <button onClick={() => setQuantity((prev) => Math.min(prev + 1, maxSelectableQuantity))} disabled={!isInStock || quantity >= maxSelectableQuantity} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity >= maxSelectableQuantity ? 'not-allowed' : 'pointer' }}>+</button>
+                <button onClick={() => setQuantity((prev) => Math.min(prev + 1, maxSelectableQuantity))} disabled={!isInStock || quantity >= maxSelectableQuantity} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity >= maxSelectableQuantity ? 'not-allowed' : 'pointer' }}>+</button>
               </div>
               {!isMainCartStatusReady ? (
                 <button disabled className="flex flex-1 items-center justify-center border-[3px] border-black font-black uppercase italic tracking-[0.08em] text-white/60 disabled:opacity-70" style={{ background: "rgba(0,0,0,0.30)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, boxShadow: '3px 3px 0 #111' }}>Loading...</button>
@@ -1180,7 +1225,7 @@ export default function ProductClient({
                   <ShoppingCart size={16} />View Cart
                 </button>
               ) : isInStock ? (
-                <button onClick={handleAddToCart} disabled={!isMainCartStatusReady || isAdding} className="flex flex-1 cursor-pointer items-center justify-center border-[3px] border-black font-black uppercase italic tracking-[0.08em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:opacity-50 disabled:cursor-not-allowed" style={{ background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, boxShadow: '3px 3px 0 #111' }}>
+                <button onClick={handleAddToCart} disabled={!isMainCartStatusReady || isAdding} className="flex flex-1 cursor-pointer items-center justify-center border-[3px] border-black font-black uppercase italic tracking-[0.08em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:opacity-50 disabled:cursor-not-allowed" style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)", fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, boxShadow: '3px 3px 0 #111' }}>
                   {isAdding ? 'Adding...' : 'Add to Bag'}
                 </button>
               ) : (
@@ -1219,7 +1264,7 @@ export default function ProductClient({
    
 
       {/* ── Prep Instructions Banner ── */}
-      <div className="relative border-y-3 border-black/15" style={{ background: "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 55%, rgb(232,68,106) 100%)" }}>
+      <div className="relative border-y-3 border-black/15" style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 55%, rgb(232,68,106) 100%)" }}>
         <div className="mx-auto max-w-[1400px] px-4 py-10 md:py-12">
           <div className="flex flex-col items-center justify-between gap-6">
             <div className="grid w-full grid-cols-2 gap-6 md:grid-cols-4">
@@ -1242,145 +1287,7 @@ export default function ProductClient({
         </div>
       </div>
 
-      {/* ── Social Proof ── */}
-      <div
-        className="relative overflow-hidden py-20 md:py-28"
-        style={{ backgroundColor: '#f5efe4', backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }}
-      >
-        {/* Decorative background star watermark */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute', top: '-8%', right: '-4%', fontSize: '30rem', lineHeight: 1,
-            fontFamily: "'Arial Black', 'Impact', sans-serif", fontWeight: 900, pointerEvents: 'none',
-            background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(232,68,106) 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            opacity: 0.05, userSelect: 'none',
-          }}
-        >★</div>
-
-        <div className="mx-auto max-w-[1400px] px-6">
-          {/* Header row */}
-          <div className="mb-14 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-            <div>
-          
-              <h2
-                className="text-[3.2rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[5rem]"
-                style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, letterSpacing: '-0.03em', color: '#111' }}
-              >
-               Don't Just Take<br />
-                <span style={{ background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  Our Word For It.
-                </span>
-              </h2>
-            </div>
-
-            {/* Aggregate rating badge */}
-            <div
-              className="inline-flex shrink-0 items-center gap-5 self-start md:self-auto"
-              style={{ border: '4px solid #111', borderRadius: '14px', padding: '16px 22px', background: 'white', boxShadow: '7px 7px 0 #111' }}
-            >
-              <div>
-                <div style={{ fontFamily: "'Arial Black', sans-serif", fontWeight: 900, fontSize: '3rem', lineHeight: 1, color: '#111' }}>4.8</div>
-                <div style={{ fontFamily: "'Arial Black', sans-serif", fontWeight: 900, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(0,0,0,0.35)', marginTop: 4 }}>Out of 5</div>
-              </div>
-              <div style={{ width: 1, height: 48, background: '#111', opacity: 0.12 }} />
-              <div>
-                <div className="mb-1.5 flex gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} style={{ fontSize: '20px', background: 'linear-gradient(135deg, rgb(124,58,237), rgb(232,68,106))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>★</span>
-                  ))}
-                </div>
-                <div style={{ fontFamily: "'Arial Black', sans-serif", fontWeight: 900, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(0,0,0,0.35)' }}>100+ Reviews</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Review cards */}
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3" style={{ alignItems: 'start' }}>
-            {([
-              {
-                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&q=80&fit=crop&crop=face',
-                name: 'Sarah M.', role: 'Fitness Coach', rating: 5,
-                quote: "I've tried every protein product on the market. Chia Charged is the only one that tastes like actual food, keeps me full until lunch, and doesn't wreck my stomach.",
-                rotate: '-1.5deg',
-              },
-              {
-                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&q=80&fit=crop&crop=face',
-                name: 'James T.', role: 'Marathon Runner', rating: 5,
-                quote: 'I prep 5 jars every Sunday. Between the MCT oil and the chia seeds, my energy is steady through my morning runs. No gel packs needed.',
-                rotate: '0.3deg',
-              },
-              {
-                avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&q=80&fit=crop&crop=face',
-                name: 'Layla K.', role: 'Nutritionist', rating: 5,
-                quote: 'As a nutritionist, I\'m extremely picky about what I recommend. Zero added sugar, 22g plant protein per serving, and MCT oil — this is the one I tell all my clients about.',
-                rotate: '1.2deg',
-              },
-            ] as { avatar: string; name: string; role: string; rating: number; quote: string; rotate: string }[]).map((t) => (
-              <div
-                key={t.name}
-                style={{
-                  border: '4px solid #111',
-                  borderRadius: '14px',
-                  boxShadow: '8px 8px 0 #111',
-                  background: 'white',
-                  padding: '28px',
-                  transform: `rotate(${t.rotate})`,
-                  transition: 'transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'rotate(0deg) translate(-4px, -4px)'
-                  ;(e.currentTarget as HTMLDivElement).style.boxShadow = '13px 13px 0 #111'
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = `rotate(${t.rotate})`
-                  ;(e.currentTarget as HTMLDivElement).style.boxShadow = '8px 8px 0 #111'
-                }}
-              >
-                {/* Oversized gradient quote mark */}
-                <div style={{
-                  fontSize: '4.5rem', lineHeight: 0.85, fontFamily: "'Arial Black', 'Impact', sans-serif", fontWeight: 900,
-                  background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(232,68,106) 100%)',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                  marginBottom: '10px', display: 'block',
-                }}>&#10078;</div>
-
-                {/* Gradient stars */}
-                <div className="mb-3 flex gap-0.5">
-                  {[...Array(t.rating)].map((_, i) => (
-                    <span key={i} style={{ fontSize: '13px', background: 'linear-gradient(135deg, rgb(124,58,237), rgb(232,68,106))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>★</span>
-                  ))}
-                </div>
-
-                {/* Verified badge */}
-                <div className="mb-5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1" style={{ background: 'rgba(124,58,237,0.07)', border: '1.5px solid rgba(124,58,237,0.2)' }}>
-                  <span style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgb(124,58,237)', fontFamily: "'Arial Black', sans-serif" }}>✓ Verified Purchase</span>
-                </div>
-
-                {/* Quote */}
-                <p style={{ fontSize: '0.93rem', lineHeight: 1.72, color: '#111', fontWeight: 600, marginBottom: '22px', fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif" }}>
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-
-                {/* Divider */}
-                <div style={{ borderTop: '2.5px solid #111', opacity: 0.1, marginBottom: '18px' }} />
-
-                {/* Author */}
-                <div className="flex items-center gap-3">
-                  <div style={{ width: 46, height: 46, border: '3px solid #111', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, boxShadow: '3px 3px 0 #111' }}>
-                    <img src={t.avatar} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: "'Arial Black', 'Impact', sans-serif", fontWeight: 900, fontSize: '0.78rem', color: '#111', textTransform: 'uppercase', letterSpacing: '0.07em', lineHeight: 1.2 }}>{t.name}</div>
-                    <div style={{ fontFamily: "'Arial Black', sans-serif", fontWeight: 900, fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 3, background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(232,68,106) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{t.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <LandingTestimonials />
 
   
 

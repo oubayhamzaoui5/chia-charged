@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Zap, Leaf, ShieldCheck, Droplets, Heart, Sparkles } from "lucide-react"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 const features = [
   {
@@ -76,7 +76,7 @@ const cardVariants = {
 export default function LandingBenefits() {
   return (
     <section
-      className="border-y-3 border-black px-4 py-20 md:py-28"
+      className="border-y-3 border-black px-3 py-10 md:px-4 md:py-24"
       style={{ background: GRADIENT }}
     >
       <div className="mx-auto max-w-[1400px]">
@@ -85,10 +85,10 @@ export default function LandingBenefits() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14"
+          className="mb-8 md:mb-14"
         >
           <h2
-            className="text-[2.8rem] font-black uppercase leading-[0.88] tracking-tighter text-white md:text-[4rem] lg:text-[5rem]"
+            className="text-[1.9rem] font-black uppercase leading-[0.88] tracking-tighter text-white md:text-[3.5rem] lg:text-[5rem]"
             style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em" }}
           >
             Why Chia Charged?
@@ -106,12 +106,12 @@ export default function LandingBenefits() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
           variants={containerVariants}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-6"
         >
           {features.map(({ icon: Icon, stat, unit, title, desc, rotate }) => (
             <motion.div key={title} variants={cardVariants}>
               <div
-                className="group relative overflow-hidden p-7"
+                className="group relative overflow-hidden p-3 md:p-7"
                 style={{
                   background: "white",
                   border: "4px solid #111",
@@ -129,30 +129,30 @@ export default function LandingBenefits() {
                   ;(e.currentTarget as HTMLElement).style.transform = `rotate(${rotate})`
                 }}
               >
-              <div className="mb-4 inline-flex h-14 w-14 items-center justify-center">
-                <Icon className="h-8 w-8" strokeWidth={2.5} style={{ color: "rgb(124,58,237)" }} />
+              <div className="mb-2 inline-flex h-8 w-8 items-center justify-center md:mb-4 md:h-14 md:w-14">
+                <Icon className="h-5 w-5 md:h-8 md:w-8" strokeWidth={2.5} style={{ color: "rgb(68,15,195)" }} />
               </div>
-              <div className="mb-3 flex items-baseline gap-1.5">
+              <div className="mb-2 flex items-baseline gap-1 md:mb-3 md:gap-1.5">
                 <span
-                  className="text-4xl font-black"
+                  className="text-xl font-black md:text-4xl"
                   style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
                 >
                   {stat}
                 </span>
                 <span
-                  className="text-xs font-black uppercase tracking-wider"
+                  className="text-[9px] font-black uppercase tracking-wider md:text-xs"
                   style={{ fontFamily: FONT, fontWeight: 900, color: "rgba(0,0,0,0.25)" }}
                 >
                   {unit}
                 </span>
               </div>
               <h3
-                className="mb-2 text-sm font-black uppercase tracking-wide"
+                className="mb-1.5 text-[10px] font-black uppercase tracking-wide md:mb-2 md:text-sm"
                 style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
               >
                 {title}
               </h3>
-              <p className="text-sm font-semibold leading-relaxed" style={{ color: "rgba(0,0,0,0.45)" }}>
+              <p className="text-[10px] font-semibold leading-relaxed md:text-sm" style={{ color: "rgba(0,0,0,0.45)" }}>
                 {desc}
               </p>
               </div>

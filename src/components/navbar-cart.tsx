@@ -49,7 +49,7 @@ type NavbarCartProps = {
 
 const GUEST_CART_KEY = "guest_cart"
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 const FREE_SHIPPING_THRESHOLD = 99
 
 function getGuestCart(): GuestCartItem[] {
@@ -339,7 +339,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {cartItems.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-5 text-center">
-              <ShoppingCart className="h-14 w-14" strokeWidth={1.75} style={{ color: 'rgb(124,58,237)' }} />
+              <ShoppingCart className="h-14 w-14" strokeWidth={1.75} style={{ color: 'rgb(68,15,195)' }} />
               <div>
                 <p
                   className="text-2xl font-black uppercase"
@@ -432,7 +432,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
                               <>
                                 <button
                                   type="button"
-                                  className="flex h-10 w-9 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                                  className="flex h-10 w-9 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
                                   style={{ fontFamily: FONT, fontWeight: 900, cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer' }}
                                   disabled={item.quantity <= 1}
                                   onClick={() => void handleUpdateQuantity(item.id, item.quantity - 1)}
@@ -448,7 +448,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
                                 </span>
                                 <button
                                   type="button"
-                                  className="flex h-10 w-9 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                                  className="flex h-10 w-9 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
                                   style={{ fontFamily: FONT, fontWeight: 900, cursor: item.quantity >= maxQty ? 'not-allowed' : 'pointer' }}
                                   disabled={item.quantity >= maxQty}
                                   onClick={() => void handleUpdateQuantity(item.id, item.quantity + 1)}

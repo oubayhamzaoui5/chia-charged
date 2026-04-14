@@ -9,7 +9,7 @@ import { Navbar } from '@/components/navbar'
 import Footer from '@/components/footer'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 const TEXTURE = { backgroundImage: "url('/texture.webp')", backgroundSize: '280px 280px' }
 
 type OrderItem = {
@@ -587,7 +587,7 @@ function OrderConfirmationContent() {
                     backgroundClip: 'text',
                   }}
                 >
-                  View my orders <ArrowRight size={12} style={{ color: 'rgb(124,58,237)' }} />
+                  View my orders <ArrowRight size={12} style={{ color: 'rgb(68,15,195)' }} />
                 </Link>
               </div>
             </section>

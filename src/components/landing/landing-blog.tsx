@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 type Post = {
   id: string
@@ -75,15 +75,17 @@ export default function LandingBlog({ posts }: { posts: Post[] }) {
         </motion.div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="-mx-6 overflow-x-auto hide-scrollbar md:mx-0 md:overflow-visible">
+        <div className="flex snap-x snap-mandatory gap-6 px-5 pb-6 pt-4 md:grid md:grid-cols-2 md:snap-none md:px-0 md:pb-0 md:pt-0 lg:grid-cols-3">
           {preview.map((post, i) => (
             <motion.div
               key={post.id}
               custom={i}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true, amount: 0 }}
               variants={cardVariants}
+              className="w-[82vw] shrink-0 snap-start sm:w-[65vw] md:w-auto md:shrink"
             >
               <Link
                 href={`/blog/${post.slug}`}
@@ -143,12 +145,13 @@ export default function LandingBlog({ posts }: { posts: Post[] }) {
                     }}
                   >
                     Read Article
-                    <ArrowRight size={12} className="transition-transform duration-200 group-hover:translate-x-1" style={{ color: "rgb(124,58,237)" }} />
+                    <ArrowRight size={12} className="transition-transform duration-200 group-hover:translate-x-1" style={{ color: "rgb(68,15,195)" }} />
                   </span>
                 </div>
               </Link>
             </motion.div>
           ))}
+        </div>
         </div>
 
         {posts.length > 3 && (

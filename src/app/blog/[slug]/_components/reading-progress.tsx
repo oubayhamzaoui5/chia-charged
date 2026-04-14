@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 export default function ReadingProgress() {
   const [progress, setProgress] = useState(0)

@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, CircleSlash, Leaf, Zap } from "lucide-react"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 const values = [
   { icon: Leaf, title: "100% Plant-Based", desc: "No dairy, no eggs, no compromise." },
@@ -17,7 +17,7 @@ export default function LandingAbout() {
   return (
     <section
       id="story"
-      className="relative overflow-hidden border-y-3 border-black py-20 md:py-28"
+      className="relative overflow-hidden border-y-3 border-black py-12 md:py-24"
       style={{ background: GRADIENT }}
     >
       {/* Decorative watermark */}
@@ -45,13 +45,13 @@ export default function LandingAbout() {
             transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
           >
             <h2
-              className="mb-6 text-[2.5rem] font-black uppercase leading-[0.88] tracking-tighter text-white md:text-[3.5rem] lg:text-[4.5rem]"
+              className="mb-4 text-[1.8rem] font-black uppercase leading-[0.88] tracking-tighter text-white md:text-[3rem] lg:text-[4.5rem]"
               style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em" }}
             >
               OUR STORY
             </h2>
             <p
-              className="mb-4 max-w-xl text-base font-bold leading-relaxed text-white"
+              className="mb-3 max-w-xl text-sm font-bold leading-relaxed text-white md:text-base"
               style={{ fontFamily: FONT, fontWeight: 900 }}
             >
               Like many health-conscious people, we were dedicated to our fitness goals, but we had
@@ -60,7 +60,7 @@ export default function LandingAbout() {
               and tasted incredible.
             </p>
             <p
-              className="mb-8 max-w-xl text-base font-bold leading-relaxed text-white"
+              className="mb-6 max-w-xl text-sm font-bold leading-relaxed text-white md:text-base"
               style={{ fontFamily: FONT, fontWeight: 900 }}
             >
               The solution didn't come from a lab—it came from our own kitchen. We started
@@ -108,7 +108,7 @@ export default function LandingAbout() {
                     transform: `rotate(${rotations[i]})`,
                   }}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center" style={{ color: "rgb(124,58,237)" }}>
+                  <div className="flex h-12 w-12 items-center justify-center" style={{ color: "rgb(68,15,195)" }}>
                     <Icon className="h-8 w-8" strokeWidth={2.4} />
                   </div>
                   <div>

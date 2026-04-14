@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 const TESTIMONIALS = [
   {
@@ -38,7 +38,7 @@ const TESTIMONIALS = [
 export default function LandingTestimonials() {
   return (
     <section
-      className="relative overflow-hidden py-20 md:py-28"
+      className="relative overflow-hidden py-12 md:py-24"
       style={{
         backgroundColor: "#f5efe4",
         backgroundImage: "url('/texture.webp')",
@@ -66,7 +66,7 @@ export default function LandingTestimonials() {
 
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         {/* Header */}
-        <div className="mb-14 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="mb-8 flex flex-col gap-5 md:mb-14 md:flex-row md:items-end md:justify-between">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -74,7 +74,7 @@ export default function LandingTestimonials() {
             transition={{ duration: 0.5 }}
           >
             <h2
-              className="text-[2.8rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[4rem] lg:text-[5rem]"
+              className="text-[1.9rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.5rem] lg:text-[5rem]"
               style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em", color: "#111" }}
             >
               Don&apos;t Just Take<br />
@@ -123,17 +123,19 @@ export default function LandingTestimonials() {
         </div>
 
         {/* Review cards */}
+        <div className="-mx-6 overflow-x-auto hide-scrollbar md:mx-0 md:overflow-visible">
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.15 }}
+          viewport={{ once: true, amount: 0 }}
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
-          className="grid grid-cols-1 gap-8 md:grid-cols-3"
+          className="flex snap-x snap-mandatory gap-5 px-5 pb-6 pt-4 md:grid md:grid-cols-3 md:gap-8 md:snap-none md:px-0 md:pb-0 md:pt-0"
           style={{ alignItems: "start" }}
         >
           {TESTIMONIALS.map((t) => (
             <motion.div
               key={t.name}
+              className="w-[82vw] shrink-0 snap-start sm:w-[65vw] md:w-auto md:shrink"
               variants={{
                 hidden: { opacity: 0, y: 40 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] } },
@@ -176,7 +178,7 @@ export default function LandingTestimonials() {
 
               {/* Verified badge */}
               <div className="mb-5 inline-flex items-center gap-1.5 rounded-sm border-2 px-2.5 py-1" style={{ background: "rgba(124,58,237,0.07)", borderColor: "rgba(124,58,237,0.2)" }}>
-                <span style={{ fontSize: "9px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgb(124,58,237)", fontFamily: FONT }}>&#10003; Verified Purchase</span>
+                <span style={{ fontSize: "9px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgb(68,15,195)", fontFamily: FONT }}>&#10003; Verified Purchase</span>
               </div>
 
               {/* Quote */}
@@ -201,6 +203,7 @@ export default function LandingTestimonials() {
             </motion.div>
           ))}
         </motion.div>
+        </div>
       </div>
     </section>
   )

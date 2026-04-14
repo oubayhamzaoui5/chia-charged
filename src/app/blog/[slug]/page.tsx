@@ -11,7 +11,7 @@ import { Navbar } from '@/components/navbar'
 import Footer from '@/components/footer'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>
@@ -194,7 +194,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 background-clip: text;
                 font-weight: 700;
                 text-decoration: underline;
-                text-decoration-color: rgb(124,58,237);
+                text-decoration-color: rgb(68,15,195);
               }
               .brutalist-prose h2:first-child {
                 margin-top: 0;
@@ -293,7 +293,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         }}
                       >
                         Read Article
-                        <ArrowRight size={12} className="transition-transform duration-200 group-hover:translate-x-1" style={{ color: 'rgb(124,58,237)' }} />
+                        <ArrowRight size={12} className="transition-transform duration-200 group-hover:translate-x-1" style={{ color: 'rgb(68,15,195)' }} />
                       </span>
                     </div>
                   </Link>

@@ -58,7 +58,7 @@ export default function HomeFlavorsSection() {
               <div
                 className="relative flex flex-col items-center justify-center px-6 pt-6 pb-0"
                 style={{
-                  background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)',
+                  background: 'linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)',
                 }}
               >
                 {/* radial glow overlay */}
@@ -130,7 +130,7 @@ export default function HomeFlavorsSection() {
                   <div
                     className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold text-white transition-opacity group-hover:opacity-90"
                     style={{
-                      background: 'linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)',
+                      background: 'linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)',
                       boxShadow: '0 6px 20px rgba(124,58,237,0.35)',
                     }}
                   >

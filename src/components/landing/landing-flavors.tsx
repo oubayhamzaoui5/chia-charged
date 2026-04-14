@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 type FlavorPriceMap = Record<
   string,
@@ -64,7 +64,7 @@ export default function LandingFlavors({
   return (
     <section
       id="flavors"
-      className="py-20 md:py-28"
+      className="py-12 md:py-24"
       style={{
         backgroundColor: "#f5efe4",
         backgroundImage: "url('/texture.webp')",
@@ -78,10 +78,10 @@ export default function LandingFlavors({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14"
+          className="mb-8 md:mb-14"
         >
           <h2
-            className="text-[2.8rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[4rem] lg:text-[5rem]"
+            className="text-[2rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.5rem] lg:text-[5rem]"
             style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: "-0.03em", color: "#111" }}
           >
             Choose Your{" "}
@@ -105,7 +105,8 @@ export default function LandingFlavors({
         </motion.div>
 
         {/* Flavor cards */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="-mx-6 overflow-x-auto hide-scrollbar md:mx-0 md:overflow-visible">
+        <div className="flex snap-x snap-mandatory gap-6 px-5 pb-6 pt-4 md:grid md:grid-cols-2 md:snap-none md:px-0 md:pb-0 md:pt-0">
           {flavors.map((flavor, i) => {
             const dynamicPricing = flavorPriceBySlug[flavor.slug]
             const displayCurrency = dynamicPricing?.currency ?? "$"
@@ -121,8 +122,9 @@ export default function LandingFlavors({
               custom={i}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.25 }}
+              viewport={{ once: true, amount: 0 }}
               variants={cardVariants}
+              className="w-[82vw] shrink-0 snap-start sm:w-[65vw] md:w-auto md:shrink"
             >
               <Link
                 href={flavor.href}
@@ -173,8 +175,8 @@ export default function LandingFlavors({
                   </div>
 
                   {/* Image */}
-                  <div className="relative z-10 mx-auto flex h-96 w-96 items-center justify-center md:h-[460px] md:w-[460px] lg:h-[520px] lg:w-[520px]">
-                    <div className="relative h-96 w-96 transition-transform duration-500 group-hover:scale-[1.06] md:h-[460px] md:w-[460px] lg:h-[520px] lg:w-[520px]">
+                  <div className="relative z-10 mx-auto flex h-52 w-52 items-center justify-center sm:h-72 sm:w-72 md:h-[400px] md:w-[400px] lg:h-[520px] lg:w-[520px]">
+                    <div className="relative h-52 w-52 transition-transform duration-500 group-hover:scale-[1.06] sm:h-72 sm:w-72 md:h-[400px] md:w-[400px] lg:h-[520px] lg:w-[520px]">
                       <div
                         className="absolute inset-4 rounded-full opacity-30 blur-2xl"
                         style={{ background: "rgba(255,255,255,0.25)" }}
@@ -195,7 +197,7 @@ export default function LandingFlavors({
                 {/* White info area */}
                 <div className="relative bg-white px-5 pt-5 pb-5">
                   <h3
-                    className="text-[1.6rem] font-black uppercase leading-[0.9] tracking-tighter md:text-[2rem]"
+                    className="text-[1.25rem] font-black uppercase leading-[0.9] tracking-tighter md:text-[1.8rem]"
                     style={{ fontFamily: FONT, fontWeight: 900, color: "#111" }}
                   >
                     {flavor.name}
@@ -230,7 +232,7 @@ export default function LandingFlavors({
                       </span>
                       {hasPromo && oldPrice && (
                         <span
-                          className="text-sm font-black text-black/40 line-through"
+                          className="hidden text-sm font-black text-black/40 line-through md:inline"
                           style={{ fontFamily: FONT, fontWeight: 900 }}
                         >
                           {oldPrice}
@@ -254,6 +256,7 @@ export default function LandingFlavors({
             </motion.div>
             )
           })}
+        </div>
         </div>
       </div>
     </section>

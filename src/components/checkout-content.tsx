@@ -50,7 +50,7 @@ type UserAddress = {
 }
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
-const GRADIENT = "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 const GUEST_CART_KEY = "guest_cart"
 const SIGNUP_PROMO_DISMISSED_KEY = "signup_promo_dismissed_v1"
 const DEFAULT_CURRENCY = "USD"
@@ -1045,7 +1045,7 @@ export function CheckoutContent() {
                     className="flex cursor-pointer items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] transition-all hover:opacity-80 disabled:opacity-30"
                     style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
                   >
-                    <Save size={13} style={{ color: 'rgb(124,58,237)' }} />
+                    <Save size={13} style={{ color: 'rgb(68,15,195)' }} />
                     {isSavingAddress ? "Saving..." : "Save this address"}
                   </button>
                 )}
@@ -1170,7 +1170,7 @@ export function CheckoutContent() {
                         <div className="flex items-center overflow-hidden rounded-sm border-[3px] border-black bg-white">
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white"
                             style={{ fontFamily: FONT, fontWeight: 900 }}
                           >
                             −
@@ -1178,7 +1178,7 @@ export function CheckoutContent() {
                           <span className="w-6 text-center text-xs font-black" style={{ fontFamily: FONT, fontWeight: 900 }}>{item.quantity}</span>
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(124,58,237)_0%,rgb(185,58,210)_50%,rgb(232,68,106)_100%)] hover:text-white"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white"
                             style={{ fontFamily: FONT, fontWeight: 900 }}
                           >
                             +

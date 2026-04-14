@@ -71,7 +71,7 @@ export default function TestimonialsSection() {
               <figcaption className="flex items-center gap-3">
                 <div
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                  style={{ background: "rgb(124,58,237)" }}
+                  style={{ background: "rgb(68,15,195)" }}
                 >
                   {t.name.charAt(0)}
                 </div>

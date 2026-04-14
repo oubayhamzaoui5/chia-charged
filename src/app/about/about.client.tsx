@@ -17,7 +17,7 @@ import LandingCtaBanner from "@/components/landing/landing-cta-banner"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT =
-  "linear-gradient(135deg, rgb(124,58,237) 0%, rgb(185,58,210) 50%, rgb(232,68,106) 100%)"
+  "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 const ease = [0.34, 1.56, 0.64, 1] as [number, number, number, number]
 
@@ -419,7 +419,7 @@ export default function AboutPageContent() {
                   >
                     <div
                       className="flex h-12 w-12 items-center justify-center"
-                      style={{ color: "rgb(124,58,237)" }}
+                      style={{ color: "rgb(68,15,195)" }}
                     >
                       <Icon className="h-8 w-8" strokeWidth={2.5} />
                     </div>
@@ -519,7 +519,7 @@ export default function AboutPageContent() {
                     />
                     <div
                       className="mb-4 flex h-10 w-10 items-center justify-center"
-                      style={{ color: "rgb(124,58,237)" }}
+                      style={{ color: "rgb(68,15,195)" }}
                     >
                       <Icon className="h-7 w-7" strokeWidth={2.5} />
                     </div>
