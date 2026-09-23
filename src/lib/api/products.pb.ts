@@ -1,9 +1,8 @@
 // src/lib/api/products.pb.ts
 import 'server-only'
 import { cookies, headers } from 'next/headers'
-import PocketBase from 'pocketbase'
+import { createServerPb } from '@/lib/pb'
 
-const PB_URL = process.env.NEXT_PUBLIC_PB_URL!
 
 /**
  * If you set PB_ADMIN_TOKEN in your env (admin auth token),
@@ -11,7 +10,7 @@ const PB_URL = process.env.NEXT_PUBLIC_PB_URL!
  * Otherwise, we fall back to public rule (isActive=true).
  */
 function getServerPb() {
-  const pb = new PocketBase(PB_URL)
+  const pb = createServerPb()
   const adminToken = process.env.PB_ADMIN_TOKEN
   if (adminToken) {
     pb.authStore.save(adminToken, null as any) // bearer token

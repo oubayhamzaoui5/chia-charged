@@ -1,20 +1,16 @@
 'use server'
 
-import PocketBase from 'pocketbase'
 import { requireAdmin } from '@/lib/auth'
-import { getOAuthKeys, saveOAuthKeys, deleteOAuthKeys, mergeOAuthKeys } from '@/lib/oauth-keys'
+import { createServicePb } from '@/lib/pb-service.server'
+import { getOAuthKeys, mergeOAuthKeys } from '@/lib/oauth-keys'
 
-const PB_URL =
-  process.env.POCKETBASE_URL ?? process.env.NEXT_PUBLIC_PB_URL ?? 'http://127.0.0.1:8090'
-const PB_ADMIN_EMAIL =
-  process.env.PB_ADMIN_EMAIL ?? process.env.POCKETBASE_ADMIN_EMAIL ?? ''
-const PB_ADMIN_PASSWORD =
-  process.env.PB_ADMIN_PASSWORD ?? process.env.POCKETBASE_ADMIN_PASSWORD ?? ''
-
-async function getAdminPb(): Promise<PocketBase> {
-  const pb = new PocketBase(PB_URL)
-  await pb.collection('_superusers').authWithPassword(PB_ADMIN_EMAIL, PB_ADMIN_PASSWORD)
-  return pb
+async function configureGoogle(clientId?: string, clientSecret?: string) {
+  const pb = await createServicePb()
+  const users = await pb.collections.getOne('users')
+  const oauth2 = users.oauth2 ?? { enabled: false, providers: [] }
+  const providers = (oauth2.providers ?? []).filter((provider: { name: string }) => provider.name !== 'google')
+  if (clientId && clientSecret) providers.push({ name: 'google', clientId, clientSecret })
+  await pb.collections.update('users', { oauth2: { ...oauth2, enabled: providers.length > 0, providers } })
 }
 
 function maskId(id: string): string {
@@ -38,26 +34,19 @@ export async function saveKeysAction(
 ): Promise<{ success: boolean; error?: string }> {
   await requireAdmin()
 
-  const id = clientId.trim()
-  const secret = clientSecret.trim()
+  const id = typeof clientId === 'string' ? clientId.trim() : ''
+  const secret = typeof clientSecret === 'string' ? clientSecret.trim() : ''
 
   if (!id || !secret) {
     return { success: false, error: 'Both Client ID and Client Secret are required.' }
   }
 
-  mergeOAuthKeys({ googleClientId: id, googleClientSecret: secret })
+  try { mergeOAuthKeys({ googleClientId: id, googleClientSecret: secret }) }
+  catch { return { success: false, error: 'Credential storage is unavailable. Check server configuration.' } }
 
   try {
-    const pb = await getAdminPb()
-    await pb.settings.update({
-      googleAuth: {
-        enabled: true,
-        clientId: id,
-        clientSecret: secret,
-      },
-    })
-  } catch (err) {
-    console.error('Failed to apply Google OAuth to PocketBase:', err)
+    await configureGoogle(id, secret)
+  } catch {
     return {
       success: true,
       error:
@@ -73,11 +62,11 @@ export async function deleteKeysAction(): Promise<{ success: boolean; error?: st
   await requireAdmin()
 
   try {
-    const pb = await getAdminPb()
-    await pb.settings.update({ googleAuth: { enabled: false } })
-    deleteOAuthKeys()
-  } catch (err) {
-    console.error('Failed to disable Google OAuth:', err)
+    // Verify local storage before changing provider settings.
+    getOAuthKeys()
+    await configureGoogle()
+    mergeOAuthKeys({ googleClientId: undefined, googleClientSecret: undefined })
+  } catch {
     return { success: false, error: 'Failed to disable Google OAuth.' }
   }
 
@@ -89,16 +78,18 @@ export async function saveStripeKeysAction(
   secretKey: string
 ): Promise<{ success: boolean; error?: string }> {
   await requireAdmin()
-  const pk = publishableKey.trim()
-  const sk = secretKey.trim()
-  if (!pk || !sk) return { success: false, error: 'Both keys are required.' }
-  mergeOAuthKeys({ stripePublishableKey: pk, stripeSecretKey: sk })
+  const pk = typeof publishableKey === 'string' ? publishableKey.trim() : ''
+  const sk = typeof secretKey === 'string' ? secretKey.trim() : ''
+  if (!/^pk_(test|live)_[A-Za-z0-9]+$/.test(pk) || !/^sk_(test|live)_[A-Za-z0-9]+$/.test(sk) || pk.split('_')[1] !== sk.split('_')[1]) return { success: false, error: 'Provide matching Stripe publishable and secret keys from the same mode.' }
+  try { mergeOAuthKeys({ stripePublishableKey: pk, stripeSecretKey: sk }) }
+  catch { return { success: false, error: 'Credential storage is unavailable. Check server configuration.' } }
   return { success: true }
 }
 
 export async function deleteStripeKeysAction(): Promise<{ success: boolean; error?: string }> {
   await requireAdmin()
-  mergeOAuthKeys({ stripePublishableKey: undefined, stripeSecretKey: undefined })
+  try { mergeOAuthKeys({ stripePublishableKey: undefined, stripeSecretKey: undefined, stripeWebhookSecret: undefined }) }
+  catch { return { success: false, error: 'Credential storage is unavailable. Check server configuration.' } }
   return { success: true }
 }
 
@@ -120,16 +111,18 @@ export async function saveMetaPixelAction(
   pixelId: string
 ): Promise<{ success: boolean; error?: string }> {
   await requireAdmin()
-  const id = pixelId.trim()
+  const id = typeof pixelId === 'string' ? pixelId.trim() : ''
   if (!id) return { success: false, error: 'Pixel ID is required.' }
   if (!/^\d{10,20}$/.test(id)) return { success: false, error: 'Invalid Pixel ID format (should be 10–20 digits).' }
-  mergeOAuthKeys({ metaPixelId: id })
+  try { mergeOAuthKeys({ metaPixelId: id }) }
+  catch { return { success: false, error: 'Credential storage is unavailable. Check server configuration.' } }
   return { success: true }
 }
 
 export async function deleteMetaPixelAction(): Promise<{ success: boolean; error?: string }> {
   await requireAdmin()
-  mergeOAuthKeys({ metaPixelId: undefined })
+  try { mergeOAuthKeys({ metaPixelId: undefined }) }
+  catch { return { success: false, error: 'Credential storage is unavailable. Check server configuration.' } }
   return { success: true }
 }
 

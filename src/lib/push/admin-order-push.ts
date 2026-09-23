@@ -5,6 +5,7 @@ import { createServerPb } from '@/lib/pb'
 type PushSubscriptionRecord = {
   id: string
   endpoint: string
+  adminUserId: string
   p256dh: string
   auth: string
 }
@@ -61,11 +62,11 @@ export async function saveAdminPushSubscription(input: {
     throw new Error('PB_ADMIN_EMAIL and PB_ADMIN_PASSWORD are required for push subscriptions')
   }
 
-  const safeEndpoint = input.endpoint.replace(/"/g, '\\"')
   const existing = await pb.collection('admin_push_subscriptions').getFirstListItem<PushSubscriptionRecord>(
-    `endpoint="${safeEndpoint}"`,
+    pb.filter('endpoint={:endpoint}', { endpoint: input.endpoint }),
     { requestKey: null }
-  ).catch(() => null)
+  ).catch(error => { if (error?.status === 404) return null; throw error })
+  if (existing && existing.adminUserId !== input.adminUserId) throw new Error('Subscription belongs to another administrator.')
 
   if (existing) {
     await pb.collection('admin_push_subscriptions').update(existing.id, {
@@ -88,15 +89,14 @@ export async function saveAdminPushSubscription(input: {
   )
 }
 
-export async function removeAdminPushSubscription(endpoint: string) {
+export async function removeAdminPushSubscription(endpoint: string, adminUserId: string) {
   const pb = await createAdminPb()
   if (!pb) return
 
-  const safeEndpoint = endpoint.replace(/"/g, '\\"')
   const existing = await pb.collection('admin_push_subscriptions').getFirstListItem<PushSubscriptionRecord>(
-    `endpoint="${safeEndpoint}"`,
+    pb.filter('endpoint={:endpoint} && adminUserId={:adminUserId}', { endpoint, adminUserId }),
     { requestKey: null }
-  ).catch(() => null)
+  ).catch(error => { if (error?.status === 404) return null; throw error })
 
   if (!existing) return
 

@@ -152,7 +152,7 @@
 .nav-offset-top {
   padding-top: var(--navbar-offset-mobile, 100px);
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .nav-offset-top {
     padding-top: var(--navbar-offset-desktop, 112px);
   }

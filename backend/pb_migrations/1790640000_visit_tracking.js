@@ -1,0 +1,10 @@
+migrate(app => {
+  const settings = app.findCollectionByNameOrId('store_settings')
+  settings.fields.add(new BoolField({ name: 'analyticsEnabled' }))
+  app.save(settings)
+  const visits = app.findCollectionByNameOrId('visits')
+  visits.fields.add(new TextField({ name: 'visitKey', max: 64, hidden: true }))
+  visits.indexes.push('CREATE UNIQUE INDEX idx_visit_key ON visits (visitKey) WHERE visitKey != ""')
+  visits.indexes.push('CREATE INDEX idx_visit_created ON visits (created)')
+  app.save(visits)
+}, () => { throw new Error('Forward-only migration: preserve visitor settings.') })

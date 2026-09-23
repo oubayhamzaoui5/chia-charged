@@ -1,3 +1,4 @@
+import { authCookieOptions } from '@/lib/auth/cookie-options'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
@@ -6,7 +7,7 @@ export async function POST() {
     const cookieStore = await cookies()
     
     // Delete the auth cookie
-    cookieStore.delete('pb_auth')
+    cookieStore.set('pb_auth', '', authCookieOptions(0))
 
     return NextResponse.json({ success: true })
   } catch (error) {

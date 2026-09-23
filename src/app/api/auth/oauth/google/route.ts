@@ -1,18 +1,15 @@
+import { getAppOrigin } from '@/lib/url-policy'
+import { authCookieOptions } from '@/lib/auth/cookie-options'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import PocketBase from 'pocketbase'
+import { createServerPb } from '@/lib/pb'
 
-const PB_URL =
-  process.env.POCKETBASE_URL ?? process.env.NEXT_PUBLIC_PB_URL ?? 'http://127.0.0.1:8090'
-const APP_URL =
-  process.env.APP_URL ??
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  'http://localhost:3000'
-const CALLBACK_URL = `${APP_URL}/api/auth/oauth/callback`
 
 export async function GET(_req: NextRequest) {
+  const APP_URL = getAppOrigin()
+  const CALLBACK_URL = `${APP_URL}/api/auth/oauth/callback`
   try {
-    const pb = new PocketBase(PB_URL)
+    const pb = createServerPb()
     const methods = await pb.collection('users').listAuthMethods()
     const provider = (methods.oauth2?.providers ?? []).find(
       (p: { name: string }) => p.name === 'google'
@@ -25,13 +22,7 @@ export async function GET(_req: NextRequest) {
     }
 
     const cookieStore = await cookies()
-    const cookieOpts = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
-      maxAge: 10 * 60,
-      path: '/',
-    }
+    const cookieOpts = authCookieOptions(10 * 60)
     cookieStore.set('oauth_state', provider.state, cookieOpts)
     cookieStore.set('oauth_code_verifier', provider.codeVerifier, cookieOpts)
 

@@ -8,6 +8,8 @@ import { assertPocketBaseId } from '@/lib/admin/validation'
 import type { Product } from '@/types/product.types'
 import { slugify } from '@/utils/slug'
 import { normalizeRelationIds } from '@/utils/product.utils'
+import { resolveCatalogPrice } from '@/lib/catalog-pricing'
+import { normalizeProductNutrition } from '@/lib/product-nutrition'
 
 type VariantAttributeRow = {
   key: string
@@ -19,27 +21,13 @@ function resolvePromoPrice(
   productPromo: number | null,
   categoriesExpanded: unknown
 ): number | null {
-  const directPromo = productPromo != null && productPromo > 0 && productPromo < price ? productPromo : null
   const categories = Array.isArray(categoriesExpanded) ? categoriesExpanded : []
-
-  const overriding = categories.filter((c) => {
-    if (!c || typeof c !== 'object') return false
-    return Boolean((c as { activeAll?: unknown }).activeAll)
-  })
-
-  if (overriding.length === 0) return directPromo
-
-  let best: number | null = null
-  for (const raw of overriding) {
-    const promo = Number((raw as { promo?: unknown }).promo ?? 0)
-    if (!Number.isFinite(promo) || promo <= 0) continue
-    const safePct = Math.min(100, Math.max(0, promo))
-    const candidate = Number((price * (1 - safePct / 100)).toFixed(2))
-    if (candidate <= 0 || candidate >= price) continue
-    if (best == null || candidate < best) best = candidate
-  }
-
-  return best
+  const resolved = resolveCatalogPrice(price, productPromo, categories.map((raw, index) => ({
+    id: raw && typeof raw === 'object' && 'id' in raw ? String(raw.id) : String(index),
+    percent: raw && typeof raw === 'object' && 'promo' in raw ? Number(raw.promo) : 0,
+    active: Boolean(raw && typeof raw === 'object' && 'activeAll' in raw && raw.activeAll),
+  })))
+  return resolved && resolved.unitPriceCents < resolved.baseUnitPriceCents ? resolved.unitPriceCents / 100 : null
 }
 
 type ProductRecordLike = {
@@ -60,6 +48,9 @@ type ProductRecordLike = {
   variantKey?: unknown
   details?: unknown
   related_products?: unknown
+  ingredients?: string
+  allergenStatement?: string
+  nutritionFacts?: unknown
   expand?: { category?: unknown; related_products?: unknown } | null
 }
 
@@ -93,7 +84,7 @@ function toProduct(record: ProductRecordLike): Product {
     isActive: Boolean(record.isActive),
     description: record.description ?? '',
     images: Array.isArray(record.images) ? record.images : [],
-    currency: record.currency ?? '$',
+    currency: record.currency ?? 'USD',
     categories: normalizeRelationIds(record.expand?.category ?? record.category),
     inView: record.inView !== false,
     isVariant: Boolean(record.isVariant),
@@ -105,6 +96,9 @@ function toProduct(record: ProductRecordLike): Product {
         : null,
     details,
     relatedProducts: normalizeRelationIds(record.related_products ?? record.expand?.related_products),
+    ingredients: record.ingredients ?? '',
+    allergenStatement: record.allergenStatement ?? '',
+    nutritionFacts: normalizeProductNutrition(record.nutritionFacts),
   }
 }
 

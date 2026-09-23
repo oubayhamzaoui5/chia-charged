@@ -1,5 +1,6 @@
 "use client"
 
+import { useStoreSettings } from "@/hooks/useStoreSettings"
 import { useState } from "react"
 import { Plus, Minus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -7,46 +8,47 @@ import { motion, AnimatePresence } from "framer-motion"
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
-const faqItems = [
+const buildFaqItems = (settings: ReturnType<typeof useStoreSettings>) => [
   {
     question: "What are the main ingredients in Chia Charged?",
     answer:
-      "Chia seed, whey protein concentrate, medium chain coconut oil triglycerides, freeze-dried strawberry slices, vanilla flavor with other natural flavors, stevia leaf glycosides, and monk fruit extract.",
+      "Our flavors contain chia seed, whey protein concentrate and coconut-derived MCT oil. Ingredients vary by flavor; read the product ingredients and allergen statement before buying.",
   },
   {
     question: "What are your delivery timeframes?",
     answer:
-      "Standard delivery takes 2-4 business days. We ship orders fresh with insulated packaging to maintain product quality during transit.",
+      settings.shippingPolicy || "Delivery details have not been published yet. Contact us before ordering.",
   },
   {
     question: "Is Chia Charged suitable for vegans?",
     answer:
-      "Yes! All our puddings are 100% plant-based. No dairy, no eggs, no animal products — just pure, nutritious ingredients that work for everyone.",
+      "No. Our current flavors contain whey protein from milk and are not vegan or dairy-free. Read each product’s allergen statement.",
   },
   {
-    question: "How much protein does each jar contain?",
+    question: "Where can I find nutrition and sugar information?",
     answer:
-      "Each serving packs 22g of high-quality plant protein, 12g of fiber, MCT oil and zero added sugar. It's the perfect snack for muscle recovery and sustained energy.",
+      "Check the nutrition panel for your selected flavor and serving size. Chocolate Chips includes cane sugar; these products are not advertised as sugar-free or free of added sugar.",
   },
   {
-    question: "Do you offer economy shipping?",
+    question: "How much does shipping cost?",
     answer:
-      "All orders placed over $99 will ship for free. Once your order ships, you’ll receive an email with tracking information.",
+      "We charge one flat shipping rate per order within the United States. Your shipping charge is shown at checkout before you pay.",
   },
   {
     question: "Do you ship internationally?",
     answer:
-      "We ship worldwide. Please be aware customers are responsible for any and all customs fees that are incurred when your order arrives to your country.",
+      "We currently deliver within the United States only.",
   },
   {
     question: "What is your refund policy?",
-    answer: "All items are final sale. No refunds will be issued.",
+    answer: settings.returnPolicy || "Our return policy has not been published yet. Contact us before ordering.",
   },
   {
     question: "How should I store the product?",
     answer:
-      "Items should be stored in a cool-dry place, unopened. Shelf life is 12 months from package date.",
+      settings.storageInstructions || "Follow the storage instructions and date on your product packaging. Additional storage details have not been published yet.",
   },
+  { question: "How do I prepare Chia Charged?", answer: settings.preparationInstructions || "Follow the preparation instructions on your product packaging. Additional preparation details have not been published yet." },
 ]
 
 const containerVariants = {
@@ -68,6 +70,8 @@ const itemVariants = {
 }
 
 export default function LandingFaq() {
+  const settings = useStoreSettings()
+  const faqItems = buildFaqItems(settings)
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (

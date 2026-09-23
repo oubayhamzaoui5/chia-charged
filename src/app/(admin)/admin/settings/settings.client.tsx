@@ -3,6 +3,8 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { CheckCircle2, AlertCircle, Shield, UserRound, Mail, Eye, EyeOff } from 'lucide-react'
 import { updateAdminPasswordAction } from './actions'
+import ShippingSettings from './shipping-settings'
+import type { ShippingPolicy } from '@/lib/shipping'
 
 type AdminUser = {
   id: string
@@ -16,7 +18,7 @@ type AdminUser = {
   verified: boolean
 }
 
-export default function SettingsClient({ user }: { user: AdminUser }) {
+export default function SettingsClient({ user, shippingPolicy }: { user: AdminUser; shippingPolicy: ShippingPolicy | null }) {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -68,9 +70,11 @@ export default function SettingsClient({ user }: { user: AdminUser }) {
           Settings
         </h1>
         <p className="mt-1 text-sm" style={{ color: '#6B7280' }}>
-          View your account details and update your password.
+          Manage US shipping, view your account details, and update your password.
         </p>
       </div>
+
+      <ShippingSettings policy={shippingPolicy} />
 
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-100 px-6 py-4">

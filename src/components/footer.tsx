@@ -1,12 +1,14 @@
 "use client"
 
 import Link from "next/link"
+import { useStoreSettings } from '@/hooks/useStoreSettings'
 import { useEffect, useState, type FormEvent } from "react"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 export default function Footer() {
+  const settings = useStoreSettings()
   const [footerEmail, setFooterEmail] = useState("")
   const [isAuthResolved, setIsAuthResolved] = useState(false)
   const [isSignedIn, setIsSignedIn] = useState(false)
@@ -90,13 +92,13 @@ export default function Footer() {
             </div>
 
             {/* Newsletter signup (hidden for signed-in users) */}
-            {isAuthResolved && !isSignedIn && (
+            {isAuthResolved && !isSignedIn && settings.firstOrderDiscountEnabled && (
               <div className="w-full max-w-md">
                 <p
                   className="mb-3 text-sm font-black uppercase tracking-[0.12em] text-white"
                   style={{ fontFamily: FONT, fontWeight: 900 }}
                 >
-                  Sign up to get 10% off your first order
+                  Sign up for {settings.firstOrderDiscountPercent}% off regular-price items on your first order
                 </p>
                 <form className="flex" onSubmit={handleFooterSignup}>
                   <input
@@ -141,10 +143,9 @@ export default function Footer() {
               </p>
               <nav className="flex flex-col gap-3">
                 {[
-                  { label: "All Products", href: "/shop" },
-                  { label: "Strawberries n' Cream", href: "/shop" },
-                  { label: "New Flavors", href: "/new-arrivals" },
-                  { label: "Bundles & Deals", href: "/promotions" },
+                  { label: "All Products", href: "/#flavors" },
+                  { label: "Strawberries n' Cream", href: "/product/strawberries-n-cream-cc-str-4" },
+                  { label: "Chocolate Chips", href: "/product/chocolate-chip-cc-chklt-4" },
                 ].map(({ label, href }) => (
                   <Link
                     key={label}
@@ -169,8 +170,8 @@ export default function Footer() {
               <nav className="flex flex-col gap-3">
                 {[
                   { label: "Contact Us", href: "/#contact" },
-                  { label: "Shipping Info", href: "/#faq" },
-                  { label: "Returns", href: "/#faq" },
+                  { label: "Shipping Info", href: "/policies/shipping" },
+                  { label: "Returns", href: "/policies/returns" },
                   { label: "FAQ", href: "/#faq" },
                 ].map(({ label, href }) => (
                   <Link
@@ -197,8 +198,8 @@ export default function Footer() {
                 {[
                   { label: "About Us", href: "/about" },
                   { label: "Blog", href: "/blog" },
-                  { label: "Privacy Policy", href: "/#faq" },
-                  { label: "Terms", href: "/#faq" },
+                  { label: "Privacy Policy", href: "/policies/privacy" },
+                  { label: "Terms", href: "/policies/terms" },
                 ].map(({ label, href }) => (
                   <Link
                     key={label}

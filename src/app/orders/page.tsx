@@ -74,7 +74,7 @@ export default async function OrdersPage() {
                 </p>
               </div>
               <Link
-                href="/shop"
+                href="/#flavors"
                 className="inline-flex items-center gap-2 border-3 border-black bg-white px-5 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-black transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
                 style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111' }}
               >
@@ -107,7 +107,7 @@ export default async function OrdersPage() {
                   Your future purchases will appear here.
                 </p>
                 <Link
-                  href="/shop"
+                  href="/#flavors"
                   className="mt-8 inline-flex items-center gap-2 border-3 border-black px-8 py-3 text-sm font-black uppercase tracking-[0.12em] text-white transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5"
                   style={{
                     fontFamily: FONT,

@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, Loader2, Package } from 'lucide-react';
-import { fetchBestSellingProducts } from '@/lib/services/stats';
+import { getBestSellingProductsAction as fetchBestSellingProducts } from '@/app/(admin)/admin/dashboard/actions';
 
 export default function BestSellingProducts() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const formatDT = (amount: number) => {
+  const formatCurrency = (amount: number) => {
     return amount.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -91,7 +91,7 @@ export default function BestSellingProducts() {
 
               {/* Revenue */}
               <div className="text-slate-900 font-bold text-sm text-right">
-                {formatDT(product.revenue)}
+                {formatCurrency(product.revenue)}
               </div>
             </div>
           ))

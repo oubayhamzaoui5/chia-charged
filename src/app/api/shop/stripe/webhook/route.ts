@@ -1,118 +1,189 @@
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerPb } from '@/lib/pb'
 import { getOAuthKeys } from '@/lib/oauth-keys'
+import { createServicePb } from '@/lib/pb-service.server'
 import { sendAdminOrderPushNotification } from '@/lib/push/admin-order-push'
 
 export const runtime = 'nodejs'
+const MAX_BODY_BYTES = 1024 * 1024
+const SIGNATURE_TOLERANCE_SECONDS = 300
 
-async function getRawBody(req: NextRequest): Promise<Buffer> {
-  const reader = req.body?.getReader()
-  if (!reader) return Buffer.alloc(0)
-  const chunks: Uint8Array[] = []
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    if (value) chunks.push(value)
+type StripeSession = {
+  id?: unknown
+  mode?: unknown
+  payment_status?: unknown
+  amount_subtotal?: unknown
+  amount_total?: unknown
+  currency?: unknown
+  client_reference_id?: unknown
+  payment_intent?: unknown
+  metadata?: { orderId?: unknown }
+  automatic_tax?: { enabled?: unknown; status?: unknown }
+  total_details?: { amount_discount?: unknown; amount_shipping?: unknown; amount_tax?: unknown }
+  shipping_details?: {
+    name?: unknown
+    phone?: unknown
+    address?: { line1?: unknown; line2?: unknown; city?: unknown; state?: unknown; postal_code?: unknown; country?: unknown }
   }
-  return Buffer.concat(chunks)
+}
+type StripeEvent = {
+  id?: unknown
+  type?: unknown
+  livemode?: unknown
+  data?: { object?: StripeSession }
 }
 
-async function getAdminPb() {
-  const pb = createServerPb()
-  const email = process.env.PB_ADMIN_EMAIL
-  const password = process.env.PB_ADMIN_PASSWORD
-  if (!email || !password) throw new Error('PB admin credentials not configured')
-  await pb.collection('_superusers').authWithPassword(email, password)
-  return pb
+function verifySignature(payload: Buffer, header: string, secret: string) {
+  const entries = header.split(',').map(part => part.trim().split('=', 2))
+  const timestampText = entries.find(([key]) => key === 't')?.[1]
+  const signatures = entries.filter(([key]) => key === 'v1').map(([, value]) => value)
+  const timestamp = Number(timestampText)
+  const now = Math.floor(Date.now() / 1000)
+  if (!Number.isInteger(timestamp) || Math.abs(now - timestamp) > SIGNATURE_TOLERANCE_SECONDS || signatures.length === 0) return false
+  const expected = createHmac('sha256', secret).update(`${timestamp}.${payload.toString('utf8')}`).digest()
+  return signatures.some(candidate => {
+    if (!/^[a-f0-9]{64}$/i.test(candidate)) return false
+    const supplied = Buffer.from(candidate, 'hex')
+    return supplied.length === expected.length && timingSafeEqual(supplied, expected)
+  })
+}
+
+function stringValue(value: unknown) {
+  return typeof value === 'string' ? value : ''
+}
+
+function validId(value: string, prefix: string) {
+  return value.startsWith(prefix) && /^[A-Za-z0-9_]+$/.test(value)
 }
 
 export async function POST(req: NextRequest) {
-  const keys = getOAuthKeys()
+  let keys
+  try { keys = getOAuthKeys() }
+  catch { return NextResponse.json({ error: 'Payment configuration unavailable.' }, { status: 503 }) }
   const stripeSecretKey = keys?.stripeSecretKey
-
-  if (!stripeSecretKey) {
-    return NextResponse.json({ error: 'Stripe not configured' }, { status: 400 })
+  const webhookSecret = keys?.stripeWebhookSecret
+  if (!stripeSecretKey || !webhookSecret) {
+    return NextResponse.json({ error: 'Stripe webhook is not configured.' }, { status: 503 })
   }
 
-  const sig = req.headers.get('stripe-signature')
-  const webhookSecret = getOAuthKeys()?.stripeWebhookSecret ?? process.env.STRIPE_WEBHOOK_SECRET
-  const rawBody = await getRawBody(req)
-
-  let event: any
-
-  if (webhookSecret && sig) {
-    try {
-      const crypto = await import('crypto')
-      const timestamp = sig.split(',').find(p => p.startsWith('t='))?.slice(2)
-      const v1 = sig.split(',').find(p => p.startsWith('v1='))?.slice(3)
-      if (!timestamp || !v1) throw new Error('Invalid signature header')
-
-      const payload = `${timestamp}.${rawBody.toString('utf8')}`
-      const expected = crypto
-        .createHmac('sha256', webhookSecret)
-        .update(payload)
-        .digest('hex')
-
-      if (expected !== v1) throw new Error('Signature mismatch')
-      event = JSON.parse(rawBody.toString('utf8'))
-    } catch (err: any) {
-      return NextResponse.json({ error: `Webhook signature failed: ${err.message}` }, { status: 400 })
-    }
-  } else {
-    try {
-      event = JSON.parse(rawBody.toString('utf8'))
-    } catch {
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-    }
+  const signature = req.headers.get('stripe-signature')
+  if (!signature) return NextResponse.json({ error: 'Missing Stripe signature.' }, { status: 400 })
+  const declaredLength = Number(req.headers.get('content-length') || 0)
+  if (declaredLength > MAX_BODY_BYTES) return NextResponse.json({ error: 'Payload too large.' }, { status: 413 })
+  const rawBody = Buffer.from(await req.arrayBuffer())
+  if (rawBody.length > MAX_BODY_BYTES) return NextResponse.json({ error: 'Payload too large.' }, { status: 413 })
+  if (!verifySignature(rawBody, signature, webhookSecret)) {
+    return NextResponse.json({ error: 'Invalid or stale Stripe signature.' }, { status: 400 })
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object
-    const orderId = session.metadata?.orderId ?? session.client_reference_id
+  let event: StripeEvent
+  try { event = JSON.parse(rawBody.toString('utf8')) as StripeEvent }
+  catch { return NextResponse.json({ error: 'Invalid JSON.' }, { status: 400 }) }
 
-    if (!orderId) {
-      return NextResponse.json({ error: 'No orderId in session' }, { status: 400 })
+  const eventId = stringValue(event.id)
+  const eventType = stringValue(event.type)
+  const session = event.data?.object
+  const sessionId = stringValue(session?.id)
+  if (!validId(eventId, 'evt_')) {
+    return NextResponse.json({ error: 'Invalid Stripe event.' }, { status: 400 })
+  }
+  const expectsLive = stripeSecretKey.startsWith('sk_live_')
+  if (event.livemode !== expectsLive) return NextResponse.json({ error: 'Stripe mode mismatch.' }, { status: 400 })
+
+  if (!['checkout.session.completed', 'checkout.session.async_payment_succeeded', 'checkout.session.async_payment_failed', 'checkout.session.expired'].includes(eventType)) {
+    return NextResponse.json({ received: true })
+  }
+  if (!validId(sessionId, 'cs_')) return NextResponse.json({ error: 'Invalid Stripe session.' }, { status: 400 })
+
+  try {
+    const pb = await createServicePb()
+    const order = await pb.collection('orders').getFirstListItem(`stripeSessionId = "${sessionId}"`, { requestKey: null })
+    if (stringValue(order.stripeEventId) === eventId) return NextResponse.json({ received: true, duplicate: true })
+    const orderId = stringValue(order.id)
+    if (!orderId || stringValue(session?.metadata?.orderId) !== orderId || stringValue(session?.client_reference_id) !== orderId) {
+      return NextResponse.json({ error: 'Stripe session does not match order.' }, { status: 400 })
     }
 
-    try {
-      const pb = await getAdminPb()
-      const order = await pb.collection('orders').getOne(orderId, { requestKey: null })
-      await pb.collection('orders').update(orderId, { status: 'paid' }, { requestKey: null })
-
-      // Reduce stock for each ordered item
-      const orderItems: Array<{ productId: string; quantity: number }> =
-        Array.isArray(order.items) ? order.items : []
-      const productIds = orderItems
-        .map((i) => i.productId)
-        .filter((id) => typeof id === 'string' && /^[a-zA-Z0-9]{15}$/.test(id))
-      if (productIds.length > 0) {
-        const productFilter = productIds.map((id) => `id = '${id}'`).join(' || ')
-        const products = await pb.collection('products').getFullList({
-          filter: productFilter,
-          fields: 'id,stock',
-          requestKey: null,
-        })
-        const stockMap = new Map(products.map((p: any) => [p.id as string, p.stock as number]))
-        for (const item of orderItems) {
-          const currentStock = stockMap.get(item.productId)
-          if (typeof currentStock === 'number') {
-            const newStock = Math.max(0, currentStock - (item.quantity || 1))
-            await pb.collection('products').update(item.productId, { stock: newStock }, { requestKey: null })
-          }
-        }
+    if (eventType === 'checkout.session.completed' || eventType === 'checkout.session.async_payment_succeeded') {
+      const expectedSubtotal = Number(order.itemsTotalCents)
+      const expectedShipping = Number(order.shippingCents)
+      const subtotal = Number(session?.amount_subtotal)
+      const shipping = Number(session?.total_details?.amount_shipping)
+      const discount = Number(session?.total_details?.amount_discount)
+      const tax = Number(session?.total_details?.amount_tax)
+      const amount = Number(session?.amount_total)
+      const currency = stringValue(session?.currency).toUpperCase()
+      const automaticTaxComplete = session?.automatic_tax?.enabled === true && session?.automatic_tax?.status === 'complete'
+      const amountsAreValid = [expectedSubtotal, expectedShipping, subtotal, shipping, discount, tax, amount]
+        .every(value => Number.isSafeInteger(value) && value >= 0)
+      if (session?.mode !== 'payment' || !automaticTaxComplete || !amountsAreValid ||
+          subtotal !== expectedSubtotal || shipping !== expectedShipping || discount !== 0 ||
+          amount !== subtotal + shipping + tax || currency !== stringValue(order.paymentCurrency).toUpperCase()) {
+        return NextResponse.json({ error: 'Stripe payment does not match order.' }, { status: 400 })
       }
-
-      void sendAdminOrderPushNotification({
-        id: orderId,
-        total: Number(order.total ?? 0),
-        currency: typeof order.currency === 'string' ? order.currency : 'USD',
-        customerName: typeof order.userName === 'string' ? order.userName : 'Customer',
+      if (session?.payment_status !== 'paid') return NextResponse.json({ received: true, paymentPending: true })
+      const paymentIntent = stringValue(session?.payment_intent)
+      if (paymentIntent && !validId(paymentIntent, 'pi_')) return NextResponse.json({ error: 'Invalid payment reference.' }, { status: 400 })
+      const stripeAddress = session?.shipping_details?.address
+      const line1 = stringValue(stripeAddress?.line1)
+      const line2 = stringValue(stripeAddress?.line2)
+      const city = stringValue(stripeAddress?.city)
+      const state = stringValue(stripeAddress?.state).toUpperCase()
+      const postalCode = stringValue(stripeAddress?.postal_code)
+      const country = stringValue(stripeAddress?.country).toUpperCase()
+      if (!line1 || !city || !/^[A-Z]{2}$/.test(state) || !/^\d{5}(?:-\d{4})?$/.test(postalCode) || country !== 'US') {
+        return NextResponse.json({ error: 'Stripe shipping address is invalid.' }, { status: 400 })
+      }
+      const existingSnapshot = order.addressSnapshot && typeof order.addressSnapshot === 'object' ? order.addressSnapshot : {}
+      const finalized = await pb.send<{ duplicate?: boolean }>('/api/chia-checkout/finalize', {
+        method: 'POST',
+        body: {
+        orderId,
+        stripeSessionId: sessionId,
+        paymentAmountCents: amount,
+        taxCents: tax,
+        totalCents: amount,
+        total: amount / 100,
+        taxStatus: 'complete',
+        stripePaymentIntentId: paymentIntent,
+        stripeEventId: eventId,
+        paidAt: new Date().toISOString(),
+        address: [line1, line2].filter(Boolean).join(', '),
+        city,
+        state,
+        postalCode,
+        country,
+        addressSnapshot: { ...existingSnapshot, address: line1, address2: line2, city, state, postalCode, country, providerVerified: true },
+        },
+        requestKey: null,
       })
-    } catch (err: any) {
-      console.error('Webhook: failed to update order', orderId, err)
-      return NextResponse.json({ error: 'Failed to update order' }, { status: 500 })
+      if (!finalized.duplicate) {
+        void sendAdminOrderPushNotification({
+          id: orderId,
+          total: amount / 100,
+          currency: stringValue(order.currency) || 'USD',
+          customerName: stringValue(order.userName) || 'Customer',
+        })
+      }
+    } else if (stringValue(order.paymentStatus) === 'pending') {
+      await pb.send('/api/chia-checkout/release', {
+        method: 'POST',
+        body: {
+          orderId,
+          reason: eventType === 'checkout.session.expired' ? 'stripe_expired' : 'stripe_payment_failed',
+          paymentStatus: eventType === 'checkout.session.expired' ? 'expired' : 'failed',
+          stripeEventId: eventId,
+        },
+        requestKey: null,
+      })
     }
+    return NextResponse.json({ received: true })
+  } catch (error) {
+    if (typeof error === 'object' && error !== null && 'status' in error && error.status === 404) {
+      return NextResponse.json({ error: 'Unknown Stripe checkout session.' }, { status: 400 })
+    }
+    const status = typeof error === 'object' && error !== null && 'status' in error ? error.status : undefined
+    console.error('Stripe webhook processing failed', { eventId, status })
+    return NextResponse.json({ error: 'Webhook processing failed.' }, { status: 500 })
   }
-
-  return NextResponse.json({ received: true })
 }

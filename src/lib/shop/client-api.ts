@@ -60,3 +60,20 @@ export async function addToCartForUser(productId: string, quantity: number): Pro
   }
 }
 
+export async function mergeGuestCartAfterAuth(): Promise<boolean> {
+  if (typeof window === 'undefined') return false
+  try {
+    const attempt = JSON.parse(window.sessionStorage.getItem('checkout_attempt_v1') || 'null')
+    if (typeof attempt?.orderId === 'string' && PB_ID_REGEX.test(attempt.orderId)) return false
+  } catch { /* Invalid recovery state does not block a normal merge. */ }
+  let items: unknown
+  try { items = JSON.parse(window.localStorage.getItem('guest_cart') || '[]') } catch { return false }
+  if (!Array.isArray(items) || items.length === 0) return false
+  const res = await fetch('/api/shop/cart/merge', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }),
+  })
+  if (!res.ok) return false
+  window.localStorage.removeItem('guest_cart')
+  window.dispatchEvent(new Event('cart:updated'))
+  return true
+}

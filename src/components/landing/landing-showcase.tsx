@@ -53,10 +53,10 @@ export default function LandingShowcase() {
               Strawberries<br />n&apos; Cream
             </h2>
             <p className="mb-7 max-w-sm text-sm font-bold leading-relaxed" style={{ color: "rgba(0,0,0,0.5)" }}>
-              Real strawberries. Creamy texture. Zero added sugar — pure indulgence that actually fuels you.
+              Made with freeze-dried strawberries and whey protein. Check the nutrition and allergen information for this flavor.
             </p>
             <div className="mb-8 flex flex-wrap gap-2">
-              {["Real Strawberries", "0g Sugar", "Ready to Eat", "22g Protein/Serving"].map((tag) => (
+              {["Real Strawberries", "Check Nutrition", "Pudding Mix", "22g Protein/Serving"].map((tag) => (
                 <span
                   key={tag}
                   className="rounded-sm border-2 border-black/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider"
@@ -127,7 +127,7 @@ export default function LandingShowcase() {
               Rich, deep chocolate taste loaded with protein. Your cravings deserve more than compromise.
             </p>
             <div className="mb-8 flex flex-wrap gap-2">
-              {["Rich Chocolate", "22g Protein/Serving", "MCT Oil", "Plant-Based"].map((tag) => (
+              {["Rich Chocolate", "22g Protein/Serving", "MCT Oil", "Contains Milk"].map((tag) => (
                 <span
                   key={tag}
                   className="rounded-sm border-2 border-black/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider"
@@ -138,7 +138,7 @@ export default function LandingShowcase() {
               ))}
             </div>
             <Link
-              href="/shop"
+              href="/#flavors"
               className="shimmer-btn relative isolate inline-flex h-13 items-center justify-center overflow-hidden rounded-sm border-3 border-black px-8 text-sm font-black uppercase tracking-[0.12em] text-white transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#111] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0px_#111]"
               style={{ fontFamily: FONT, fontWeight: 900, background: "#D4813A", boxShadow: "4px 4px 0 #111" }}
             >

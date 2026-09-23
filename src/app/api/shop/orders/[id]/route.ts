@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth/server'
+import { createServicePb } from '@/lib/pb-service.server'
 import { createServerPb } from '@/lib/pb'
+import { hasGuestOrderAccess } from '@/lib/guest-order-access.server'
 
 function productImageUrl(productId: string, filename: string): string {
   const base =
@@ -21,19 +23,13 @@ export async function GET(
 
   try {
     const session = await getSession()
-    const pb = createServerPb()
-
-    if (session?.token) {
-      pb.authStore.save(session.token, session.user as any)
-    }
-
+    const pb = await createServicePb()
     const record = await pb.collection('orders').getOne(id, { requestKey: null })
-
-    // Security: only the owner or a guest can see this (guest order has no user field)
-    const recordUser = typeof record.user === 'string' ? record.user : null
-    if (recordUser && session?.user?.id !== recordUser && session?.user?.role !== 'admin') {
-      return NextResponse.json({ message: 'Unauthorized.' }, { status: 403 })
+    const ownsOrder = Boolean(record.user && session?.user?.id === record.user)
+    if (!ownsOrder && session?.user?.role !== 'admin' && !hasGuestOrderAccess(request, record)) {
+      return NextResponse.json({ message: 'Order not found.' }, { status: 404, headers: { 'Cache-Control': 'private, no-store' } })
     }
+    const catalog = createServerPb()
 
     // Resolve product images for items
     const rawItems = Array.isArray(record.items) ? record.items : []
@@ -43,7 +39,7 @@ export async function GET(
         const productId = typeof item.productId === 'string' ? item.productId : null
         if (productId) {
           try {
-            const product = await pb.collection('products').getOne(productId, {
+            const product = await catalog.collection('products').getOne(productId, {
               fields: 'id,images',
               requestKey: null,
             })
@@ -71,6 +67,9 @@ export async function GET(
         id: String(record.id),
         created: String(record.created ?? ''),
         status: String(record.status ?? 'pending'),
+        fulfillmentStatus: String(record.fulfillmentStatus ?? record.status ?? 'on hold'),
+        paymentStatus: String(record.paymentStatus ?? 'legacy_unverified'),
+        isGuest: Boolean(record.isGuest),
         firstName: String(record.firstName ?? ''),
         lastName: String(record.lastName ?? ''),
         email: String(record.email ?? ''),
@@ -78,13 +77,23 @@ export async function GET(
         address: String(record.address ?? ''),
         city: String(record.city ?? ''),
         postalCode: String(record.postalCode ?? ''),
+        country: String(record.country ?? ''),
+        state: String(record.state ?? ''),
+        shipping: record.shippingPolicyVersion ? Number(record.shippingCents ?? 0) / 100 : null,
+        subtotal: record.pricingVersion ? Number(record.subtotalCents ?? 0) / 100 : null,
+        discount: record.pricingVersion ? Number(record.discountCents ?? 0) / 100 : null,
+        itemsTotal: record.pricingVersion ? Number(record.itemsTotalCents ?? 0) / 100 : null,
+        tax: record.pricingVersion ? Number(record.taxCents ?? 0) / 100 : null,
+        taxStatus: String(record.taxStatus ?? ''),
+        taxProvider: String(record.taxProvider ?? ''),
+        pricingVersion: String(record.pricingVersion ?? ''),
         notes: String(record.notes ?? ''),
-        paymentMode: String(record.paymentMode ?? 'cash_on_delivery'),
+        paymentMode: String(record.paymentMode ?? 'stripe'),
         total: Number(record.total ?? 0),
-        currency: String(record.currency ?? 'DT'),
+        currency: String(record.currency ?? 'USD'),
         items,
       },
-    })
+    }, { headers: { 'Cache-Control': 'private, no-store' } })
   } catch (error: any) {
     if (error?.status === 404) {
       return NextResponse.json({ message: 'Order not found.' }, { status: 404 })

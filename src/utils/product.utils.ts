@@ -7,8 +7,7 @@ export function slugify(input: string): string {
 }
 
 export function fileUrl(id: string, filename: string): string {
-  const PB_URL = process.env.NEXT_PUBLIC_PB_URL ?? ''
-  return `${PB_URL}/api/files/products/${id}/${encodeURIComponent(filename)}`
+  return `/api/pb-files/products/${id}/${encodeURIComponent(filename)}`
 }
 
 export function filePreview(file: File): string {

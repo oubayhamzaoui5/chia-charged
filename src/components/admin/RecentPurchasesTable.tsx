@@ -2,16 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link'; // Assuming you are using Next.js
-import { Trash2, Pause, ShoppingCart, CheckCircle2, Clock, Truck, ChevronRight } from 'lucide-react';
-import { fetchRecentPurchases } from '@/lib/services/stats'; 
-
-type Status = 'pending' | 'confirmed' | 'delevering' | 'delivered' | 'cancelled' | 'on hold' | 'returned';
+import { Trash2, Pause, ShoppingCart, Truck, ChevronRight } from 'lucide-react';
+import { getRecentPurchasesAction as fetchRecentPurchases } from '@/app/(admin)/admin/dashboard/actions';
+import type { OrderStatus } from '@/types/order.types';
 
 interface Purchase {
   customer: string;
   phone: string;
   product: string;
-  status: Status;
+  status: OrderStatus;
   amount: number;
 }
 
@@ -19,38 +18,29 @@ export default function RecentPurchasesTable() {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const statusIcon = (status: Status) => {
+  const statusIcon = (status: OrderStatus) => {
     switch (status) {
-      case 'pending': return <Clock className="w-3 h-3" />
-      case 'confirmed': return <CheckCircle2 className="w-3 h-3" />
-      case 'delevering': return <Truck className="w-3 h-3" />
+      case 'delivering': return <Truck className="w-3 h-3" />
       case 'delivered': return <ShoppingCart className="w-3 h-3" />
       case 'cancelled': return <Trash2 className="w-3 h-3" />
       case 'on hold': return <Pause className="w-3 h-3" />
-      case 'returned': return <Truck className="w-3 h-3" />
     }
   }
 
-  const statusBadgeClass = (status: Status) => {
+  const statusBadgeClass = (status: OrderStatus) => {
     switch (status) {
-      case 'pending': return 'bg-orange-50 text-orange-700'
-      case 'confirmed': return 'bg-blue-50 text-blue-700'
-      case 'delevering': return 'bg-purple-50 text-purple-700'
+      case 'delivering': return 'bg-purple-50 text-purple-700'
       case 'delivered': return 'bg-emerald-50 text-emerald-700'
       case 'cancelled': return 'bg-red-50 text-red-700'
       case 'on hold': return 'bg-slate-100 text-slate-600'
-      case 'returned': return 'bg-red-50 text-red-700'
     }
   }
 
-  const statusLabels: Record<Status, string> = {
-    pending: 'Pending',
-    confirmed: 'Confirmed',
-    delevering: 'Out for delivery',
+  const statusLabels: Record<OrderStatus, string> = {
+    delivering: 'Out for delivery',
     delivered: 'Delivered',
     cancelled: 'Cancelled',
     'on hold': 'On hold',
-    returned: 'Returned',
   }
 
   useEffect(() => {

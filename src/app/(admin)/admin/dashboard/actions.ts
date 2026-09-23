@@ -4,6 +4,8 @@ import { requireAdmin } from '@/lib/auth'
 import { getAdminPbForAction } from '@/lib/admin/actions'
 import {
   fetchAlertCounts,
+  fetchRecentPurchases,
+  fetchBestSellingProducts,
   fetchChartRowData,
   fetchExtendedStats,
   fetchMonthlyOrdersTrend,
@@ -19,18 +21,11 @@ export async function getTodaySalesAction() {
 export async function getTodayVisitsAction(): Promise<number> {
   await requireAdmin()
 
-  const PB_URL = process.env.POCKETBASE_URL ?? process.env.NEXT_PUBLIC_PB_URL ?? 'http://127.0.0.1:8090'
-  const email = process.env.PB_ADMIN_EMAIL ?? ''
-  const password = process.env.PB_ADMIN_PASSWORD ?? ''
-
   const now = new Date()
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
 
   try {
-    const PocketBase = (await import('pocketbase')).default
-    const pb = new PocketBase(PB_URL)
-    pb.autoCancellation(false)
-    await pb.collection('_superusers').authWithPassword(email, password)
+    const { pb } = await getAdminPbForAction()
 
     try {
       const records = await pb.collection('visits').getFullList({
@@ -131,7 +126,7 @@ export async function getMonthlySalesTrendAction(
 export async function getPendingOrdersCountAction() {
   const { pb } = await getAdminPbForAction()
   const pending = await pb.collection('orders').getList(1, 1, {
-    filter: 'status = "pending"',
+    filter: 'paymentStatus = "pending"',
   })
   return pending.totalItems
 }
@@ -145,16 +140,16 @@ export async function getOrdersKpisAction() {
 
   const [pendingToday, deliveredToday, pendingAll, confirmedAll] = await Promise.all([
     pb.collection('orders').getList(1, 1, {
-      filter: `status = "paid" && updated >= "${pbDate}"`,
+      filter: `paymentStatus = "paid" && fulfillmentStatus = "on hold" && updated >= "${pbDate}"`,
     }),
     pb.collection('orders').getList(1, 1, {
-      filter: `status = "delivered" && updated >= "${pbDate}"`,
+      filter: `paymentStatus = "paid" && fulfillmentStatus = "delivered" && updated >= "${pbDate}"`,
     }),
     pb.collection('orders').getList(1, 1, {
-      filter: 'status = "paid"',
+      filter: 'paymentStatus = "paid" && fulfillmentStatus = "on hold"',
     }),
     pb.collection('orders').getList(1, 1, {
-      filter: 'status = "delivering"',
+      filter: 'paymentStatus = "paid" && fulfillmentStatus = "delivering"',
     }),
   ])
 
@@ -169,6 +164,7 @@ export async function getOrdersKpisAction() {
 export async function getLatestOrderForNotificationAction() {
   const { pb } = await getAdminPbForAction()
   const res = await pb.collection('orders').getList(1, 1, {
+    filter: 'paymentStatus = "paid"',
     sort: '-created',
     fields: 'id,created,total,currency,firstName,lastName',
     requestKey: null,
@@ -184,7 +180,10 @@ export async function getLatestOrderForNotificationAction() {
     id: String(item.id ?? ''),
     created: String(item.created ?? ''),
     total: Number(item.total ?? 0),
-    currency: typeof item.currency === 'string' ? item.currency : '$',
+    currency: typeof item.currency === 'string' ? item.currency : 'USD',
     customerName: `${firstName} ${lastName}`.trim() || 'Customer',
   }
 }
+
+export async function getRecentPurchasesAction() { return fetchRecentPurchases() }
+export async function getBestSellingProductsAction() { return fetchBestSellingProducts() }

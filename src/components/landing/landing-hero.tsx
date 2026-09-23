@@ -153,8 +153,7 @@ export default function LandingHero() {
           initial={{ opacity: 0, y: 16, scale: 0.96 }}
           animate={loaded ? { opacity: 1, y: 0, scale: 1 } : {}}
           transition={{ duration: 0.7, delay: 0.28, ease: [0.34, 1.56, 0.64, 1] }}
-          className="order-1 relative w-full lg:hidden"
-          style={{ minHeight: 300 }}
+          className="order-1 relative isolate aspect-[5/4] w-full max-w-[440px] shrink-0 lg:hidden"
         >
           {/* White glow behind products */}
           <div
@@ -167,18 +166,19 @@ export default function LandingHero() {
             }}
           />
 
+          {/* Percentage sizing accounts for transparent image padding and keeps the pair together. */}
           {/* Strawberry — front-right */}
           <motion.div
             initial={{ opacity: 0, x: 30, rotate: 5 }}
             animate={loaded ? { opacity: 1, x: 0, rotate: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="absolute -right-[16%] top-1/2 -translate-y-1/2 z-20"
-            style={{ width: 330, height: 374 }}
+            className="absolute -right-[15%] -top-[5%] z-20 aspect-square w-full"
           >
             <Image
               src="/product1.webp"
               alt="Chia Charged Pudding Fraises et Creme"
               fill
+              sizes="(max-width: 488px) calc(100vw - 48px), 440px"
               priority
               className="object-contain"
               style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.28))" }}
@@ -190,13 +190,13 @@ export default function LandingHero() {
             initial={{ opacity: 0, x: -30, rotate: -5 }}
             animate={loaded ? { opacity: 1, x: 0, rotate: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.42 }}
-            className="absolute -left-[16%] top-1/2 -translate-y-1/2 z-10"
-            style={{ width: 310, height: 332 }}
+            className="absolute -left-[14%] top-[4%] z-10 aspect-square w-[86%]"
           >
             <Image
               src="/product2.webp"
               alt="Chia Charged Pudding Chocolat"
               fill
+              sizes="(max-width: 488px) calc((100vw - 48px) * 0.86), 379px"
               priority
               className="object-contain"
               style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.28))" }}

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { normalizeProductNutrition } from '@/lib/product-nutrition'
 
 function coerceVariantKey(value: unknown): Record<string, unknown> | null | unknown {
   if (value == null) return null
@@ -63,7 +64,7 @@ export const ProductRecordSchema = z.object({
   isActive: z.boolean().optional().default(true),
   description: z.string().optional().default(''),
   images: z.array(z.string()).optional().default([]),
-  currency: z.string().optional().default('DT'),
+  currency: z.literal('USD').optional().default('USD'),
   category: z.union([
     z.string(),
     z.array(z.string()),
@@ -92,6 +93,24 @@ export const ProductRecordSchema = z.object({
   related_products: z
     .union([z.string(), z.array(z.string()), z.array(z.object({ id: z.string() }))])
     .optional(),
+  ingredients: z.string().optional().default(''),
+  allergenStatement: z.string().optional().default(''),
+  nutritionFacts: z.preprocess(
+    normalizeProductNutrition,
+    z.object({
+      servingsPerContainer: z.string(),
+      servingSize: z.string(),
+      calories: z.string(),
+      rows: z.array(z.object({
+        label: z.string(),
+        dailyValue: z.string(),
+        indent: z.union([z.literal(0), z.literal(1), z.literal(2)]),
+        bold: z.boolean(),
+        dividerBefore: z.boolean(),
+      })),
+      footnote: z.string(),
+    })
+  ),
   expand: z.object({
     category: z.any().optional(),
     parent: z.any().optional(),

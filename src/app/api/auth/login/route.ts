@@ -1,13 +1,10 @@
+import { authCookieOptions } from '@/lib/auth/cookie-options'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import PocketBase from 'pocketbase'
+import { createServerPb } from '@/lib/pb'
 import { z } from 'zod'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
-const PB_URL =
-  process.env.POCKETBASE_URL ??
-  process.env.NEXT_PUBLIC_PB_URL ??
-  'http://127.0.0.1:8090'
 const PB_ADMIN_EMAIL =
   process.env.PB_ADMIN_EMAIL ??
   process.env.POCKETBASE_ADMIN_EMAIL ??
@@ -114,8 +111,8 @@ function dedupeIdentities(values: string[]): string[] {
   return output
 }
 
-async function createLookupPb(): Promise<PocketBase> {
-  const pb = new PocketBase(PB_URL)
+async function createLookupPb(): Promise<ReturnType<typeof createServerPb>> {
+  const pb = createServerPb()
   if (!PB_ADMIN_EMAIL || !PB_ADMIN_PASSWORD) return pb
 
   try {
@@ -135,7 +132,7 @@ async function createLookupPb(): Promise<PocketBase> {
 }
 
 async function resolveIdentityCandidatesForLogin(
-  pb: PocketBase,
+  pb: ReturnType<typeof createServerPb>,
   identifier: string
 ): Promise<{
   identities: string[]
@@ -220,7 +217,7 @@ async function resolveIdentityCandidatesForLogin(
 }
 
 async function authenticateWithCandidates(
-  pb: PocketBase,
+  pb: ReturnType<typeof createServerPb>,
   identities: string[],
   password: string
 ) {
@@ -264,7 +261,7 @@ export async function POST(request: NextRequest) {
     attemptedIdentifier = identifier
     const password = parsed.password
 
-    const pb = new PocketBase(PB_URL)
+    const pb = createServerPb()
     const lookupPb = await createLookupPb()
     const resolvedIdentities = await resolveIdentityCandidatesForLogin(lookupPb, identifier)
     lookupRestricted = resolvedIdentities.lookupRestricted
@@ -282,11 +279,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const isHttpsRequest =
-      request.headers.get('x-forwarded-proto') === 'https' ||
-      request.nextUrl.protocol === 'https:' ||
-      process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https://') === true
-
     const cookieStore = await cookies()
     const authCookie = JSON.stringify({
       token: authData.token,
@@ -299,18 +291,13 @@ export async function POST(request: NextRequest) {
         username: authData.record.username,
         role: authData.record.role || 'customer',
         isActive: authData.record.isActive !== false,
+        canManageAdmins: authData.record.canManageAdmins === true,
         verified: authData.record.verified || false,
         avatar: authData.record.avatar || undefined,
       },
     })
 
-    cookieStore.set('pb_auth', authCookie, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' && isHttpsRequest,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
+    cookieStore.set('pb_auth', authCookie, authCookieOptions())
 
     return NextResponse.json({
       user: {
@@ -322,6 +309,7 @@ export async function POST(request: NextRequest) {
         username: authData.record.username,
         role: authData.record.role || 'customer',
         isActive: authData.record.isActive !== false,
+        canManageAdmins: authData.record.canManageAdmins === true,
         verified: authData.record.verified || false,
         avatar: authData.record.avatar || undefined,
       },

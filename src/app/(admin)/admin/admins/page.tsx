@@ -40,7 +40,7 @@ async function getAdmins(): Promise<AdminUser[]> {
 export default async function AdminAccountsPage() {
   const session = await requireAdmin()
   const admins = await getAdmins()
-  const canManageAdmins = session.user.email.trim().toLowerCase() === 'admin@admin.com'
+  const canManageAdmins = session.user.canManageAdmins
 
   return (
     <Suspense fallback={<div className="p-8 text-slate-500">Loading...</div>}>

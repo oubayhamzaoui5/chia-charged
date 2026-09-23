@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import EmptyState from '@/components/admin/empty-state'
 import { Trash2, ChevronDown, ChevronUp, Pause, ShoppingCart, CheckCircle2, Truck, Search, Download } from 'lucide-react'
 import type { OrderRecord, OrderStatus } from '@/types/order.types'
-import { deleteOrderAction, updateOrderStatusAction } from './actions'
+import { archiveOrderAction, refundOrderAction, updateOrderStatusAction } from './actions'
 import { useAdminToast } from '@/components/admin/AdminToast'
 
 export default function OrdersClient({ initialOrders }: { initialOrders: OrderRecord[] }) {
@@ -66,30 +66,27 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
 
   const statusIcon = (status: OrderStatus) => {
     switch (status) {
-      case 'paid': return <CheckCircle2 className="w-3 h-3" />
       case 'delivering': return <Truck className="w-3 h-3" />
       case 'delivered': return <ShoppingCart className="w-3 h-3" />
-      case 'refunded': return <Trash2 className="w-3 h-3" />
+      case 'cancelled': return <Trash2 className="w-3 h-3" />
       case 'on hold': return <Pause className="w-3 h-3" />
     }
   }
 
   const statusBadgeClass = (status: OrderStatus) => {
     switch (status) {
-      case 'paid': return 'bg-emerald-50 text-emerald-700'
       case 'delivering': return 'bg-purple-50 text-purple-700'
       case 'delivered': return 'bg-blue-50 text-blue-700'
-      case 'refunded': return 'bg-red-50 text-red-700'
+      case 'cancelled': return 'bg-red-50 text-red-700'
       case 'on hold': return 'bg-slate-100 text-slate-600'
     }
   }
 
   const statusLabels: Record<OrderStatus, string> = {
-    paid: 'Paid',
+    'on hold': 'On hold',
     delivering: 'Delivering',
     delivered: 'Delivered',
-    refunded: 'Refunded',
-    'on hold': 'On hold',
+    cancelled: 'Cancelled',
   }
 
   function extractCountAndFlavor(name?: string, sku?: string) {
@@ -198,6 +195,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
       'Amount',
       'Currency',
       'Payment Mode',
+      'Payment Status',
       'Items',
       'Notes',
     ]
@@ -217,8 +215,9 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
         order.postalCode || '',
         statusLabels[order.status as OrderStatus] ?? order.status,
         order.total.toFixed(2),
-        order.currency || '$',
+        order.currency || 'USD',
         order.paymentMode || '',
+        order.paymentStatus,
         itemsSummary,
         order.notes || '',
       ]
@@ -238,30 +237,38 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
     toast('Orders CSV exported.', 'success')
   }
 
-  async function deleteOrder(id: string) {
-    if (!confirm('Delete this order?')) return
+  async function archiveOrder(id: string) {
+    if (!confirm('Archive this order? It will leave the active list but remain in the audit record.')) return
 
     const prev = orders
     setOrders((current) => current.filter((o) => o.id !== id))
 
     try {
-      await deleteOrderAction(id)
-      toast('Order deleted.', 'success')
+      await archiveOrderAction(id)
+      toast('Order archived.', 'success')
       window.dispatchEvent(new Event('admin:orders-changed'))
     } catch {
       setOrders(prev)
-      toast('Delete failed.', 'error')
+      toast('Archive failed.', 'error')
     }
   }
 
   async function updateStatus(orderId: string, newStatus: OrderStatus) {
+    let tracking: { carrier: string; number: string } | undefined
+    if (newStatus === 'delivering') {
+      const carrier = window.prompt('Shipping carrier (for example USPS or UPS)')?.trim()
+      if (!carrier) return
+      const number = window.prompt('Tracking number')?.trim()
+      if (!number) return
+      tracking = { carrier, number }
+    }
     const prev = orders
     setOrders((current) =>
       current.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
     )
 
     try {
-      const result = await updateOrderStatusAction(orderId, newStatus)
+      const result = await updateOrderStatusAction(orderId, newStatus, tracking)
       setOrders((current) =>
         current.map((o) => (o.id === orderId ? { ...o, status: result.status } : o))
       )
@@ -271,6 +278,18 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
     } catch {
       setOrders(prev)
       toast('Failed to update status.', 'error')
+    }
+  }
+
+  async function refundOrder(orderId: string) {
+    if (!confirm('Issue a full Stripe refund? Unshipped stock will be restored automatically.')) return
+    try {
+      const result = await refundOrderAction(orderId)
+      setOrders((current) => current.map((o) => o.id === orderId ? { ...o, paymentStatus: result.status === 'refunded' ? 'refunded' : o.paymentStatus, refundStatus: result.status } : o))
+      toast(result.status === 'refunded' ? 'Refund completed.' : 'Refund is pending at Stripe.', 'success')
+      setOpenMenuId(null)
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Refund failed.', 'error')
     }
   }
 
@@ -513,7 +532,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
                         </div>
                         <div className="flex flex-col gap-1">
                           <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Payment</span>
-                          <span style={{ color: '#374151', fontWeight: 500, textTransform: 'uppercase' }}>{order.paymentMode || '—'}</span>
+                          <span style={{ color: '#374151', fontWeight: 500, textTransform: 'uppercase' }}>{order.paymentMode || '—'} · {order.paymentStatus.replaceAll('_', ' ')}</span>
                         </div>
                         <div className="flex flex-col gap-1">
                           <span style={{ color: '#9CA3AF', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 10 }}>Address</span>
@@ -622,7 +641,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
 
       {openMenuId && dropdownPos && createPortal(
         <div id="order-dropdown" className="absolute w-44 rounded-xl z-50 overflow-hidden" style={{ top: dropdownPos.top + 4, left: dropdownPos.left, background: '#FFFFFF', border: '1px solid #E8EAED', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
-          {['paid', 'delivering', 'delivered', 'refunded', 'on hold'].map(s => (
+          {(orders.find(o => o.id === openMenuId)?.status === 'on hold' ? ['delivering'] : orders.find(o => o.id === openMenuId)?.status === 'delivering' ? ['delivered'] : []).map(s => (
             <button
               key={s}
               onClick={() => updateStatus(openMenuId, s as OrderStatus)}
@@ -635,17 +654,20 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderRe
               {statusLabels[s as OrderStatus]}
             </button>
           ))}
+          {orders.find(o => o.id === openMenuId)?.paymentStatus === 'paid' && (
+            <button onClick={() => refundOrder(openMenuId)} className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[#FFF7ED]" style={{ color: '#C2410C', borderTop: '1px solid #F0F2F5' }}>
+              Full refund
+            </button>
+          )}
           <button
-            onClick={() => deleteOrder(openMenuId)}
+            onClick={() => archiveOrder(openMenuId)}
             className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[#FEF2F2]"
             style={{ color: '#EF4444', borderTop: '1px solid #F0F2F5' }}
           >
-            Delete
+            Archive
           </button>
         </div>, document.body
       )}
     </div>
   )
 }
-
-

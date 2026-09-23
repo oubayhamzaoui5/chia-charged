@@ -12,16 +12,7 @@ function resolveRedirectPath(path?: string | null): string | null {
   return path
 }
 
-export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
+async function loadAuthUser(): Promise<User | null> {
     try {
       let res = await fetch('/api/auth/session')
       if (!res.ok) {
@@ -43,18 +34,31 @@ export function useAuth() {
 
       if (res.ok) {
         const data = await res.json()
-        setUser(data.user)
-        return
+        return data.user ?? null
       }
 
-      setUser(null)
+      return null
     } catch (error) {
       console.error('Auth check error:', error)
-      setUser(null)
-    } finally {
-      setLoading(false)
+      return null
     }
-  }
+}
+
+export function useAuth() {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  const checkAuth = useCallback(async () => {
+    const nextUser = await loadAuthUser()
+    setUser(nextUser); setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    void loadAuthUser().then(nextUser => { if (active) { setUser(nextUser); setLoading(false) } })
+    return () => { active = false }
+  }, [])
 
   const login = useCallback(async (email: string, password: string, redirectTo?: string) => {
     try {

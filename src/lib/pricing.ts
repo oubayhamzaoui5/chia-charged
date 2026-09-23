@@ -1,11 +1,10 @@
 // src/lib/pricing.ts
 import type { Product } from "@/types/product.types"
+import { resolveCatalogPrice } from "@/lib/catalog-pricing"
 
 export function effectivePrice(p: Product): number {
-  const promo = toNum(p.promoPrice)
-  const price = toNum(p.price)
-  // promo must be > 0 and < price to be valid
-  return promo > 0 && promo < price ? promo : price
+  const resolved = resolveCatalogPrice(toNum(p.price), p.promoPrice, [])
+  return resolved ? resolved.unitPriceCents / 100 : 0
 }
 
 export function hasValidPromo(p: Product): boolean {

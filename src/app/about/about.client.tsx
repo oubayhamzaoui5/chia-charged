@@ -40,14 +40,14 @@ const values = [
   },
   {
     icon: FlaskConical,
-    title: "Science-Backed",
+    title: "Label Details",
     desc: "22g protein per serving, 12g fiber, MCT oil — each number exists for a reason. We obsess over formulation so you don't have to.",
     rotate: "0.8deg",
   },
   {
     icon: Leaf,
     title: "Real. Always.",
-    desc: "100% plant-based, no artificial sweeteners, no fillers, no shortcuts. Real food that actually tastes incredible.",
+    desc: "Made with chia seeds, whey protein and coconut-derived MCT oil. Contains milk; check each flavor’s ingredients.",
     rotate: "-0.6deg",
   },
 ]
@@ -57,34 +57,34 @@ const ingredients = [
     icon: Droplets,
     name: "Chia Seeds",
     stat: "12g Fiber",
-    why: "The backbone of every jar. Chia seeds form a natural gel that slows digestion, stabilizes blood sugar, and keeps you genuinely full for hours.",
+    why: "Chia seeds are the base of our pudding mix. See the product label for preparation and nutrition information.",
   },
   {
     icon: Zap,
     name: "Premium Protein",
     stat: "22g / Serving",
-    why: "High-quality plant protein for muscle recovery, sustained energy, and real satiation — not the chalky kind you've been suffering through.",
+    why: "Whey protein concentrate is a milk-derived ingredient. Read the nutrition panel for your selected flavor.",
   },
   {
     icon: Droplets,
     name: "MCT Oil",
-    stat: "Brain Fuel",
-    why: "Medium-chain triglycerides convert directly to energy. Mental clarity, metabolic boost, no sugar crash — just clean, sustained power.",
+    stat: "Coconut-Derived",
+    why: "Our supplied ingredients include medium chain coconut oil triglycerides.",
   },
   {
     icon: Heart,
-    name: "Zero Junk",
-    stat: "0% Fillers",
-    why: "No artificial sweeteners, no gums, no mystery additives. If you can't recognize an ingredient, it doesn't belong in your pudding.",
+    name: "Ingredients",
+    stat: "Read the Label",
+    why: "Ingredients vary by flavor. Review the full ingredient and allergen statements before buying.",
   },
 ]
 
 const stats = [
   { value: "22g", label: "Protein Per Serving" },
   { value: "12g", label: "Dietary Fiber" },
-  { value: "0%", label: "Artificial Junk" },
+  { value: "Read", label: "Ingredients" },
   { value: "2", label: "Bold Flavors" },
-  { value: "100%", label: "Plant-Based" },
+  { value: "Milk", label: "Allergen" },
   { value: "MCT", label: "Oil Inside" },
 ]
 
@@ -261,7 +261,7 @@ export default function AboutPageContent() {
                   style={{ color: "#111" }}
                 >
                   The answer didn't come from a nutrition lab — it came from our own kitchen. One
-                  experiment turned into an obsession: mixing premium plant protein, hydrating chia
+                  experiment turned into an obsession: mixing whey protein, hydrating chia
                   seeds, quality MCT oil, and natural flavors we actually loved. Chia Charged wasn't
                   invented. It was discovered — spoonful by spoonful.
                 </p>

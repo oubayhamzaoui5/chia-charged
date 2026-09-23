@@ -7,6 +7,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { NavbarCart } from "@/components/navbar-cart"
 import { MegaMenu } from "@/components/mega-menu"
+import { mergeGuestCartAfterAuth } from "@/lib/shop/client-api"
 import {
   ShoppingBag,
   CircleUser,
@@ -272,7 +273,7 @@ export function Navbar(props: NavbarProps) {
     }
     window.addEventListener("open-signup-modal", handler)
     return () => window.removeEventListener("open-signup-modal", handler)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [])
 
   useEffect(() => {
@@ -450,6 +451,7 @@ export function Navbar(props: NavbarProps) {
       }
 
       setCurrentUser((data?.user as AuthUser) ?? null)
+      await mergeGuestCartAfterAuth()
       closeAuthModal()
       router.refresh()
 
@@ -517,6 +519,7 @@ export function Navbar(props: NavbarProps) {
       }
 
       setCurrentUser((loginData?.user as AuthUser) ?? null)
+      await mergeGuestCartAfterAuth()
       closeAuthModal()
       router.refresh()
 
@@ -549,6 +552,7 @@ export function Navbar(props: NavbarProps) {
         }
 
         const data = await res.json()
+        await mergeGuestCartAfterAuth()
         if (!cancelled) {
           setCurrentUser((data?.user as AuthUser) ?? null)
         }
@@ -728,7 +732,7 @@ export function Navbar(props: NavbarProps) {
           <div key={category.id}>
             <div className="flex items-center justify-between">
               <Link
-                href={`/shop/category/${category.slug}`}
+                href="/#flavors"
                 className="text-sm font-medium hover:opacity-70 transition-opacity"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -763,8 +767,10 @@ export function Navbar(props: NavbarProps) {
 
   const LogoSwap = ({
     size = 60,
+    fontSize,
   }: {
     size?: number
+    fontSize?: string
     scale?: number
   }) => {
     const fs = Math.max(13, Math.round(size * 0.3))
@@ -774,7 +780,7 @@ export function Navbar(props: NavbarProps) {
         style={{
           fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
           fontWeight: 900,
-          fontSize: `${fs}px`,
+          fontSize: fontSize ?? `${fs}px`,
           letterSpacing: '-0.02em',
           lineHeight: 1,
         }}
@@ -812,8 +818,8 @@ export function Navbar(props: NavbarProps) {
   const shouldShowSignupPromo = showSignupPromo
   const navSpacerClass = reserveSpace
     ? shouldShowSignupPromo
-      ? "h-[100px] md:h-[112px]"
-      : "h-[60px] md:h-[72px]"
+      ? "h-[100px] lg:h-[112px]"
+      : "h-[60px] lg:h-[72px]"
     : null
 
     useLayoutEffect(() => {
@@ -855,7 +861,7 @@ export function Navbar(props: NavbarProps) {
                 textShadow: "0 1px 10px rgba(0,0,0,0.25)",
               }}
             >
-              FREE SHIPPING ON ORDERS $99+
+              US DELIVERY · SHIPPING AT CHECKOUT
             </p>
             <button
               type="button"
@@ -886,13 +892,13 @@ export function Navbar(props: NavbarProps) {
         }}
       >
         {/* Desktop */}
-        <div className="hidden md:grid grid-cols-[auto_1fr_auto] items-center px-28 py-2 mx-auto">
-          <Link href="/" className="flex items-center gap-3 justify-self-start mr-12">
-            <LogoSwap size={140} />
+        <div className="mx-auto hidden h-[69px] grid-cols-[auto_1fr_auto] items-center px-6 lg:grid xl:px-12 2xl:px-28">
+          <Link href="/" className="mr-6 flex items-center gap-3 justify-self-start xl:mr-12">
+            <LogoSwap size={140} fontSize="clamp(30px, 2.92vw, 42px)" />
           </Link>
 
           <div
-            className=" flex items-center justify-start gap-6 text-[1rem] font-black uppercase tracking-[0.12em] text-white justify-self-start"
+            className="flex items-center justify-start gap-4 whitespace-nowrap text-sm font-black uppercase tracking-[0.12em] text-white justify-self-start xl:gap-6 xl:text-base"
             style={{
               fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif",
               fontWeight: 900,
@@ -1090,18 +1096,18 @@ export function Navbar(props: NavbarProps) {
           </div>
         </div>
         {/* Mobile */}
-        <div className="md:hidden relative">
-          <div className="flex items-center gap-1.5 px-2 py-2">
-            <div className="flex flex-1 items-center justify-center">
+        <div className="relative lg:hidden">
+          <div className="flex h-[57px] items-center gap-1 px-4">
+            <div className="flex min-w-0 flex-1 items-center justify-start">
               <Link href="/" className="flex items-center" aria-label="Home">
-                <LogoSwap size={90} />
+                <LogoSwap size={90} fontSize="clamp(16px, 4.7vw, 27px)" />
               </Link>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center">
               <button
                 type="button"
-                className="inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
+                className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
                 aria-label="Account"
                 onClick={() => {
                   if (!currentUser) {
@@ -1122,7 +1128,7 @@ export function Navbar(props: NavbarProps) {
                 type="button"
                 onClick={openCart}
                 aria-label="Cart"
-                className="relative inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
+                className="relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-white transition-all hover:opacity-80"
               >
                 <ShoppingBag size={30} strokeWidth={2.25} />
                 {cartCount > 0 && (
@@ -1139,7 +1145,7 @@ export function Navbar(props: NavbarProps) {
                 onClick={() => {
                   setIsMenuOpen(!isMenuOpen)
                 }}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-white hover:bg-white/15 transition-all duration-300 ${isMenuOpen ? "rotate-90" : "rotate-0"}`}
+                className={`inline-flex h-11 w-11 items-center justify-center rounded-xl text-white hover:bg-white/15 transition-all duration-300 ${isMenuOpen ? "rotate-90" : "rotate-0"}`}
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? <X size={20} strokeWidth={1.75} /> : <Menu size={20} strokeWidth={1.75} />}
@@ -1150,12 +1156,12 @@ export function Navbar(props: NavbarProps) {
         </div>
         {/* Mobile panel */}
         <div
-          className={`text-white transition-all duration-300 ease-out md:hidden overflow-hidden ${
+          className={`text-white transition-all duration-300 ease-out lg:hidden overflow-hidden ${
             isMenuOpen ? "max-h-[calc(100vh-60px)] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
           }`}
           style={{
             background: 'linear-gradient(160deg, rgb(44,10,130) 0%, rgb(120,28,160) 45%, rgb(180,48,100) 100%)',
-            borderTop: '2px solid rgba(255,255,255,0.18)',
+            borderTop: isMenuOpen ? '2px solid rgba(255,255,255,0.18)' : 'none',
           }}
           aria-hidden={!isMenuOpen}
         >
@@ -1364,7 +1370,7 @@ export function Navbar(props: NavbarProps) {
 
       {/* Desktop Mega Menu — fixed to viewport, full screen height */}
       <div
-        className="hidden md:block"
+        className="hidden lg:block"
         onMouseEnter={() => {
           if (megaMenuTimeoutRef.current) clearTimeout(megaMenuTimeoutRef.current)
           setIsDesktopMenuOpen(true)

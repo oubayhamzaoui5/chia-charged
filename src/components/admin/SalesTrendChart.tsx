@@ -155,7 +155,7 @@ export default function SalesTrendChart() {
               tickFormatter={(value) => `$${value}`}
             />
             <Tooltip 
-              formatter={(value: number | undefined) => [formatCurrency(value ?? 0), "Sales"]}
+              formatter={(value) => [formatCurrency(typeof value === "number" ? value : 0), "Sales"]}
               contentStyle={{ backgroundColor: '#ffffff', border: 'none', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' , fontWeight: "bold", color: "#000000" }}
               labelStyle={{ fontWeight: "bold", color: "#000000", marginBottom: '4px' }}
               cursor={{ stroke: '#e2e8f0', strokeWidth: 2 }}

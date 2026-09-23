@@ -33,7 +33,7 @@ export async function GET() {
           id: String(item.id ?? ''),
           created: String(item.created ?? ''),
           total: Number(item.total ?? 0),
-          currency: typeof item.currency === 'string' ? item.currency : 'DT',
+          currency: typeof item.currency === 'string' ? item.currency : 'USD',
           customerName: `${firstName} ${lastName}`.trim() || 'Client',
         },
       },

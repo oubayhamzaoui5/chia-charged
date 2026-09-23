@@ -4,11 +4,10 @@ import { getSession } from '@/lib/auth/server'
 import { createServerPb } from '@/lib/pb'
 
 export type CustomerOrderStatus =
-  | 'paid'
+  | 'on hold'
   | 'delivering'
   | 'delivered'
-  | 'refunded'
-  | 'on hold'
+  | 'cancelled'
 
 export type CustomerOrder = {
   id: string
@@ -17,6 +16,7 @@ export type CustomerOrder = {
   totalAmount: number
   currency: string
   status: CustomerOrderStatus
+  paymentStatus: string
   itemsCount: number
   items: Array<{
     id?: string
@@ -39,19 +39,18 @@ export class OrdersServiceError extends Error {
 }
 
 const allowedStatuses: CustomerOrderStatus[] = [
-  'paid',
+  'on hold',
   'delivering',
   'delivered',
-  'refunded',
-  'on hold',
+  'cancelled',
 ]
 const PB_ID_REGEX = /^[a-zA-Z0-9]{15}$/
 
 function normalizeStatus(value: unknown): CustomerOrderStatus {
-  if (typeof value !== 'string') return 'paid'
+  if (typeof value !== 'string') return 'on hold'
   return allowedStatuses.includes(value as CustomerOrderStatus)
     ? (value as CustomerOrderStatus)
-    : 'paid'
+    : 'on hold'
 }
 
 function escapePbString(value: string): string {
@@ -162,7 +161,7 @@ export async function getCurrentUserOrders(): Promise<CustomerOrder[]> {
     const res = await pb.collection('orders').getList(1, 200, {
       filter: `user = "${safeUserId}"`,
       sort: '-created',
-      fields: 'id,created,updated,total,currency,status,user,items',
+      fields: 'id,created,updated,total,currency,status,fulfillmentStatus,paymentStatus,user,items',
       requestKey: null,
     })
 
@@ -196,8 +195,9 @@ export async function getCurrentUserOrders(): Promise<CustomerOrder[]> {
           createdAt: String(item.created ?? ''),
           updatedAt: String(item.updated ?? item.created ?? ''),
           totalAmount: Number(item.total ?? 0),
-          currency: typeof item.currency === 'string' ? item.currency : 'DT',
-          status: normalizeStatus(item.status),
+          currency: typeof item.currency === 'string' ? item.currency : 'USD',
+          status: normalizeStatus(item.fulfillmentStatus ?? item.status),
+          paymentStatus: typeof item.paymentStatus === 'string' ? item.paymentStatus : 'legacy_unverified',
           itemsCount: normalizedItems.length,
           items: normalizedItems,
         }

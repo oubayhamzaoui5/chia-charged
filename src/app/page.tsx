@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import LandingTestimonials from '@/components/landing/landing-testimonials'
 import Footer from '@/components/footer'
 import { Navbar } from '@/components/navbar'
 import LandingHero from '@/components/landing/landing-hero'
@@ -8,7 +9,6 @@ import LandingFlavors from '@/components/landing/landing-flavors'
 import LandingAbout from '@/components/landing/landing-about'
 import LandingBenefits from '@/components/landing/landing-benefits'
 import LandingShowcase from '@/components/landing/landing-showcase'
-import LandingTestimonials from '@/components/landing/landing-testimonials'
 import LandingBlog from '@/components/landing/landing-blog'
 import { getAllPublishedPosts } from '@/lib/services/posts.service'
 import { getProductDetailsBySlug } from '@/lib/services/product.service'
@@ -40,9 +40,9 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: 
 }
 
 export const metadata: Metadata = {
-  title: 'Chia Charged | Pudding Proteine aux Graines de Chia — 22g Protein Per Serving, Zero Junk',
+  title: 'Chia Charged | Chia Seed Pudding Mix',
   description:
-    'Chia Charged: pudding proteine aux graines de chia avec 22g de proteine par portion, 12g de fibre, huile MCT et zero sucre ajoute. Saveurs Fraises & Creme et Chocolat. Livraison rapide en Tunisie.',
+    'Chia seed pudding mix with whey protein and coconut-derived MCT oil. Strawberries & Cream and Chocolate Chips. Contains milk. US delivery only.',
   keywords: [
     'chia pudding',
     'protein pudding',
@@ -50,25 +50,25 @@ export const metadata: Metadata = {
     'graines de chia',
     'snack proteine',
     'MCT oil',
-    'plant based protein',
+    'whey protein',
     'healthy snack',
     'chia charged',
-    'Tunisia',
+    'United States',
   ],
   openGraph: {
     title: 'Chia Charged — Fuel Smarter. Taste Better.',
     description:
-      'High-protein chia seed pudding with 22g protein per serving, 12g fiber, and MCT oil. Two irresistible flavors. Zero junk.',
+      'Chia seed pudding mix with whey protein and MCT oil. Contains milk. Explore ingredients and nutrition for each flavor.',
     url: siteUrl,
     siteName: 'Chia Charged',
     type: 'website',
-    locale: 'fr_FR',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Chia Charged — Fuel Smarter. Taste Better.',
     description:
-      'High-protein chia seed pudding with 22g protein per serving, 12g fiber, and MCT oil. Two irresistible flavors. Zero junk.',
+      'Chia seed pudding mix with whey protein and MCT oil. Contains milk. Explore ingredients and nutrition for each flavor.',
   },
   alternates: {
     canonical: '/',
@@ -107,7 +107,7 @@ export default async function HomePage() {
       basePrice: product.price,
       promoPrice: hasPromo ? (product.promoPrice as number) : null,
       hasPromo,
-      currency: product.currency || '$',
+      currency: product.currency || 'USD',
     }
   }
 
@@ -140,9 +140,9 @@ export default async function HomePage() {
         </div>
         <LandingFlavors flavorPriceBySlug={flavorPriceBySlug} />
         <LandingAbout />
-                <LandingTestimonials />
 
         <LandingBenefits />
+        <LandingTestimonials />
         <LandingBlog posts={posts} />
         <LandingContact />
         <LandingFaq />

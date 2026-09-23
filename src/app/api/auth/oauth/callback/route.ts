@@ -1,16 +1,13 @@
+import { getAppOrigin } from '@/lib/url-policy'
+import { authCookieOptions } from '@/lib/auth/cookie-options'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import PocketBase from 'pocketbase'
+import { createServerPb } from '@/lib/pb'
 
-const PB_URL =
-  process.env.POCKETBASE_URL ?? process.env.NEXT_PUBLIC_PB_URL ?? 'http://127.0.0.1:8090'
-const APP_URL =
-  process.env.APP_URL ??
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  'http://localhost:3000'
-const CALLBACK_URL = `${APP_URL}/api/auth/oauth/callback`
 
 export async function GET(req: NextRequest) {
+  const APP_URL = getAppOrigin()
+  const CALLBACK_URL = `${APP_URL}/api/auth/oauth/callback`
   const { searchParams } = req.nextUrl
   const code = searchParams.get('code')
   const state = searchParams.get('state')
@@ -19,8 +16,8 @@ export async function GET(req: NextRequest) {
   const storedState = cookieStore.get('oauth_state')?.value
   const codeVerifier = cookieStore.get('oauth_code_verifier')?.value
 
-  cookieStore.delete('oauth_state')
-  cookieStore.delete('oauth_code_verifier')
+  cookieStore.set('oauth_state', '', authCookieOptions(0))
+  cookieStore.set('oauth_code_verifier', '', authCookieOptions(0))
 
   const fail = (reason: string) => {
     const url = new URL('/', APP_URL)
@@ -32,7 +29,7 @@ export async function GET(req: NextRequest) {
   if (state !== storedState) return fail('oauth_state_mismatch')
 
   try {
-    const pb = new PocketBase(PB_URL)
+    const pb = createServerPb()
 
     const authData = await pb
       .collection('users')
@@ -41,10 +38,7 @@ export async function GET(req: NextRequest) {
     if (!authData?.record) return fail('oauth_no_record')
 
     const record = authData.record
-    const isHttps =
-      req.headers.get('x-forwarded-proto') === 'https' ||
-      process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https://') === true
-
+    if (record.isActive === false) return fail('account_inactive')
     const authCookie = JSON.stringify({
       token: authData.token,
       record: {
@@ -56,18 +50,13 @@ export async function GET(req: NextRequest) {
         username: record.username ?? '',
         role: record.role || 'customer',
         isActive: record.isActive !== false,
+        canManageAdmins: record.canManageAdmins === true,
         verified: record.verified ?? true,
         avatar: record.avatar || undefined,
       },
     })
 
-    cookieStore.set('pb_auth', authCookie, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' && isHttps,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
+    cookieStore.set('pb_auth', authCookie, authCookieOptions())
 
     return NextResponse.redirect(new URL('/', APP_URL))
   } catch (err) {

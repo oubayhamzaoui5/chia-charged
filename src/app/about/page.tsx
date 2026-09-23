@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     'about chia charged',
     'protein pudding Tunisia',
     'chia seeds protein',
-    'plant based protein snack',
+    'whey protein pudding mix',
     'our story',
     'high protein snack',
     'MCT oil pudding',

@@ -14,6 +14,10 @@ import type {
   EditState,
   ID,
 } from '@/types/product.types'
+import {
+  EMPTY_PRODUCT_NUTRITION,
+  normalizeProductNutrition,
+} from '@/lib/product-nutrition'
 
 function parseNumericInput(value: string): number | null {
   const trimmed = value.trim()
@@ -144,11 +148,14 @@ export function useProducts({
     description: '',
     isActive: true,
     inView: true,
-    currency: '$',
+    currency: 'USD',
     slug: '',
     existing: [] as string[],
     files: [] as File[],
     categories: [] as string[],
+    ingredients: '',
+    allergenStatement: '',
+    nutritionFacts: normalizeProductNutrition(EMPTY_PRODUCT_NUTRITION),
   })
 
   const [isVariant, setIsVariant] = useState(false)
@@ -166,11 +173,14 @@ export function useProducts({
       description: '',
       isActive: true,
       inView: true,
-      currency: '$',
+      currency: 'USD',
       slug: '',
       existing: [],
       files: [],
       categories: [],
+      ingredients: '',
+      allergenStatement: '',
+      nutritionFacts: normalizeProductNutrition(EMPTY_PRODUCT_NUTRITION),
     })
     setIsVariant(false)
     setIsParent(false)
@@ -192,13 +202,16 @@ export function useProducts({
         description: parent.description ?? '',
         isActive: true,
         inView: true,
-        currency: '$',
+        currency: 'USD',
         slug: '',
         existing: [],
         files: [],
         categories: Array.isArray(parent.categories)
           ? parent.categories.slice()
           : normalizeRelationIds(parent.expand?.category),
+        ingredients: parent.ingredients ?? '',
+        allergenStatement: parent.allergenStatement ?? '',
+        nutritionFacts: normalizeProductNutrition(parent.nutritionFacts),
       })
       setParentId(parent.id)
       setIsVariant(true)
@@ -223,11 +236,14 @@ export function useProducts({
       description: p.description ?? '',
       isActive: !!p.isActive,
       inView: p.inView ?? true,
-      currency: typeof p.currency === 'string' && p.currency ? p.currency : 'DT',
+      currency: typeof p.currency === 'string' && p.currency ? p.currency : 'USD',
       slug: '',
       existing: Array.isArray(p.images) ? p.images.slice() : [],
       files: [],
       categories: Array.isArray(p.categories) ? p.categories.slice() : [],
+      ingredients: p.ingredients ?? '',
+      allergenStatement: p.allergenStatement ?? '',
+      nutritionFacts: normalizeProductNutrition(p.nutritionFacts),
     })
     setIsVariant(p.isVariant ?? false)
     setIsParent(p.isParent ?? (!p.isVariant && !p.parent))
@@ -381,7 +397,10 @@ export function useProducts({
     fd.set('description', form.description)
     fd.set('isActive', String(form.isActive))
     fd.set('inView', String(form.inView))
-    fd.set('currency', form.currency || 'DT')
+    fd.set('currency', 'USD')
+    fd.set('ingredients', form.ingredients.trim())
+    fd.set('allergenStatement', form.allergenStatement.trim())
+    fd.set('nutritionFacts', JSON.stringify(normalizeProductNutrition(form.nutritionFacts)))
     if (form.categories.length === 0) {
       fd.set('category', '')
     } else {
@@ -483,4 +502,3 @@ export function useProducts({
     submitProduct,
   }
 }
-

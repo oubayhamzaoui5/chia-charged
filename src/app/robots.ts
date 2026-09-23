@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next"
+import { getAppOrigin } from '@/lib/url-policy'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  const baseUrl = getAppOrigin()
 
   return {
     rules: {
       userAgent: "*",
-      disallow: "/admin",
+      disallow: ['/admin', '/api/', '/account', '/orders', '/checkout', '/order-access', '/login', '/register', '/reset-password'],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   }

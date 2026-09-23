@@ -1,3 +1,4 @@
+import { getAppOrigin } from '@/lib/url-policy'
 import { getKeysStatusAction, getStripeKeysStatusAction, getMetaPixelStatusAction } from './actions'
 import KeysClient from './keys.client'
 
@@ -11,6 +12,7 @@ export default async function KeysPage() {
   ])
   return (
     <KeysClient
+      callbackUrl={`${getAppOrigin()}/api/auth/oauth/callback`}
       googleConfigured={google.configured}
       googleClientIdMasked={google.clientIdMasked}
       stripeConfigured={stripe.configured}

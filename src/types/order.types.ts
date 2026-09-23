@@ -9,11 +9,19 @@ export type UserRecord = {
 }
 
 export type OrderStatus =
-  | 'paid'
+  | 'on hold'
   | 'delivering'
   | 'delivered'
+  | 'cancelled'
+
+export type PaymentStatus =
+  | 'pending'
+  | 'paid'
+  | 'failed'
+  | 'expired'
+  | 'checkout_failed'
   | 'refunded'
-  | 'on hold'
+  | 'legacy_unverified'
 
 export type OrderItem = {
   id?: string
@@ -34,6 +42,8 @@ export type OrderRecord = {
   total: number
   currency: string
   status: OrderStatus
+  fulfillmentStatus: OrderStatus
+  paymentStatus: PaymentStatus
   userId: string | null
   user?: UserRecord | null
   isGuest: boolean
@@ -50,4 +60,11 @@ export type OrderRecord = {
   postalCode?: string
   notes?: string
   paymentMode?: string
+  trackingCarrier?: string
+  trackingNumber?: string
+  shippedAt?: string
+  deliveredAt?: string
+  refundStatus?: string
+  refundedAt?: string
+  archivedAt?: string
 }

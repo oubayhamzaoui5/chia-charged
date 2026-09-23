@@ -1,3 +1,4 @@
+import { authCookieOptions } from '@/lib/auth/cookie-options'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { getSession } from '@/lib/auth/server'
@@ -39,11 +40,6 @@ export async function PATCH(request: NextRequest) {
       // keep existing token
     }
 
-    const isHttps =
-      request.headers.get('x-forwarded-proto') === 'https' ||
-      request.nextUrl.protocol === 'https:' ||
-      process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https://') === true
-
     const cookieStore = await cookies()
     cookieStore.set(
       'pb_auth',
@@ -58,11 +54,12 @@ export async function PATCH(request: NextRequest) {
           username: finalRecord.username,
           role: finalRecord.role || 'customer',
           isActive: finalRecord.isActive !== false,
+          canManageAdmins: finalRecord.canManageAdmins === true,
           verified: finalRecord.verified || false,
           avatar: finalRecord.avatar || undefined,
         },
       }),
-      { httpOnly: true, secure: process.env.NODE_ENV === 'production' && isHttps, sameSite: 'lax', maxAge: 60 * 60 * 24 * 7, path: '/' }
+      authCookieOptions()
     )
 
     return NextResponse.json({

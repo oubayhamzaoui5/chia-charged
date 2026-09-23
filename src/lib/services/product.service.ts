@@ -7,6 +7,8 @@ import { z } from 'zod'
 import { getSession } from '@/lib/auth/server'
 import { createServerPb } from '@/lib/pb'
 import { getWishlistProductIds } from '@/lib/services/shop-user.service'
+import { resolveCatalogPrice } from '@/lib/catalog-pricing'
+import { normalizeProductNutrition, type ProductNutritionFacts } from '@/lib/product-nutrition'
 
 const PB_ID_REGEX = /^[a-zA-Z0-9]{15}$/
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i
@@ -78,6 +80,9 @@ export type ProductListItem = {
   variantKey: Record<string, string>
   stock: number
   inStock: boolean
+  ingredients: string
+  allergenStatement: string
+  nutritionFacts: ProductNutritionFacts
 }
 
 export type ShopListInput = z.infer<typeof shopListQuerySchema>
@@ -241,36 +246,11 @@ function resolveCategoryPromoPrice(
   categoryIds: string[],
   categoriesById?: Map<string, ShopCategory>
 ): number | null {
-  const productPromo =
-    promoPrice != null && promoPrice > 0 && promoPrice < price ? promoPrice : null
-
-  if (!categoriesById || categoryIds.length === 0) return productPromo
-
-  const overridingCategories = categoryIds
-    .map((categoryId) => categoriesById.get(categoryId))
-    .filter((category): category is ShopCategory => !!category && category.activeAll)
-
-  // No category is configured to override product promotions.
-  if (overridingCategories.length === 0) return productPromo
-
-  let bestPromo: number | null = null
-
-  for (const category of overridingCategories) {
-    const percent = Number(category.promo ?? 0)
-    if (!Number.isFinite(percent) || percent <= 0) continue
-
-    const cappedPercent = Math.min(100, Math.max(0, percent))
-    const candidate = Number((price * (1 - cappedPercent / 100)).toFixed(2))
-    if (candidate <= 0 || candidate >= price) continue
-
-    if (bestPromo == null || candidate < bestPromo) {
-      bestPromo = candidate
-    }
-  }
-
-  // At least one category overrides product promo:
-  // use best category promo if available, otherwise no promo.
-  return bestPromo
+  const resolved = resolveCatalogPrice(price, promoPrice, categoryIds.map((id) => {
+    const category = categoriesById?.get(id)
+    return { id, percent: Number(category?.promo ?? 0), active: category?.activeAll === true }
+  }))
+  return resolved && resolved.unitPriceCents < resolved.baseUnitPriceCents ? resolved.unitPriceCents / 100 : null
 }
 
 function mapProduct(
@@ -298,7 +278,7 @@ function mapProduct(
     description: String(record.description ?? ''),
     images,
     imageUrls: images.map((img) => fileUrl('products', id, img, record.updated ? String(record.updated) : undefined)),
-    currency: String(record.currency ?? 'DT'),
+    currency: String(record.currency ?? 'USD'),
     categories: categoryIds,
     isNew: Boolean(record.isNew),
     isVariant: Boolean(record.isVariant),
@@ -306,6 +286,9 @@ function mapProduct(
     variantKey: (record.variantKey as Record<string, string> | undefined) ?? {},
     stock,
     inStock: stock > 0,
+    ingredients: String(record.ingredients ?? '').trim(),
+    allergenStatement: String(record.allergenStatement ?? '').trim(),
+    nutritionFacts: normalizeProductNutrition(record.nutritionFacts),
   }
 }
 
@@ -629,7 +612,7 @@ async function getVariantsAndValues(
     const children = await pb.collection('products').getFullList(200, {
       filter: `parent="${escapePbString(recordId)}" && isActive=true `,
       fields:
-        'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,stock,updated',
+        'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,stock,ingredients,allergenStatement,nutritionFacts,updated',
       requestKey: null,
     })
     rawVariants = [baseRecord, ...(children as unknown as PocketBaseRecord[])]
@@ -637,13 +620,13 @@ async function getVariantsAndValues(
     const [parent, siblings] = await Promise.all([
       pb.collection('products').getOne(parentId, {
         fields:
-          'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,stock,updated',
+          'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,stock,ingredients,allergenStatement,nutritionFacts,updated',
         requestKey: null,
       }),
       pb.collection('products').getFullList(200, {
         filter: `parent="${escapePbString(parentId)}" && isActive=true`,
         fields:
-          'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,stock,updated',
+          'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,stock,ingredients,allergenStatement,nutritionFacts,updated',
         requestKey: null,
       }),
     ])
@@ -884,7 +867,7 @@ export async function getProductDetailsBySlug(rawSlug: string): Promise<ProductD
       `slug="${escapedSlug}" && isActive=true `,
       {
         fields:
-          'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,details,stock,related_products,updated',
+          'id,slug,sku,name,price,promoPrice,isActive,inView,description,images,currency,categories,category,isNew,isVariant,isParent,parent,variantKey,details,stock,related_products,ingredients,allergenStatement,nutritionFacts,updated',
         requestKey: null,
       }
     )

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type ReactNode } from "react"
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -48,9 +48,11 @@ type NavbarCartProps = {
 }
 
 const GUEST_CART_KEY = "guest_cart"
+const subscribeToMount = () => () => {}
+const clientMounted = () => true
+const serverMounted = () => false
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
-const FREE_SHIPPING_THRESHOLD = 99
 
 function getGuestCart(): GuestCartItem[] {
   if (typeof window === "undefined") return []
@@ -81,9 +83,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
 
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => { setIsMounted(true) }, [])
+  const isMounted = useSyncExternalStore(subscribeToMount, clientMounted, serverMounted)
 
   useEffect(() => {
     if (typeof document === "undefined") return
@@ -133,7 +133,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
               imageUrls: Array.isArray(prod.imageUrls) ? prod.imageUrls : [],
               price: typeof prod.price === "number" ? prod.price : undefined,
               promoPrice: typeof prod.promoPrice === "number" ? prod.promoPrice : null,
-              currency: prod.currency ?? "DT",
+              currency: prod.currency ?? "USD",
               stock: typeof prod.stock === "number" ? prod.stock : undefined,
             } : null
             return { id: it.id ?? "", quantity: Number(it.quantity ?? 1), product, source: "server" }
@@ -158,7 +158,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
               imageUrls: Array.isArray(prod.imageUrls) ? prod.imageUrls : [],
               price: typeof prod.price === "number" ? prod.price : undefined,
               promoPrice: typeof prod.promoPrice === "number" ? prod.promoPrice : null,
-              currency: prod.currency ?? "DT",
+              currency: prod.currency ?? "USD",
               stock: typeof prod.stock === "number" ? prod.stock : undefined,
             }
             result.push({ id: item.productId, quantity: item.quantity, product, source: "guest" })
@@ -232,7 +232,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
   }
 
   const cartCount = cartItems.length
-  const cartCurrency = cartItems.find((item) => item.product?.currency)?.product?.currency ?? "DT"
+  const cartCurrency = cartItems.find((item) => item.product?.currency)?.product?.currency ?? "USD"
   const cartSubtotal = cartItems.reduce((sum, item) => {
     const prod = item.product
     if (!prod) return sum
@@ -242,9 +242,6 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
     return sum + unitPrice * item.quantity
   }, 0)
 
-  const shippingProgress = Math.min(100, (cartSubtotal / FREE_SHIPPING_THRESHOLD) * 100)
-  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cartSubtotal)
-  const freeShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD
 
   const overlay = isMounted && createPortal(
     <div
@@ -293,47 +290,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
           </button>
         </div>
 
-        {/* Shipping progress bar */}
-        <div className="px-6 py-4">
-          <div className="mb-2 flex items-center justify-between">
-            <span
-              className="text-[9px] font-black uppercase tracking-[0.22em]"
-              style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
-            >
-              YOU
-            </span>
-            <span
-              className="text-[9px] font-black uppercase tracking-[0.22em]"
-              style={{ fontFamily: FONT, fontWeight: 900, color: freeShipping ? 'rgb(34,197,94)' : '#111' }}
-            >
-              FREE SHIPPING
-            </span>
-          </div>
-
-          {/* Bar */}
-          <div
-            className="relative h-8 w-full overflow-hidden border-[3px] border-black"
-            style={{ background: 'rgba(255,255,255,0.7)', boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.06)' }}
-          >
-            <div
-              className="h-full"
-              style={{
-                width: `${shippingProgress}%`,
-                background: freeShipping ? 'linear-gradient(90deg, rgb(34,197,94), rgb(16,185,129))' : GRADIENT,
-                transition: 'width 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
-              }}
-            />
-          </div>
-
-          <div className="mt-1.5 flex justify-between">
-            <span className="text-[9px] font-black uppercase tracking-wider" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}>
-              {cartSubtotal > 0 ? `$${cartSubtotal.toFixed(0)}` : '$0'}
-            </span>
-            <span className="text-[9px] font-black uppercase tracking-wider" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}>
-              ${FREE_SHIPPING_THRESHOLD}
-            </span>
-          </div>
-        </div>
+        <p className="px-6 py-4 text-xs font-bold uppercase tracking-wide">US delivery. Shipping calculated at checkout.</p>
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -376,7 +333,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
                   ? prod.imageUrls[0]! : "/placeholder-square.webp"
                 const unitPrice = prod?.promoPrice && typeof prod.promoPrice === "number" && typeof prod.price === "number" && prod.promoPrice < prod.price
                   ? prod.promoPrice : prod?.price
-                const currency = prod?.currency ?? "DT"
+                const currency = prod?.currency ?? "USD"
 
                 return (
                   <div

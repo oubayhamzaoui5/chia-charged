@@ -1,8 +1,47 @@
 'use server'
 
+import { authCookieOptions } from '@/lib/auth/cookie-options'
+
 import { requireAdmin } from '@/lib/auth'
+import { createServicePb } from '@/lib/pb-service.server'
+import { STORE_SETTINGS_ID, storeSettingsSchema } from '@/lib/store-settings'
+import { revalidatePath } from 'next/cache'
+
+export async function saveStoreSettingsAction(input: unknown) {
+  await requireAdmin()
+  const parsed = storeSettingsSchema.safeParse(input)
+  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message ?? 'Invalid settings.' }
+  try {
+    const pb = await createServicePb()
+    await pb.collection('store_settings').update(STORE_SETTINGS_ID, parsed.data)
+    revalidatePath('/policies', 'layout')
+    return { success: true, message: 'Store settings saved.' }
+  } catch { return { success: false, message: 'Could not save settings. Please retry.' } }
+}
 import { createServerPb } from '@/lib/pb'
 import { cookies } from 'next/headers'
+import { randomUUID } from 'node:crypto'
+import { parseShippingRate, SHIPPING_RECORD_ID, type ShippingPolicy } from '@/lib/shipping'
+
+export async function saveShippingRateAction(rate: string): Promise<{ success: boolean; message: string; policy?: ShippingPolicy }> {
+  await requireAdmin()
+  let rateCents: number
+  try { rateCents = parseShippingRate(rate) } catch (error) {
+    return { success: false, message: error instanceof Error ? error.message : 'Invalid shipping rate.' }
+  }
+  try {
+    const email = process.env.PB_ADMIN_EMAIL
+    const password = process.env.PB_ADMIN_PASSWORD
+    if (!email || !password) throw new Error('Missing backend credentials')
+    const pb = createServerPb()
+    await pb.collection('_superusers').authWithPassword(email, password)
+    const version = randomUUID()
+    await pb.collection('shipping_settings').update(SHIPPING_RECORD_ID, { rateCents, version })
+    return { success: true, message: 'US shipping rate saved.', policy: { rateCents, version, currency: 'USD', country: 'US' } }
+  } catch {
+    return { success: false, message: 'Shipping could not be saved. Please try again.' }
+  }
+}
 
 function getErrorMessage(error: unknown): string {
   if (!error || typeof error !== 'object') return 'Failed to update password.'
@@ -89,13 +128,7 @@ export async function updateAdminPasswordAction(input: {
         },
       })
 
-      cookieStore.set('pb_auth', authCookie, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-      })
+      cookieStore.set('pb_auth', authCookie, authCookieOptions())
     }
 
     return { success: true }

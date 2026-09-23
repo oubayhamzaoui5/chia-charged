@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import { useStoreSettings } from '@/hooks/useStoreSettings'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
@@ -12,6 +13,7 @@ const DELAY_MS = 3500
 const COOLDOWN_MS = 2 * 60 * 60 * 1000 // 2 hours
 
 export default function PromoPopup() {
+  const settings = useStoreSettings()
   const [visible, setVisible] = useState(false)
   const [email, setEmail] = useState('')
 
@@ -50,7 +52,7 @@ export default function PromoPopup() {
 
   useEffect(() => {
     if (typeof document === 'undefined') return
-    if (visible) {
+    if (visible && settings.firstOrderDiscountEnabled) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
       document.body.style.paddingRight = `${scrollbarWidth}px`
       document.body.style.overflow = 'hidden'
@@ -65,7 +67,7 @@ export default function PromoPopup() {
       document.documentElement.style.overflow = ''
       document.body.style.paddingRight = ''
     }
-  }, [visible])
+  }, [visible, settings.firstOrderDiscountEnabled])
 
   function handleClose() {
     setVisible(false)
@@ -84,7 +86,7 @@ export default function PromoPopup() {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && settings.firstOrderDiscountEnabled && (
         <>
           {/* Backdrop */}
           <motion.div
@@ -123,7 +125,7 @@ export default function PromoPopup() {
               <div className="relative hidden w-[42%] shrink-0 sm:block" style={{ minHeight: 500 }}>
                 <Image
                   src="/popup-promo.webp"
-                  alt="Chia Charged — 10% off your first order"
+                  alt={`Chia Charged — ${settings.firstOrderDiscountPercent}% off your first order`}
                   fill
                   className="object-cover"
                   priority
@@ -206,7 +208,7 @@ export default function PromoPopup() {
                             display: 'inline-block',
                           }}
                         >
-                          10% Off
+                          {settings.firstOrderDiscountPercent}% Off
                         </span>
                       </div>
                       <p
@@ -257,7 +259,7 @@ export default function PromoPopup() {
                           className="text-[9px] uppercase tracking-[0.1em] text-white/35"
                           style={{ fontFamily: FONT, fontWeight: 900 }}
                         >
-                          No spam. Unsubscribe anytime. Valid on first order only.
+                          First paid order with a verified account. Regular-price items only. Applied at payment.
                         </p>
                       </form>
 

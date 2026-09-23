@@ -12,7 +12,7 @@ export default function ParentHeader({ parent, variables, onSave }: Props) {
   const imageUrls = Array.isArray(parent.images)
     ? parent.images.map(
         (img: string) =>
-          `${process.env.NEXT_PUBLIC_PB_URL}/api/files/products/${parent.id}/${img}`
+          `/api/pb-files/products/${parent.id}/${img}`
       )
     : []
 

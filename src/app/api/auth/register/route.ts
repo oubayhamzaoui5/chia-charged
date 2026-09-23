@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import PocketBase from 'pocketbase'
+import { createServerPb } from '@/lib/pb'
 import { z } from 'zod'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
-const PB_URL =
-  process.env.POCKETBASE_URL ??
-  process.env.NEXT_PUBLIC_PB_URL ??
-  'http://127.0.0.1:8090'
 const PHONE_PREFIX = '+216'
 const PHONE_LOCAL_DIGITS_COUNT = 8
 
@@ -152,7 +148,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = registerSchema.parse(body)
 
-    const pb = new PocketBase(PB_URL)
+    const pb = createServerPb()
 
     const phoneInput = (data.phone ?? '').trim()
     const normalizedPhone = phoneInput ? normalizePhone(phoneInput) : null

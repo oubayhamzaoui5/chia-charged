@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerPb } from "@/lib/pb"
+import { catalogCategoryIds, resolveCatalogPrice } from "@/lib/catalog-pricing"
 
 function normalizeImageFilenames(raw: unknown): string[] {
   if (Array.isArray(raw)) {
@@ -25,7 +26,7 @@ function normalizeImageFilenames(raw: unknown): string[] {
   return []
 }
 
-function normalizeProduct(record: any) {
+function normalizeProduct(record: Record<string, unknown>, promoPrice: number | null) {
   const PB_BASE =
     process.env.NEXT_PUBLIC_PB_URL ??
     process.env.POCKETBASE_URL ??
@@ -44,11 +45,8 @@ function normalizeProduct(record: any) {
         `${PB_BASE}/api/files/products/${productId}/${encodeURIComponent(filename)}`
     ),
     price: typeof record?.price === "number" ? record.price : Number(record?.price ?? 0),
-    promoPrice:
-      record?.promoPrice == null || !Number.isFinite(Number(record?.promoPrice))
-        ? null
-        : Number(record.promoPrice),
-    currency: String(record?.currency ?? "DT"),
+    promoPrice,
+    currency: String(record?.currency ?? "USD"),
     stock: typeof record?.stock === "number" ? record.stock : Number(record?.stock ?? 0),
   }
 }
@@ -66,7 +64,7 @@ export async function GET(
 
     const pb = createServerPb()
     const record = await pb.collection("products").getOne(safeId, {
-      fields: "id,slug,name,sku,images,price,promoPrice,currency,stock,isActive,inView",
+      fields: "id,slug,name,sku,images,price,promoPrice,currency,stock,isActive,inView,category",
       requestKey: null,
     })
 
@@ -74,7 +72,23 @@ export async function GET(
       return NextResponse.json({ error: "Produit indisponible" }, { status: 404 })
     }
 
-    return NextResponse.json({ product: normalizeProduct(record) }, { status: 200 })
+    const categoryIds = catalogCategoryIds(record.category)
+    const categories = categoryIds.length === 0 ? [] : await pb.collection("categories").getFullList({
+      filter: categoryIds.map((categoryId) => `id = '${categoryId}'`).join(" || "),
+      fields: "id,promo,activeAll",
+      requestKey: null,
+    })
+    const categoryMap = new Map(categories.map((category) => [category.id, category]))
+    const price = resolveCatalogPrice(
+      Number(record.price),
+      record.promoPrice == null ? null : Number(record.promoPrice),
+      categoryIds.map((categoryId) => {
+        const category = categoryMap.get(categoryId)
+        return { id: categoryId, percent: Number(category?.promo ?? 0), active: category?.activeAll === true }
+      }),
+    )
+    const promoPrice = price && price.unitPriceCents < price.baseUnitPriceCents ? price.unitPriceCents / 100 : null
+    return NextResponse.json({ product: normalizeProduct(record, promoPrice) }, { status: 200 })
   } catch {
     return NextResponse.json({ error: "Produit introuvable" }, { status: 404 })
   }

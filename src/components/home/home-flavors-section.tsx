@@ -124,8 +124,7 @@ export default function HomeFlavorsSection() {
 
                 <div className="mt-5 flex items-center justify-between">
                   <span className="text-2xl font-black text-slate-900">
-                    {flavor.price}
-                    <span className="ml-1 text-sm font-semibold opacity-60">DT</span>
+                    ${flavor.price}
                   </span>
                   <div
                     className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold text-white transition-opacity group-hover:opacity-90"

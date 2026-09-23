@@ -22,7 +22,7 @@ const faqItems = [
   {
     question: 'Is Chia Charged suitable for vegans?',
     answer:
-      'Yes! All our puddings are 100% plant-based. No dairy, no eggs, no animal products — just pure, nutritious ingredients that work for everyone.',
+      'No. Our current flavors contain whey protein from milk and are not vegan or dairy-free.',
   },
 ]
 

@@ -3,6 +3,7 @@ import 'server-only'
 import {
   getSession,
   requireAdmin,
+  requireAdminManager,
   requireAuth,
   isAdmin,
   isAuthenticated,
@@ -13,5 +14,5 @@ export async function auth(): Promise<Session | null> {
   return getSession()
 }
 
-export { requireAuth, requireAdmin, isAdmin, isAuthenticated }
+export { requireAuth, requireAdmin, requireAdminManager, isAdmin, isAuthenticated }
 export type { Session }

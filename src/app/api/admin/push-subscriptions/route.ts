@@ -61,7 +61,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ message: 'Endpoint is required' }, { status: 400 })
     }
 
-    await removeAdminPushSubscription(endpoint)
+    await removeAdminPushSubscription(endpoint, session.user.id)
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })

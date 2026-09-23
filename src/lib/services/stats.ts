@@ -1,17 +1,17 @@
 import 'server-only'
 
-import { getPb } from '@/lib/pb';
+import { getAdminPbForAction } from '@/lib/admin/actions';
+import type { OrderStatus } from '@/types/order.types';
 
 export const fetchTodaySales = async (): Promise<number> => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   
   const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  const pbDate = `${startOfDay.getFullYear()}-${pad(startOfDay.getMonth() + 1)}-${pad(startOfDay.getDate())} 00:00:00`;
+  // Daily dashboard counters use UTC, matching persisted timestamps and visitor deduplication.
+  const pbDate = `${now.toISOString().slice(0, 10)} 00:00:00.000Z`;
 
   const records = await pb.collection('orders').getFullList({
-    filter: `(status = "paid" || status = "delivering" || status = "delivered") && created >= "${pbDate}"`,
+    filter: `paymentStatus = "paid" && created >= "${pbDate}"`,
     fields: 'total',
     requestKey: null,
   });
@@ -20,14 +20,14 @@ export const fetchTodaySales = async (): Promise<number> => {
 };
 
 export const fetchAlertCounts = async () => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   
   try {
     const [outOfStock, lowStock, pendingOrders] = await Promise.all([
       pb.collection('products').getList(1, 1, { filter: 'stock = 0', requestKey: null }),
       pb.collection('products').getList(1, 1, { filter: 'stock > 0 && stock < 10', requestKey: null }),
       pb.collection('orders').getList(1, 50, { // Increased limit to see the data
-        filter: 'status = "paid"',
+        filter: 'paymentStatus = "paid" && fulfillmentStatus = "on hold"',
         requestKey: null 
       })
     ]);
@@ -44,7 +44,7 @@ export const fetchAlertCounts = async () => {
 
 
 export const fetchChartRowData = async () => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
@@ -55,7 +55,7 @@ export const fetchChartRowData = async () => {
 
   const [deliveredOrders, totalCount] = await Promise.all([
     pb.collection('orders').getFullList({
-      filter: `(status = "paid" || status = "delivering" || status = "delivered") && created >= "${pbDateLimit}"`,
+      filter: `paymentStatus = "paid" && created >= "${pbDateLimit}"`,
       fields: 'total,created',
     }),
     pb.collection('orders').getList(1, 1),
@@ -90,7 +90,7 @@ export const fetchChartRowData = async () => {
   };
 };
 export const fetchExtendedStats = async () => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   const now = new Date();
   
   // Début du mois actuel
@@ -108,7 +108,7 @@ export const fetchExtendedStats = async () => {
 
   const allOrders = await pb.collection('orders').getFullList({
     filter: `updated >= "${pbDateLimit}"`,
-    fields: 'total,status,updated',
+    fields: 'total,paymentStatus,fulfillmentStatus,updated',
   });
 
   const stats = {
@@ -127,13 +127,13 @@ export const fetchExtendedStats = async () => {
     const target = isCurrentMonth ? stats.current : stats.previous;
     
     target.total++;
-    if (order.status === 'delivered') {
+    if (order.fulfillmentStatus === 'delivered') {
       target.delCount++;
     }
 
-    if (order.status === 'paid' || order.status === 'delivering' || order.status === 'delivered') {
+    if (order.paymentStatus === 'paid') {
       target.delSales += amount;
-    } else if (order.status === 'refunded') {
+    } else if (order.paymentStatus === 'refunded') {
       target.retCount++;
       target.retSales += amount;
     }
@@ -171,7 +171,7 @@ export const fetchExtendedStats = async () => {
 };
 
 export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month: number, year: number) => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   
   // Set date boundaries based on view mode
   const startDate = viewMode === 'month' 
@@ -187,8 +187,8 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
   try {
     const orders = await pb.collection('orders').getFullList({
-      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && (status = "delivered" || status = "refunded")`,
-      fields: 'status,created',
+      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && (fulfillmentStatus = "delivered" || fulfillmentStatus = "cancelled")`,
+      fields: 'fulfillmentStatus,created',
       sort: 'updated'
     });
 
@@ -206,8 +206,8 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
       orders.forEach(order => {
         const dayIndex = new Date(order.created).getDate() - 1;
-        if (order.status === 'delivered') deliveredData[dayIndex]++;
-        else if (order.status === 'refunded') returnedData[dayIndex]++;
+        if (order.fulfillmentStatus === 'delivered') deliveredData[dayIndex]++;
+        else if (order.fulfillmentStatus === 'cancelled') returnedData[dayIndex]++;
       });
     } else {
       // Annual view: Group by month
@@ -217,8 +217,8 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
       orders.forEach(order => {
         const monthIndex = new Date(order.created).getMonth();
-        if (order.status === 'delivered') deliveredData[monthIndex]++;
-        else if (order.status === 'refunded') returnedData[monthIndex]++;
+        if (order.fulfillmentStatus === 'delivered') deliveredData[monthIndex]++;
+        else if (order.fulfillmentStatus === 'cancelled') returnedData[monthIndex]++;
       });
     }
 
@@ -237,7 +237,7 @@ export const fetchMonthlyOrdersTrend = async (viewMode: 'month' | 'year', month:
 
 
 export const fetchMonthlySalesTrend = async (viewMode: 'month' | 'year', month: number, year: number) => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   
   const startDate = viewMode === 'month' 
     ? new Date(year, month, 1) 
@@ -252,7 +252,7 @@ export const fetchMonthlySalesTrend = async (viewMode: 'month' | 'year', month: 
 
   try {
     const orders = await pb.collection('orders').getFullList({
-      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && (status = "paid" || status = "delivering" || status = "delivered")`,
+      filter: `created >= "${pbStartDate}" && created <= "${pbEndDate}" && paymentStatus = "paid"`,
       fields: 'total,created',
       sort: 'updated'
     });
@@ -292,12 +292,12 @@ export const fetchMonthlySalesTrend = async (viewMode: 'month' | 'year', month: 
 };
 
 export const fetchRecentPurchases = async () => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   try {
     const records = await pb.collection('orders').getList(1, 7, {
       sort: '-created',
       expand: 'user',
-      fields: 'id,total,status,items,phone,firstName,lastName',
+      fields: 'id,total,fulfillmentStatus,paymentStatus,items,phone,firstName,lastName',
     });
 
     return records.items.map((r: any) => {
@@ -331,7 +331,7 @@ export const fetchRecentPurchases = async () => {
         customer: fullName,
         phone: r.phone || '—',
         product: productDisplay,
-        status: r.status as any,
+        status: r.fulfillmentStatus as OrderStatus,
         amount: r.total || 0,
       };
     });
@@ -342,14 +342,14 @@ export const fetchRecentPurchases = async () => {
 };
 
 export const fetchBestSellingProducts = async () => {
-  const pb = getPb();
+  const { pb } = await getAdminPbForAction();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const pbDate = sevenDaysAgo.toISOString().replace('T', ' ').split('.')[0];
 
   try {
     const orders = await pb.collection('orders').getFullList({
-      filter: `(status = "paid" || status = "delivering" || status = "delivered") && created >= "${pbDate}"`,
+      filter: `paymentStatus = "paid" && created >= "${pbDate}"`,
       fields: 'items',
       requestKey: null,
     });
@@ -393,7 +393,7 @@ export const fetchBestSellingProducts = async () => {
       topProducts.map(async (stat) => {
         try {
           // Find the product by SKU to get its image array
-          const productRecord = await pb.collection('products').getFirstListItem(`sku="${stat.sku}"`, {
+          const productRecord = await pb.collection('products').getFirstListItem(pb.filter('sku={:sku}', { sku: stat.sku }), {
             fields: 'id,collectionId,images',
             requestKey: null,
           });
@@ -401,7 +401,7 @@ export const fetchBestSellingProducts = async () => {
           let imageUrl = '';
           if (productRecord && productRecord.images?.length > 0) {
             // Build the URL correctly using the PocketBase helper
-            imageUrl = pb.files.getURL(productRecord, productRecord.images[0], { thumb: '100x100' });
+            imageUrl = `/api/pb-files/products/${productRecord.id}/${encodeURIComponent(productRecord.images[0])}?thumb=100x100`;
           }
 
           return {

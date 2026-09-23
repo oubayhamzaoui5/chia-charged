@@ -51,11 +51,11 @@ export default function HomeMarblePanelSection() {
           </h2>
 
           <p className="mb-7 max-w-sm text-base leading-relaxed text-slate-500">
-            Real strawberries. Creamy texture. Zero added sugar — pure indulgence that actually fuels you.
+            Made with freeze-dried strawberries and whey protein. Check the nutrition and allergen information for this flavor.
           </p>
 
           <div className="mb-8 flex flex-wrap gap-2">
-            {["Real Strawberries", "0g Sugar", "Ready to Eat", "22g Protein/Serving"].map((tag) => (
+            {["Real Strawberries", "Check Nutrition", "Pudding Mix", "22g Protein/Serving"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full px-4 py-1.5 text-xs font-bold"

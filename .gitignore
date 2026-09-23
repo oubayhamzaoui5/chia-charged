@@ -32,13 +32,26 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
 
 # encrypted OAuth keys (never commit)
 /secrets/
+/.local-preview/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/.local-preview*.log
+
+/.local-tools/
+/backend/pb_data/
+/backend/pocketbase*
+
+# Local diagnostic output is not release documentation
+*.log
+/docs/*-lint*.json
+/docs/*-audit-*.json

@@ -65,7 +65,7 @@ function addPattern(pattern: RemoteImagePattern | null) {
 
 addPattern(buildPattern("http://127.0.0.1:8090"));
 addPattern(buildPattern("http://localhost:8090"));
-addPattern(buildPattern("http://51.68.124.47:8099"));
+
 if (pbUrl) addPattern(buildPattern(pbUrl));
 addPattern({ protocol: "https", hostname: "images.unsplash.com", pathname: "/**" });
 
@@ -82,19 +82,15 @@ const nextConfig: NextConfig = {
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
     remotePatterns,
   },
-  async rewrites() {
-    return [
-      // Legacy French accent variant
-      {
-        source: '/Nouveaut\u00E9s',
-        destination: '/new-arrivals',
-      },
-    ]
-  },
   async redirects() {
     return [
-      // Backward-compat: French URLs → English equivalents
-      { source: '/shop/:slug((?!category)[^/]+)', destination: '/product/:slug', permanent: true },
+      // Retired catalog pages converge on the retained flavor section.
+      ...['/shop', '/boutique', '/new-arrivals', '/promotions', '/Nouveautes', '/Nouveaut%C3%A9s'].map(source => ({ source, destination: '/#flavors', permanent: true })),
+      { source: '/wishlist', destination: '/', permanent: true },
+      { source: '/shop/category/:slug*', destination: '/#flavors', permanent: true },
+      { source: '/boutique/categorie/:slug*', destination: '/#flavors', permanent: true },
+      // Legacy product links retain their corresponding product.
+      { source: '/shop/:slug', destination: '/product/:slug', permanent: true },
       { source: '/boutique/categorie/:slug*', destination: '/shop/category/:slug*', permanent: true },
       { source: '/boutique', destination: '/shop', permanent: true },
       { source: '/produit/:slug*', destination: '/product/:slug*', permanent: true },
@@ -116,12 +112,18 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
-          { key: "Content-Security-Policy", value: csp },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+      {
+        // Private order-link handlers provide their own nonce CSP and no-referrer policy.
+        source: '/:path((?!order-access(?:/|$)|api/shop/order-access(?:/|$)).*)',
+        headers: [
+          { key: 'Content-Security-Policy', value: csp },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         ],
       },
     ];

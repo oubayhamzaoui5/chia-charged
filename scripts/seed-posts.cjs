@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+
 /**
  * Seed script — creates 3 Chia Charged blog posts in PocketBase.
  *

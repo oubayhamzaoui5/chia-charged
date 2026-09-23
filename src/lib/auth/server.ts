@@ -12,6 +12,7 @@ export type User = {
   username: string
   role: 'admin' | 'customer'
   isActive: boolean
+  canManageAdmins: boolean
   verified: boolean
   avatar?: string
 }
@@ -65,6 +66,7 @@ export const getSession = cache(async (): Promise<Session | null> => {
       username: record.username || '',
       role: record.role || 'customer',
       isActive: record.isActive !== false,
+      canManageAdmins: record.canManageAdmins === true,
       verified: record.verified || false,
       avatar: record.avatar || undefined,
     }
@@ -112,6 +114,12 @@ export async function requireAdmin(): Promise<Session> {
     redirect('/login')
   }
 
+  return session
+}
+
+export async function requireAdminManager(): Promise<Session> {
+  const session = await requireAdmin()
+  if (!session.user.canManageAdmins) redirect('/admin')
   return session
 }
 

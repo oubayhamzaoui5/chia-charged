@@ -1,41 +1,17 @@
 "use client"
 
+import { useStoreSettings } from "@/hooks/useStoreSettings"
 import { motion } from "framer-motion"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
-const TESTIMONIALS = [
-  {
-    name: "Sarah M.",
-    role: "Fitness Coach",
-    rating: 5,
-    quote:
-      "I've tried every protein product on the market. Chia Charged is the only one that tastes like actual food, keeps me full until lunch, and doesn't wreck my stomach.",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&q=80&fit=crop&crop=face",
-    rotate: "-1.5deg",
-  },
-  {
-    name: "James T.",
-    role: "Marathon Runner",
-    rating: 5,
-    quote:
-      "I prep 5 jars every Sunday. Between the MCT oil and the chia seeds, my energy is steady through my morning runs. No gel packs needed.",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&q=80&fit=crop&crop=face",
-    rotate: "0.3deg",
-  },
-  {
-    name: "Layla K.",
-    role: "Nutritionist",
-    rating: 5,
-    quote:
-      "As a nutritionist, I'm extremely picky about what I recommend. Zero added sugar, 22g plant protein per serving, and MCT oil — this is the one I tell all my clients about.",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&q=80&fit=crop&crop=face",
-    rotate: "1.2deg",
-  },
-]
+
 
 export default function LandingTestimonials() {
+  const { socialProof } = useStoreSettings()
+  if (!socialProof.enabled) return null
+  const testimonials = socialProof.testimonials.filter(item => item.enabled)
   return (
     <section
       className="relative overflow-hidden py-12 md:py-24"
@@ -92,7 +68,7 @@ export default function LandingTestimonials() {
           </motion.div>
 
           {/* Rating badge */}
-          <motion.div
+          {socialProof.ratingsEnabled && <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -107,7 +83,7 @@ export default function LandingTestimonials() {
             }}
           >
             <div>
-              <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: "3rem", lineHeight: 1, color: "#111" }}>4.8</div>
+              <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: "3rem", lineHeight: 1, color: "#111" }}>{socialProof.averageRating}</div>
               <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(0,0,0,0.35)", marginTop: 4 }}>Out of 5</div>
             </div>
             <div style={{ width: 1, height: 48, background: "#111", opacity: 0.12 }} />
@@ -117,9 +93,9 @@ export default function LandingTestimonials() {
                   <span key={i} style={{ fontSize: "20px", background: GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>★</span>
                 ))}
               </div>
-              <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(0,0,0,0.35)" }}>100+ Reviews</div>
+              <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(0,0,0,0.35)" }}>{socialProof.reviewCount} Reviews</div>
             </div>
-          </motion.div>
+          </motion.div>}
         </div>
 
         {/* Review cards */}
@@ -132,9 +108,9 @@ export default function LandingTestimonials() {
           className="flex snap-x snap-mandatory gap-5 px-5 pb-6 pt-4 md:grid md:grid-cols-3 md:gap-8 md:snap-none md:px-0 md:pb-0 md:pt-0"
           style={{ alignItems: "start" }}
         >
-          {TESTIMONIALS.map((t) => (
+          {testimonials.map((t) => (
             <motion.div
-              key={t.name}
+              key={t.id}
               className="w-[82vw] shrink-0 snap-start sm:w-[65vw] md:w-auto md:shrink"
               variants={{
                 hidden: { opacity: 0, y: 40 },
@@ -177,9 +153,9 @@ export default function LandingTestimonials() {
               </div>
 
               {/* Verified badge */}
-              <div className="mb-5 inline-flex items-center gap-1.5 rounded-sm border-2 px-2.5 py-1" style={{ background: "rgba(124,58,237,0.07)", borderColor: "rgba(124,58,237,0.2)" }}>
+              {t.verified && <div className="mb-5 inline-flex items-center gap-1.5 rounded-sm border-2 px-2.5 py-1" style={{ background: "rgba(124,58,237,0.07)", borderColor: "rgba(124,58,237,0.2)" }}>
                 <span style={{ fontSize: "9px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgb(68,15,195)", fontFamily: FONT }}>&#10003; Verified Purchase</span>
-              </div>
+              </div>}
 
               {/* Quote */}
               <p style={{ fontSize: "0.93rem", lineHeight: 1.72, color: "#111", fontWeight: 600, marginBottom: "22px" }}>
@@ -193,7 +169,7 @@ export default function LandingTestimonials() {
               <div className="flex items-center gap-3">
                 <div style={{ width: 46, height: 46, border: "3px solid #111", borderRadius: "8px", overflow: "hidden", flexShrink: 0, boxShadow: "3px 3px 0 #111" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={t.avatar} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <img src={t.avatar || '/logow.webp'} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
                 <div>
                   <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: "0.78rem", color: "#111", textTransform: "uppercase", letterSpacing: "0.07em", lineHeight: 1.2 }}>{t.name}</div>

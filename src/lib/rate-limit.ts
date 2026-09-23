@@ -1,22 +1,27 @@
-/**
- * Redis-backed rate limiter using local Redis (redis://localhost:6379).
- * Works correctly across multiple processes/instances on the same server.
- * Falls back to allowing the request if Redis is unavailable.
- */
-
+// Shared production limits require Redis; local preview uses bounded in-process fallback.
 import Redis from 'ioredis'
+import { isIP } from 'node:net'
 
 let redis: Redis | null = null
+let lastFailureLog = 0
+const localWindows = new Map<string, { count: number; resetAt: number }>()
+const incrementScript = `
+local count = redis.call('INCR', KEYS[1])
+local ttl = redis.call('PTTL', KEYS[1])
+if ttl < 0 then
+  redis.call('PEXPIRE', KEYS[1], ARGV[1])
+  ttl = tonumber(ARGV[1])
+end
+return {count, ttl}
+`
+
 
 function getRedis(): Redis {
   if (!redis) {
-    redis = new Redis({
-      host: process.env.REDIS_HOST ?? 'localhost',
-      port: Number(process.env.REDIS_PORT ?? 6379),
-      lazyConnect: true,
-      enableOfflineQueue: false,
-      maxRetriesPerRequest: 1,
-    })
+    const options = { lazyConnect: true, enableOfflineQueue: true, maxRetriesPerRequest: 1, connectTimeout: 1000, commandTimeout: 1500 }
+    redis = process.env.REDIS_URL
+      ? new Redis(process.env.REDIS_URL, options)
+      : new Redis({ ...options, host: process.env.REDIS_HOST ?? 'localhost', port: Number(process.env.REDIS_PORT ?? 6379), password: process.env.REDIS_PASSWORD || undefined })
     redis.on('error', () => {
       // Suppress unhandled error events — failures are handled in rateLimit()
     })
@@ -31,23 +36,16 @@ export async function rateLimit(
 ): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
   const now = Date.now()
   const resetAt = now + windowMs
-  const windowSecs = Math.ceil(windowMs / 1000)
+  if (!Number.isSafeInteger(limit) || limit < 1 || !Number.isSafeInteger(windowMs) || windowMs < 1) throw new Error('Invalid rate limit configuration.')
 
   try {
     const client = getRedis()
     const redisKey = `rl:${key}`
 
-    // INCR atomically increments (creates key at 0 if missing, then increments to 1)
-    const count = await client.incr(redisKey)
-
-    // Set expiry only on first request in the window
-    if (count === 1) {
-      await client.expire(redisKey, windowSecs)
-    }
-
-    // Get remaining TTL to compute resetAt accurately
-    const ttl = await client.pttl(redisKey)
-    const actualResetAt = ttl > 0 ? now + ttl : resetAt
+    // Count and expiry share one atomic operation; interrupted clients cannot leave permanent keys.
+    const result = await client.eval(incrementScript, 1, redisKey, windowMs) as [number, number]
+    const [count, ttl] = result
+    const actualResetAt = now + ttl
 
     if (count > limit) {
       return { allowed: false, remaining: 0, resetAt: actualResetAt }
@@ -55,16 +53,21 @@ export async function rateLimit(
 
     return { allowed: true, remaining: limit - count, resetAt: actualResetAt }
   } catch {
-    // If Redis is down, fail open (allow the request) to avoid blocking all users
-    return { allowed: true, remaining: limit, resetAt }
+    if (process.env.NODE_ENV === 'production') {
+      if (now - lastFailureLog > 60000) { console.error('Rate limiter unavailable; protected requests blocked. Check Redis.'); lastFailureLog = now }
+      return { allowed: false, remaining: 0, resetAt }
+    }
+    for (const [entryKey, entry] of localWindows) if (entry.resetAt <= now) localWindows.delete(entryKey)
+    const entry = localWindows.get(key) ?? { count: 0, resetAt }
+    if (!localWindows.has(key) && localWindows.size >= 10000) return { allowed: false, remaining: 0, resetAt }
+    entry.count += 1; localWindows.set(key, entry)
+    return { allowed: entry.count <= limit, remaining: Math.max(0, limit - entry.count), resetAt: entry.resetAt }
   }
 }
 
 export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim()
-    if (first) return first
-  }
-  return request.headers.get('x-real-ip') ?? 'unknown'
+  // Enable only behind an ingress which replaces these headers and blocks direct access.
+  if (process.env.TRUST_PROXY_HEADERS !== 'true') return 'unknown'
+  const raw = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? ''
+  return isIP(raw) ? raw : 'unknown'
 }

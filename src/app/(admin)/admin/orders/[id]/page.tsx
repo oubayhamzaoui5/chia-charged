@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Phone, Mail, User, CreditCard } from 'lucide-react'
+import { ArrowLeft, MapPin, Phone, Mail, User, CreditCard, Clock } from 'lucide-react'
 
 import { requireAdmin } from '@/lib/auth'
 import { createServerPb } from '@/lib/pb'
@@ -11,27 +11,21 @@ import type { OrderStatus } from '@/types/order.types'
 export const dynamic = 'force-dynamic'
 
 const statusOptions: { value: OrderStatus; label: string }[] = [
-  { value: 'paid', label: 'Paid' },
+  { value: 'on hold', label: 'On hold' },
   { value: 'delivering', label: 'Delivering' },
   { value: 'delivered', label: 'Delivered' },
-  { value: 'refunded', label: 'Refunded' },
-  { value: 'on hold', label: 'On hold' },
+  { value: 'cancelled', label: 'Cancelled' },
 ]
 
 const statusColors: Record<OrderStatus, string> = {
-  paid: 'bg-emerald-100 text-emerald-800',
+  'on hold': 'bg-slate-100 text-slate-800',
   delivering: 'bg-indigo-100 text-indigo-800',
   delivered: 'bg-blue-100 text-blue-800',
-  refunded: 'bg-rose-100 text-rose-800',
-  'on hold': 'bg-slate-100 text-slate-800',
+  cancelled: 'bg-rose-100 text-rose-800',
 }
 
 function productImageUrl(productId: string, filename: string) {
-  const base =
-    process.env.NEXT_PUBLIC_PB_URL ??
-    process.env.POCKETBASE_URL ??
-    'http://127.0.0.1:8090'
-  return `${base}/api/files/products/${productId}/${encodeURIComponent(filename)}`
+  return `/api/pb-files/products/${productId}/${encodeURIComponent(filename)}`
 }
 
 async function getOrderDetail(id: string) {
@@ -42,6 +36,7 @@ async function getOrderDetail(id: string) {
 
   try {
     const record = await pb.collection('orders').getOne(id, { requestKey: null })
+    const events = await pb.collection('order_events').getFullList({ filter: `orderId = "${id}"`, sort: '-created', requestKey: null })
 
     const rawItems = Array.isArray(record.items) ? record.items : []
     const items = await Promise.all(
@@ -76,7 +71,8 @@ async function getOrderDetail(id: string) {
     return {
       id: String(record.id),
       created: String(record.created ?? ''),
-      status: String(record.status ?? 'paid') as OrderStatus,
+      status: String(record.fulfillmentStatus ?? record.status ?? 'on hold') as OrderStatus,
+      paymentStatus: String(record.paymentStatus ?? 'legacy_unverified'),
       firstName: String(record.firstName ?? ''),
       lastName: String(record.lastName ?? ''),
       email: String(record.email ?? ''),
@@ -86,9 +82,19 @@ async function getOrderDetail(id: string) {
       postalCode: String(record.postalCode ?? ''),
       notes: String(record.notes ?? ''),
       paymentMode: String(record.paymentMode ?? ''),
+      subtotal: record.pricingVersion ? Number(record.subtotalCents ?? 0) / 100 : null,
+      discount: record.pricingVersion ? Number(record.discountCents ?? 0) / 100 : null,
+      shipping: record.shippingPolicyVersion ? Number(record.shippingCents ?? 0) / 100 : null,
+      tax: record.pricingVersion ? Number(record.taxCents ?? 0) / 100 : null,
+      taxStatus: String(record.taxStatus ?? ''),
       total: Number(record.total ?? 0),
-      currency: String(record.currency ?? '$'),
+      currency: String(record.currency ?? 'USD'),
       userId: typeof record.user === 'string' ? record.user : null,
+      trackingCarrier: String(record.trackingCarrier ?? ''),
+      trackingNumber: String(record.trackingNumber ?? ''),
+      shippedAt: String(record.shippedAt ?? ''),
+      deliveredAt: String(record.deliveredAt ?? ''),
+      events: events.map((event) => ({ id: String(event.id), type: String(event.type ?? ''), fromStatus: String(event.fromStatus ?? ''), toStatus: String(event.toStatus ?? ''), created: String(event.created ?? '') })),
       items,
     }
   } catch (e: unknown) {
@@ -107,8 +113,11 @@ export default async function AdminOrderDetailPage({
 
   if (!order) notFound()
 
-  const subtotal = order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
-  const shipping = order.total - subtotal
+  const itemTotal = order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
+  const subtotal = order.subtotal ?? itemTotal
+  const discount = order.discount ?? 0
+  const shipping = order.shipping ?? Math.max(0, order.total - itemTotal)
+  const tax = order.tax ?? 0
 
   return (
     <div className="p-6 md:p-8 max-w-4xl">
@@ -149,7 +158,7 @@ export default async function AdminOrderDetailPage({
                 <div key={idx} className="flex items-center gap-4 px-5 py-4">
                   <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
                     {item.imageUrl ? (
-                      <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                      <Image unoptimized src={item.imageUrl} alt={item.name} fill className="object-cover" />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-xs text-slate-400">IMG</div>
                     )}
@@ -168,12 +177,22 @@ export default async function AdminOrderDetailPage({
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-emerald-700">
+                  <span>Discount</span>
+                  <span>-${discount.toFixed(2)}</span>
+                </div>
+              )}
               {shipping > 0 && (
                 <div className="flex justify-between text-sm text-slate-500">
                   <span>Shipping</span>
                   <span>${shipping.toFixed(2)}</span>
                 </div>
               )}
+              <div className="flex justify-between text-sm text-slate-500">
+                <span>Tax</span>
+                <span>{order.taxStatus === 'complete' ? `$${tax.toFixed(2)}` : 'Pending Stripe calculation'}</span>
+              </div>
               <div className="flex justify-between font-bold text-base pt-1">
                 <span>Total</span>
                 <span>${order.total.toFixed(2)}</span>
@@ -183,31 +202,26 @@ export default async function AdminOrderDetailPage({
 
           {/* Status update */}
           <div className="rounded-2xl bg-white p-5" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-            <h2 className="font-semibold mb-4" style={{ color: '#111827' }}>Update status</h2>
-            <form
+            <h2 className="font-semibold mb-4" style={{ color: '#111827' }}>Update fulfillment status</h2>
+            {(order.status === 'on hold' || order.status === 'delivering') ? <form
               action={async (formData: FormData) => {
                 'use server'
                 const status = formData.get('status') as string
-                await updateOrderStatusAction(id, status)
+                await updateOrderStatusAction(id, status, { carrier: String(formData.get('carrier') ?? ''), number: String(formData.get('trackingNumber') ?? '') })
               }}
-              className="flex flex-col sm:flex-row gap-3"
+              className="flex flex-col gap-3"
             >
-              <select
-                name="status"
-                defaultValue={order.status}
-                className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
-                style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#374151' }}
-              >
-                {statusOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
+              <input type="hidden" name="status" value={order.status === 'on hold' ? 'delivering' : 'delivered'} />
+              {order.status === 'on hold' && <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input name="carrier" required minLength={2} maxLength={100} placeholder="Carrier (USPS, UPS, FedEx...)" className="rounded-xl px-3 py-2.5 text-sm" style={{ border: '1px solid #E8EAED' }} />
+                <input name="trackingNumber" required minLength={3} maxLength={200} placeholder="Tracking number" className="rounded-xl px-3 py-2.5 text-sm" style={{ border: '1px solid #E8EAED' }} />
+              </div>}
               <button
                 type="submit"
                 className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ background: '#4F46E5' }}
-              >Update</button>
-            </form>
+              >{order.status === 'on hold' ? 'Mark shipped' : 'Mark delivered'}</button>
+            </form> : <p className="text-sm text-slate-500">No further fulfillment transition is available.</p>}
             {order.notes && (
               <div className="mt-4 rounded-lg bg-amber-50 border border-amber-100 p-3 text-sm text-amber-800">
                 <span className="font-semibold">Customer note: </span>{order.notes}
@@ -259,6 +273,19 @@ export default async function AdminOrderDetailPage({
             <div className="text-sm space-y-1" style={{ color: '#6B7280' }}>
               <p>{order.address}</p>
               <p>{order.city} {order.postalCode}</p>
+              {order.trackingNumber && <p className="pt-2 font-medium text-slate-700">{order.trackingCarrier}: {order.trackingNumber}</p>}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5" style={{ border: '1px solid #E8EAED', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+            <div className="flex items-center gap-2 mb-3 font-semibold" style={{ color: '#111827' }}><Clock size={16} />Audit history</div>
+            <div className="space-y-3 text-sm">
+              {order.events.length === 0 ? <p className="text-slate-500">No operational events yet.</p> : order.events.map((event) => (
+                <div key={event.id} className="border-l-2 border-indigo-200 pl-3">
+                  <p className="font-medium text-slate-800">{event.type.replaceAll('_', ' ')}</p>
+                  <p className="text-xs text-slate-500">{event.fromStatus && event.toStatus ? `${event.fromStatus} → ${event.toStatus} · ` : ''}{new Date(event.created).toLocaleString('en-US')}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -269,7 +296,7 @@ export default async function AdminOrderDetailPage({
               Payment
             </div>
             <p className="text-sm" style={{ color: '#6B7280' }}>
-              {order.paymentMode === 'cash_on_delivery' ? 'Cash on delivery' : order.paymentMode}
+              Card · {order.paymentStatus.replaceAll('_', ' ')}
             </p>
           </div>
         </div>

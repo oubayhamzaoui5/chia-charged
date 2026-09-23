@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { User, Mail, Lock, MapPin, Save, Plus, Trash2, ShoppingBag, ChevronRight } from 'lucide-react'
+import { User, Mail, Lock, MapPin, Save, Plus, Trash2, ShoppingBag, ChevronRight, UserX } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import Footer from '@/components/footer'
 
@@ -20,26 +20,6 @@ type Address = {
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
-
-const COUNTRIES = [
-  { code: "US", name: "United States" }, { code: "CA", name: "Canada" },
-  { code: "GB", name: "United Kingdom" }, { code: "AU", name: "Australia" },
-  { code: "FR", name: "France" }, { code: "DE", name: "Germany" },
-  { code: "ES", name: "Spain" }, { code: "IT", name: "Italy" },
-  { code: "NL", name: "Netherlands" }, { code: "BE", name: "Belgium" },
-  { code: "CH", name: "Switzerland" }, { code: "SE", name: "Sweden" },
-  { code: "NO", name: "Norway" }, { code: "DK", name: "Denmark" },
-  { code: "PT", name: "Portugal" }, { code: "IE", name: "Ireland" },
-  { code: "AT", name: "Austria" }, { code: "PL", name: "Poland" },
-  { code: "GR", name: "Greece" }, { code: "JP", name: "Japan" },
-  { code: "KR", name: "South Korea" }, { code: "SG", name: "Singapore" },
-  { code: "IN", name: "India" }, { code: "AE", name: "United Arab Emirates" },
-  { code: "SA", name: "Saudi Arabia" }, { code: "QA", name: "Qatar" },
-  { code: "MA", name: "Morocco" }, { code: "TN", name: "Tunisia" },
-  { code: "DZ", name: "Algeria" }, { code: "EG", name: "Egypt" },
-  { code: "ZA", name: "South Africa" }, { code: "BR", name: "Brazil" },
-  { code: "MX", name: "Mexico" }, { code: "NZ", name: "New Zealand" },
-] as const
 
 const US_STATES = [
   { code: "AL", name: "Alabama" }, { code: "AK", name: "Alaska" },
@@ -178,10 +158,13 @@ export default function AccountPage() {
   const [pwMsg, setPwMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   const [addresses, setAddresses] = useState<Address[]>([])
-  const [newAddr, setNewAddr] = useState({ address: '', address2: '', city: '', state: '', country: '', postalCode: '', notes: '' })
+  const [newAddr, setNewAddr] = useState({ address: '', address2: '', city: '', state: '', country: 'US', postalCode: '', notes: '' })
   const [addrSaving, setAddrSaving] = useState(false)
   const [addrMsg, setAddrMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
   const [showAddrForm, setShowAddrForm] = useState(false)
+  const [deactivatePassword, setDeactivatePassword] = useState('')
+  const [deactivating, setDeactivating] = useState(false)
+  const [deactivateMsg, setDeactivateMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -227,8 +210,7 @@ export default function AccountPage() {
       const res = await fetch('/api/auth/profile', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email.trim() }) })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data?.message || 'Update failed.')
-      setEmailMsg({ type: 'ok', text: 'Email updated successfully.' })
-      if (data.user?.email) setEmail(data.user.email)
+      setEmailMsg({ type: 'ok', text: `Confirmation sent to ${data.requestedEmail}. Your current email remains active until confirmed.` })
     } catch (err: any) { setEmailMsg({ type: 'err', text: err?.message || 'Could not update email.' }) }
     finally { setEmailSaving(false) }
   }
@@ -252,7 +234,7 @@ export default function AccountPage() {
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data?.message || 'Could not add address.')
       setAddresses(prev => [data.item, ...prev])
-      setNewAddr({ address: '', address2: '', city: '', state: '', country: '', postalCode: '', notes: '' })
+      setNewAddr({ address: '', address2: '', city: '', state: '', country: 'US', postalCode: '', notes: '' })
       setShowAddrForm(false)
       setAddrMsg({ type: 'ok', text: 'Address added.' })
     } catch (err: any) { setAddrMsg({ type: 'err', text: err?.message || 'Could not add address.' }) }
@@ -266,6 +248,20 @@ export default function AccountPage() {
       if (!res.ok) return
       setAddresses(prev => prev.filter(a => a.id !== id))
     } catch { /* ignore */ }
+  }
+
+  const handleDeactivate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!confirm('Deactivate your account and sign out?')) return
+    setDeactivating(true); setDeactivateMsg(null)
+    try {
+      const res = await fetch('/api/auth/deactivate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: deactivatePassword }) })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data?.message || 'Could not deactivate account.')
+      router.replace('/')
+      router.refresh()
+    } catch (err: unknown) { setDeactivateMsg({ type: 'err', text: err instanceof Error ? err.message : 'Could not deactivate account.' }) }
+    finally { setDeactivating(false) }
   }
 
   const pageStyle: React.CSSProperties = {
@@ -467,11 +463,7 @@ export default function AccountPage() {
                     <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       Country <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <select className={inputCls} style={inputStyle} value={newAddr.country}
-                      onChange={e => setNewAddr(p => ({ ...p, country: e.target.value, state: '' }))}>
-                      <option value="">Select country...</option>
-                      {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
-                    </select>
+                    <input className={inputCls} style={inputStyle} value="United States" readOnly />
                   </div>
 
                   {/* Address Line 1 */}
@@ -497,20 +489,13 @@ export default function AccountPage() {
                   {/* State */}
                   <div>
                     <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
-                      {newAddr.country === 'US' ? 'State' : 'State / Province / Region'}
-                      {newAddr.country === 'US' && <span style={{ color: '#C62828' }}> *</span>}
+                      State <span style={{ color: '#C62828' }}> *</span>
                     </label>
-                    {newAddr.country === 'US' ? (
-                      <select className={inputCls} style={inputStyle} value={newAddr.state}
+                    <select className={inputCls} style={inputStyle} value={newAddr.state} required
                         onChange={e => setNewAddr(p => ({ ...p, state: e.target.value }))}>
                         <option value="">Select state...</option>
                         {US_STATES.map(s => <option key={s.code} value={s.code}>{s.name}</option>)}
-                      </select>
-                    ) : (
-                      <input className={inputCls} style={inputStyle} value={newAddr.state}
-                        onChange={e => setNewAddr(p => ({ ...p, state: e.target.value }))}
-                        placeholder="State / Province / Region" />
-                    )}
+                    </select>
                   </div>
 
                   {/* City + Postal Code */}
@@ -525,16 +510,14 @@ export default function AccountPage() {
                     </div>
                     <div>
                       <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
-                        {newAddr.country === 'US' ? 'ZIP Code' : 'Postal Code'}
+                        ZIP Code <span style={{ color: '#C62828' }}>*</span>
                       </label>
                       <input className={inputCls} style={inputStyle} value={newAddr.postalCode}
                         onChange={e => {
-                          const v = newAddr.country === 'US'
-                            ? e.target.value.replace(/\D/g, '').slice(0, 5)
-                            : e.target.value.slice(0, 10)
+                          const v = e.target.value.replace(/\D/g, '').slice(0, 5)
                           setNewAddr(p => ({ ...p, postalCode: v }))
                         }}
-                        placeholder={newAddr.country === 'US' ? '10001' : '00000'} />
+                        required inputMode="numeric" pattern="\d{5}" placeholder="10001" />
                     </div>
                   </div>
 
@@ -562,6 +545,20 @@ export default function AccountPage() {
                   </div>
                 </form>
               )}
+            </div>
+          </section>
+
+          <section style={sectionStyle}>
+            <SectionHeader icon={<UserX size={16} />} title="Deactivate Account" />
+            <div className="space-y-4 p-5" style={sectionBodyStyle}>
+              <p className="text-xs font-bold">This blocks future sign-ins and ends your current session. Order records remain for legal and accounting needs.</p>
+              <form onSubmit={handleDeactivate} className="space-y-4">
+                <input type="password" className={inputCls} style={inputStyle} value={deactivatePassword} onChange={e => setDeactivatePassword(e.target.value)} placeholder="Current password" required />
+                <FeedbackMsg msg={deactivateMsg} />
+                <button type="submit" disabled={deactivating} className="border-[3px] border-black bg-red-700 px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.1em] text-white disabled:opacity-40">
+                  {deactivating ? 'Deactivating...' : 'Deactivate Account'}
+                </button>
+              </form>
             </div>
           </section>
 

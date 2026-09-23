@@ -1,8 +1,12 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useStoreSettings } from '@/hooks/useStoreSettings'
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
+import Link from "next/link"
+import { parseShippingPolicy, type ShippingPolicy } from "@/lib/shipping"
+import { mergeGuestCartAfterAuth } from "@/lib/shop/client-api"
 import {
   CreditCard,
   Save,
@@ -54,68 +58,7 @@ const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%
 const GUEST_CART_KEY = "guest_cart"
 const SIGNUP_PROMO_DISMISSED_KEY = "signup_promo_dismissed_v1"
 const DEFAULT_CURRENCY = "USD"
-
-const COUNTRIES = [
-  { code: "US", name: "United States" },
-  { code: "CA", name: "Canada" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "AU", name: "Australia" },
-  { code: "FR", name: "France" },
-  { code: "DE", name: "Germany" },
-  { code: "ES", name: "Spain" },
-  { code: "IT", name: "Italy" },
-  { code: "NL", name: "Netherlands" },
-  { code: "BE", name: "Belgium" },
-  { code: "CH", name: "Switzerland" },
-  { code: "SE", name: "Sweden" },
-  { code: "NO", name: "Norway" },
-  { code: "DK", name: "Denmark" },
-  { code: "FI", name: "Finland" },
-  { code: "PT", name: "Portugal" },
-  { code: "IE", name: "Ireland" },
-  { code: "AT", name: "Austria" },
-  { code: "PL", name: "Poland" },
-  { code: "CZ", name: "Czech Republic" },
-  { code: "HU", name: "Hungary" },
-  { code: "RO", name: "Romania" },
-  { code: "GR", name: "Greece" },
-  { code: "JP", name: "Japan" },
-  { code: "KR", name: "South Korea" },
-  { code: "CN", name: "China" },
-  { code: "HK", name: "Hong Kong" },
-  { code: "SG", name: "Singapore" },
-  { code: "MY", name: "Malaysia" },
-  { code: "TH", name: "Thailand" },
-  { code: "ID", name: "Indonesia" },
-  { code: "PH", name: "Philippines" },
-  { code: "VN", name: "Vietnam" },
-  { code: "IN", name: "India" },
-  { code: "PK", name: "Pakistan" },
-  { code: "BD", name: "Bangladesh" },
-  { code: "AE", name: "United Arab Emirates" },
-  { code: "SA", name: "Saudi Arabia" },
-  { code: "QA", name: "Qatar" },
-  { code: "KW", name: "Kuwait" },
-  { code: "BH", name: "Bahrain" },
-  { code: "OM", name: "Oman" },
-  { code: "TR", name: "Turkey" },
-  { code: "IL", name: "Israel" },
-  { code: "EG", name: "Egypt" },
-  { code: "MA", name: "Morocco" },
-  { code: "TN", name: "Tunisia" },
-  { code: "DZ", name: "Algeria" },
-  { code: "ZA", name: "South Africa" },
-  { code: "NG", name: "Nigeria" },
-  { code: "KE", name: "Kenya" },
-  { code: "GH", name: "Ghana" },
-  { code: "BR", name: "Brazil" },
-  { code: "MX", name: "Mexico" },
-  { code: "AR", name: "Argentina" },
-  { code: "CL", name: "Chile" },
-  { code: "CO", name: "Colombia" },
-  { code: "PE", name: "Peru" },
-  { code: "NZ", name: "New Zealand" },
-] as const
+const CHECKOUT_ATTEMPT_KEY = "checkout_attempt_v1"
 
 const US_STATES = [
   { code: "AL", name: "Alabama" }, { code: "AK", name: "Alaska" },
@@ -195,6 +138,7 @@ function getUnitPrice(product: CartProduct | null): number {
 }
 
 export function CheckoutContent() {
+  const storeSettings = useStoreSettings()
   const router = useRouter()
   const searchParams = useSearchParams()
   const buyNow = searchParams.get("buyNow") === "1"
@@ -204,9 +148,10 @@ export function CheckoutContent() {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
   const [profileEmail, setProfileEmail] = useState("")
 
-  const [country, setCountry] = useState("")
+  const country = "US"
   const [address, setAddress] = useState("")
   const [address2, setAddress2] = useState("")
   const [city, setCity] = useState("")
@@ -216,6 +161,8 @@ export function CheckoutContent() {
 
   const [isNavbarVisible, setIsNavbarVisible] = useState(true)
   const lastScrollYRef = useRef(0)
+  const checkoutAttemptRef = useRef<string | null>(null)
+  const cancelHandledRef = useRef(false)
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [authUserId, setAuthUserId] = useState<string | null>(null)
@@ -229,6 +176,47 @@ export function CheckoutContent() {
   const [isPromoBannerVisible, setIsPromoBannerVisible] = useState(false)
   const [orderFlowStage, setOrderFlowStage] = useState<"idle" | "loading" | "success">("idle")
   const [stripeConfigured, setStripeConfigured] = useState(false)
+  const [shippingPolicy, setShippingPolicy] = useState<ShippingPolicy | null>(null)
+  const [shippingError, setShippingError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (searchParams.get("cancelled") !== "1" || cancelHandledRef.current) return
+    cancelHandledRef.current = true
+    const orderId = searchParams.get("orderId") ?? ""
+    if (!/^[A-Za-z0-9]{15}$/.test(orderId)) {
+      void Promise.resolve().then(() => setOrderError("Payment was cancelled. Your cart is unchanged."))
+      return
+    }
+    void fetch(`/api/shop/orders/${encodeURIComponent(orderId)}/cancel`, { method: "POST" })
+      .then(async response => {
+        if (response.ok) {
+          window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY)
+          checkoutAttemptRef.current = null
+          void mergeGuestCartAfterAuth()
+          setOrderError("Payment was cancelled. Your cart is unchanged and ready to retry.")
+        } else {
+          setOrderError("Payment cancellation is being confirmed. Your cart is unchanged.")
+        }
+      })
+      .catch(() => setOrderError("Payment cancellation is being confirmed. Your cart is unchanged."))
+  }, [searchParams])
+
+  async function loadShipping() {
+    setShippingError(null)
+    try {
+      const response = await fetch("/api/shop/shipping", { cache: "no-store" })
+      if (!response.ok) throw new Error("Shipping unavailable")
+      const data = await response.json()
+      setShippingPolicy(parseShippingPolicy(data.policy))
+    } catch {
+      setShippingPolicy(null)
+      setShippingError("Shipping is temporarily unavailable. Please try again.")
+    }
+  }
+
+  // Fetch callback owns shipping request state; running once on mount is intentional.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void loadShipping() }, [])
 
   useEffect(() => {
     const threshold = 8
@@ -320,11 +308,15 @@ export function CheckoutContent() {
     const dismissedUntil = dismissedUntilRaw ? Number(dismissedUntilRaw) : 0
     const isDismissed =
       !!dismissedUntilRaw && Number.isFinite(dismissedUntil) && Date.now() < dismissedUntil
+    // Visibility depends on browser-only persisted dismissal state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsPromoBannerVisible(!isLoggedIn && !isDismissed)
   }, [isLoggedIn])
 
   useEffect(() => {
     if (!isLoggedIn) {
+      // Clear account-owned addresses immediately after sign-out.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAddresses([])
       setSelectedAddressId("new")
       return
@@ -378,12 +370,19 @@ export function CheckoutContent() {
     if (selectedAddressId === "new") return
     const selected = addresses.find((a) => a.id === selectedAddressId)
     if (!selected) return
+    if (selected.country && selected.country.toUpperCase() !== "US") {
+      // Reject a persisted legacy non-US address before copying it into checkout.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setOrderError("Please enter a US delivery address.")
+      setSelectedAddressId("new")
+      return
+    }
     setAddress(selected.address || "")
     setAddress2(selected.address2 || "")
     setCity(selected.city || "")
     setPostalCode(selected.postalCode || "")
     setNotes(selected.notes || "")
-    setCountry(selected.country || "")
+
     setState(selected.state || "")
   }, [addresses, selectedAddressId])
 
@@ -506,7 +505,7 @@ export function CheckoutContent() {
     [cartItems]
   )
   const cartCurrency = "USD"
-  const shipping = cartItems.length > 0 ? (country === "US" ? 5 : country ? 20 : 0) : 0
+  const shipping = cartItems.length > 0 && shippingPolicy ? shippingPolicy.rateCents / 100 : 0
   const cartTotal = cartSubtotal + shipping
 
   const canSaveAddress = useMemo(() => {
@@ -699,7 +698,12 @@ export function CheckoutContent() {
   const handleConfirmOrder = async () => {
     setOrderError(null)
 
-    if (!firstName.trim() || !lastName.trim()) {
+    if (!shippingPolicy) {
+      setOrderError("Shipping is unavailable. Please reload the shipping rate before continuing.")
+      return
+    }
+
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
       setOrderError("Please fill in your contact information.")
       return
     }
@@ -738,6 +742,7 @@ export function CheckoutContent() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
+        phone: phone.trim(),
         country: country.trim(),
         address: address.trim(),
         address2: address2.trim(),
@@ -745,64 +750,60 @@ export function CheckoutContent() {
         state: state.trim(),
         postalCode: postalCode.trim(),
         notes: notes.trim(),
-        shipping,
+        shippingVersion: shippingPolicy.version,
         items: itemsPayload,
-        total: cartTotal,
         currency: cartCurrency,
+      }
+
+      const payloadSignature = JSON.stringify(orderPayload)
+      let checkoutAttemptKey = checkoutAttemptRef.current
+      if (typeof window !== "undefined" && !checkoutAttemptKey) {
+        try {
+          const stored = JSON.parse(window.sessionStorage.getItem(CHECKOUT_ATTEMPT_KEY) || "null")
+          if (stored?.payload === payloadSignature && typeof stored?.key === "string") checkoutAttemptKey = stored.key
+        } catch { /* Start a fresh attempt below. */ }
+      }
+      if (!checkoutAttemptKey) checkoutAttemptKey = crypto.randomUUID()
+      checkoutAttemptRef.current = checkoutAttemptKey
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(CHECKOUT_ATTEMPT_KEY, JSON.stringify({ key: checkoutAttemptKey, payload: payloadSignature }))
       }
 
       const orderRes = await fetch("/api/shop/stripe/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": checkoutAttemptKey,
+        },
         body: JSON.stringify(orderPayload),
       })
       const orderData = await orderRes.json().catch(() => ({}))
       if (!orderRes.ok) {
+        if (orderData?.resetCheckoutAttempt === true) {
+          checkoutAttemptRef.current = null
+          if (typeof window !== "undefined") window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY)
+        }
+        if (orderRes.status === 409 && orderData.policy) {
+          setShippingPolicy(parseShippingPolicy(orderData.policy))
+        }
+        if (orderRes.status === 503) {
+          setShippingPolicy(null)
+          setShippingError("Shipping is temporarily unavailable. Please try again.")
+        }
         throw new Error(orderData?.message || "Checkout failed. Please try again.")
+      }
+      if (typeof window !== "undefined" && typeof orderData?.orderId === "string") {
+        window.sessionStorage.setItem(CHECKOUT_ATTEMPT_KEY, JSON.stringify({ key: checkoutAttemptKey, payload: payloadSignature, orderId: orderData.orderId }))
       }
 
       // Stripe redirect
       if (typeof orderData?.url === "string" && orderData.url) {
-        if (!buyNow) {
-          if (isLoggedIn) {
-            await Promise.allSettled(
-              cartItems
-                .filter((it) => it.source === "pb")
-                .map((it) =>
-                  fetch(`/api/shop/cart?itemId=${encodeURIComponent(it.id)}`, { method: "DELETE" })
-                )
-            )
-          } else {
-            setGuestCart([])
-          }
-        }
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(new Event("cart:updated"))
-        }
         window.location.href = orderData.url
         return
       }
 
       // Test mode
       const createdOrderId = typeof orderData?.orderId === "string" ? orderData.orderId : ""
-
-      if (!buyNow) {
-        if (isLoggedIn) {
-          await Promise.allSettled(
-            cartItems
-              .filter((it) => it.source === "pb")
-              .map((it) =>
-                fetch(`/api/shop/cart?itemId=${encodeURIComponent(it.id)}`, { method: "DELETE" })
-              )
-          )
-        } else {
-          setGuestCart([])
-        }
-      }
-
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("cart:updated"))
-      }
 
       await new Promise((resolve) => window.setTimeout(resolve, 1000))
       setOrderFlowStage("success")
@@ -918,11 +919,19 @@ export function CheckoutContent() {
                     <input type="text" className={inputCls} style={inputStyle} placeholder="Smith" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                   </div>
                 </div>
-                <div>
-                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
-                    Email
-                  </label>
-                  <input type="email" className={inputCls} style={inputStyle} placeholder="you@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => { void syncEmailToProfile(false) }} />
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                      Email <span style={{ color: '#C62828' }}>*</span>
+                    </label>
+                    <input type="email" autoComplete="email" required className={inputCls} style={inputStyle} placeholder="you@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => { void syncEmailToProfile(false) }} />
+                  </div>
+                  <div>
+                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                      Phone <span style={{ color: 'rgba(0,0,0,0.25)' }}>(optional)</span>
+                    </label>
+                    <input type="tel" autoComplete="tel" className={inputCls} style={inputStyle} placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  </div>
                 </div>
               </div>
             </section>
@@ -965,15 +974,8 @@ export function CheckoutContent() {
                   <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Country <span style={{ color: '#C62828' }}>*</span>
                   </label>
-                  <select className={inputCls} style={inputStyle} value={country} onChange={(e) => { setCountry(e.target.value); setState("") }}>
-                    <option value="">Select country...</option>
-                    {COUNTRIES.map((c) => (<option key={c.code} value={c.code}>{c.name}</option>))}
-                  </select>
-                  {country && (
-                    <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: country === "US" ? '#2E7D32' : 'rgba(0,0,0,0.4)' }}>
-                      {country === "US" ? "Shipping: $5.00" : "International shipping: $20.00"}
-                    </p>
-                  )}
+                  <p className={inputCls} style={inputStyle}>United States</p>
+                  <p className="mt-1.5 text-xs text-black/60">US delivery only. {shippingPolicy ? `Shipping: $${(shippingPolicy.rateCents / 100).toFixed(2)} per order.` : shippingError ? "Shipping is temporarily unavailable." : "Loading shipping rate…"}</p>
                 </div>
 
                 <div>
@@ -1096,9 +1098,9 @@ export function CheckoutContent() {
                       <div className="m-auto mt-[2px] h-1.5 w-1.5 bg-black" style={{ borderRadius: '50%' }} />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-[11px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>Test Mode</span>
+                      <span className="text-[11px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>Payments unavailable</span>
                       <span className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.4)' }}>
-                        No payment processor configured. Orders placed in test mode.
+                        Card checkout is temporarily unavailable. Please try again later.
                       </span>
                     </div>
                   </div>
@@ -1205,29 +1207,42 @@ export function CheckoutContent() {
                 <div className="flex justify-between">
                   <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}>Shipping</span>
                   <span className="text-sm font-black" style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}>
-                    {country ? `+$${shipping.toFixed(2)}` : "Select country"}
+                    {shippingPolicy ? `+$${shipping.toFixed(2)}` : shippingError ? "Unavailable" : "Loading…"}
                   </span>
                 </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.4)' }}>Sales tax</span>
+                  <span className="text-right text-[10px] font-black uppercase" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.55)' }}>Calculated by Stripe</span>
+                </div>
                 <div className="flex items-end justify-between border-t-[2px] border-black/10 pt-3">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>Total</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}>Before tax</span>
                   <span
                     className="text-2xl font-black tracking-tighter"
                     style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
                   >
-                    ${cartTotal.toFixed(2)}
+                    {shippingPolicy ? `$${cartTotal.toFixed(2)}` : "—"}
                   </span>
                 </div>
               </div>
 
+              {storeSettings.firstOrderDiscountEnabled && <p className="px-5 pb-4 text-sm text-black">
+                Eligible verified accounts receive {storeSettings.firstOrderDiscountPercent}% off regular-price items on their first paid order. Any eligible discount is applied on the payment page; the estimate above is before this offer.
+              </p>}
+              <p className="px-5 pb-4 text-sm text-black"><Link href="/policies/terms" className="underline">Terms of sale</Link> · <Link href="/policies/returns" className="underline">Returns</Link> · <Link href="/policies/privacy" className="underline">Privacy</Link></p>
+              {shippingError && <div role="alert" className="px-5 pb-4 text-sm text-red-700">
+                <p>{shippingError}</p>
+                <button type="button" onClick={() => void loadShipping()} className="mt-2 font-semibold underline">Retry shipping rate</button>
+              </div>}
+
               {/* Confirm button */}
               <div className="px-5 pb-5">
                 <button
-                  disabled={isPlacingOrder || cartItems.length === 0 || !isRequiredFieldsValid}
+                  disabled={!stripeConfigured || isPlacingOrder || !shippingPolicy || cartItems.length === 0 || !isRequiredFieldsValid}
                   onClick={handleConfirmOrder}
                   className="relative w-full cursor-pointer border-[3px] border-black py-3.5 text-sm font-black uppercase italic tracking-[0.1em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#111] disabled:cursor-not-allowed disabled:opacity-40"
                   style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '3px 3px 0 #111', borderRadius: '2px' }}
                 >
-                  {isPlacingOrder ? "Processing..." : stripeConfigured ? "Pay with Stripe →" : "Place Test Order →"}
+                  {isPlacingOrder ? "Processing..." : stripeConfigured ? "Pay with Stripe →" : "Payments unavailable"}
                 </button>
                 <p className="mt-2.5 text-center text-[9px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.3)' }}>
                   *Taxes are calculated at checkout*

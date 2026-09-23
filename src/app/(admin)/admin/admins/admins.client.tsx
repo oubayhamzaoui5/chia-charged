@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { Search, CheckCircle2, XCircle, ShieldCheck, Download, UserPlus, KeyRound } from 'lucide-react'
 import type { AdminUser } from '../users/page'
-import { createAdminUserAction, resetAdminPasswordAction } from '../users/actions'
+import { createAdminUserAction, sendAdminPasswordResetAction } from '../users/actions'
 import { useAdminToast } from '@/components/admin/AdminToast'
 
 export default function AdminsClient({
@@ -18,7 +18,6 @@ export default function AdminsClient({
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [surname, setSurname] = useState('')
-  const [password, setPassword] = useState('')
   const [creating, setCreating] = useState(false)
   const [resettingId, setResettingId] = useState<string | null>(null)
   const { toast, ToastContainer } = useAdminToast()
@@ -81,19 +80,18 @@ export default function AdminsClient({
   async function handleCreateAdmin(e: React.FormEvent) {
     e.preventDefault()
     if (!canManageAdmins) {
-      toast('Only admin@admin.com can add admins.', 'error')
+      toast('Admin Manager permission required.', 'error')
       return
     }
 
     setCreating(true)
     try {
-      const created = await createAdminUserAction({ email, name, surname, password })
+      const created = await createAdminUserAction({ email, name, surname })
       setAdmins((prev) => [created, ...prev])
       setEmail('')
       setName('')
       setSurname('')
-      setPassword('')
-      toast('Admin created successfully.', 'success')
+      toast(created.invitationSent ? 'Admin created. Password setup link sent.' : 'Admin created. Email delivery is not configured yet.', created.invitationSent ? 'success' : 'error')
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to create admin.'
       toast(message, 'error')
@@ -104,17 +102,14 @@ export default function AdminsClient({
 
   async function handleResetPassword(admin: AdminUser) {
     if (!canManageAdmins) {
-      toast('Only admin@admin.com can reset admin passwords.', 'error')
+      toast('Admin Manager permission required.', 'error')
       return
     }
 
-    const nextPassword = window.prompt(`Enter new password for ${admin.email}`)
-    if (!nextPassword) return
-
     setResettingId(admin.id)
     try {
-      await resetAdminPasswordAction(admin.id, nextPassword)
-      toast('Admin password reset successfully.', 'success')
+      await sendAdminPasswordResetAction(admin.id)
+      toast('Password reset link sent.', 'success')
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to reset password.'
       toast(message, 'error')
@@ -144,10 +139,10 @@ export default function AdminsClient({
         </div>
         {!canManageAdmins && (
           <p className="mb-3 text-xs font-medium text-amber-700">
-            Only `admin@admin.com` can create admins or reset passwords.
+            Admin Manager permission is required to create admins or send password reset links.
           </p>
         )}
-        <form onSubmit={handleCreateAdmin} className="grid grid-cols-1 gap-3 md:grid-cols-4">
+        <form onSubmit={handleCreateAdmin} className="grid grid-cols-1 gap-3 md:grid-cols-3">
           <input
             type="email"
             required
@@ -178,20 +173,10 @@ export default function AdminsClient({
             className="rounded-xl px-3 py-2.5 text-sm outline-none disabled:opacity-60"
             style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#111827' }}
           />
-          <input
-            type="password"
-            required
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={!canManageAdmins || creating}
-            className="rounded-xl px-3 py-2.5 text-sm outline-none disabled:opacity-60"
-            style={{ border: '1px solid #E8EAED', background: '#FFFFFF', color: '#111827' }}
-          />
           <button
             type="submit"
             disabled={!canManageAdmins || creating}
-            className="md:col-span-4 inline-flex items-center justify-center rounded-xl bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA] disabled:cursor-not-allowed disabled:opacity-60"
+            className="md:col-span-3 inline-flex items-center justify-center rounded-xl bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4338CA] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {creating ? 'Creating...' : 'Create Admin'}
           </button>
@@ -287,7 +272,7 @@ export default function AdminsClient({
                       onClick={() => handleResetPassword(admin)}
                       disabled={!canManageAdmins || resettingId === admin.id}
                       className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
-                      title={canManageAdmins ? 'Reset admin password' : 'Only admin@admin.com can reset password'}
+                      title={canManageAdmins ? 'Send password reset link' : 'Admin Manager permission required'}
                     >
                       <KeyRound size={12} />
                       {resettingId === admin.id ? 'Resetting...' : 'Reset Password'}

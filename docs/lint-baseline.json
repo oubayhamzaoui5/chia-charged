@@ -1,0 +1,2682 @@
+{
+  "d268f1b5ea13ae323971a2f31f398dcb917e260ea1d69ba0eda796f3d82ea774": {
+    "key": [
+      "public/admin-order-notifications-sw.js",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'_' is defined but never used.",
+      "} catch (_) {"
+    ],
+    "count": 1
+  },
+  "51b27f190d333b925d6f94ada87f7ee1004a8dbf0ac7faca823158b8bcea72a9": {
+    "key": [
+      "scripts/migrate-slugs.cjs",
+      null,
+      1,
+      "Unused eslint-disable directive (no problems were reported from 'no-console').",
+      "/* eslint-disable no-console */"
+    ],
+    "count": 1
+  },
+  "d457b56b1fe6b5d57f98cdec1ad52ed2a5f5653725f98d5128a7361c14fe653d": {
+    "key": [
+      "scripts/seed-posts.cjs",
+      null,
+      1,
+      "Unused eslint-disable directive (no problems were reported from 'no-console').",
+      "/* eslint-disable no-console */"
+    ],
+    "count": 1
+  },
+  "e069c13dcec3234783d248c7d7814718b67599f8b471392690324604494bfcca": {
+    "key": [
+      "src/app/(admin)/admin/admins/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 1
+  },
+  "c90db5d25cda525d3902aef93d522ca95b0f60980ed4c97f350f8a4aafe79511": {
+    "key": [
+      "src/app/(admin)/admin/admins/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "return res.map((r: any) => ({"
+    ],
+    "count": 1
+  },
+  "35c3a94b656d1a457cb758191ba62d36777a07e798e642d54ae813d6d957f1f1": {
+    "key": [
+      "src/app/(admin)/admin/blog/_components/post-form.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img src={src} alt={altText} className=\"block h-auto w-full rounded-xl\" />"
+    ],
+    "count": 1
+  },
+  "55fde9fb0cc3b930e832934b3b6902d0c3a97516f036b0cd3f5bde5fea08a410": {
+    "key": [
+      "src/app/(admin)/admin/blog/_components/post-form.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img src={coverImagePreview} alt=\"Cover preview\" className=\"h-full w-full object-cover\" />"
+    ],
+    "count": 1
+  },
+  "281318a9662ea890fa5dd9c5242d53c35f791e8daa59dd844b931e074b1bde4c": {
+    "key": [
+      "src/app/(admin)/admin/blog/page.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img src={post.coverImage} alt={post.title} className=\"h-full w-full object-cover\" />"
+    ],
+    "count": 1
+  },
+  "c5649e7cb9859329a6a32f7be813c33690dfbae837073d2518f530917845829d": {
+    "key": [
+      "src/app/(admin)/admin/dashboard/actions.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "records.map((r: any) => r.visitorId).filter(Boolean)"
+    ],
+    "count": 1
+  },
+  "77f4144bdc2a365ea1dfefb71d4ef20277cc79c0848897d41cf048999e3a5887": {
+    "key": [
+      "src/app/(admin)/admin/dashboard/actions.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (filterErr: any) {"
+    ],
+    "count": 1
+  },
+  "45ec1caf9b80bb7eb95f07f217e2f82d724ac72d05b00d629e0fb3619d0eb7bf": {
+    "key": [
+      "src/app/(admin)/admin/dashboard/actions.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "for (const record of batch.items as any[]) {"
+    ],
+    "count": 1
+  },
+  "f0af470f13d55501ee415bea9eb9d607944fee6061c9c1b6212670fc2e19c7fd": {
+    "key": [
+      "src/app/(admin)/admin/dashboard/actions.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const e = err as any"
+    ],
+    "count": 1
+  },
+  "20f355c93a8965e57d82ebb75d1a95a9857615b8bd84a2519de117b6ac8f5d0b": {
+    "key": [
+      "src/app/(admin)/admin/inventory/inventory.client.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "8376b097d9e5b429ccc46f866abe6280aaf97ef0aceebb98d4e8ad4acfe030d0": {
+    "key": [
+      "src/app/(admin)/admin/keys/keys.client.tsx",
+      "react-hooks/static-components",
+      2,
+      "Error: Cannot create components during render\n\nComponents created during render will reset their state each time they are created. Declare components outside of render.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\(admin)\\admin\\keys\\keys.client.tsx:275:14\n  273 |\n  274 |           <div className=\"px-6 py-5\">\n> 275 |             <StatusBanner status={googleStatus} />\n      |              ^^^^^^^^^^^^ This component is created during render\n  276 |\n  277 |             {isGoogleConfigured && maskedGoogleId && (\n  278 |               <div className=\"mb-5 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3\">\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\(admin)\\admin\\keys\\keys.client.tsx:188:3\n  186 |     'w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 placeholder:text-slate-400 font-mono'\n  187 |\n> 188 |   function StatusBanner({ status }: { status: { type: 'success' | 'warning' | 'error'; msg: string } | null }) {\n      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 189 |     if (!status) return null\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 190 |     return (\n      …\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 207 |     )\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 208 |   }\n      | ^^^^ The component is created during render here\n  209 |\n  210 |   return (\n  211 |     <div className=\"min-h-screen p-6 md:p-8\">",
+      "<StatusBanner status={googleStatus} />"
+    ],
+    "count": 1
+  },
+  "cc9f29f5b07f47a54418a362fb098bb02fb770207e4068536eca2ac42c94b6d1": {
+    "key": [
+      "src/app/(admin)/admin/keys/keys.client.tsx",
+      "react-hooks/static-components",
+      2,
+      "Error: Cannot create components during render\n\nComponents created during render will reset their state each time they are created. Declare components outside of render.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\(admin)\\admin\\keys\\keys.client.tsx:403:14\n  401 |\n  402 |           <div className=\"px-6 py-5\">\n> 403 |             <StatusBanner status={stripeStatus} />\n      |              ^^^^^^^^^^^^ This component is created during render\n  404 |\n  405 |             {isStripeConfigured && maskedStripePk && (\n  406 |               <div className=\"mb-5 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3\">\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\(admin)\\admin\\keys\\keys.client.tsx:188:3\n  186 |     'w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 placeholder:text-slate-400 font-mono'\n  187 |\n> 188 |   function StatusBanner({ status }: { status: { type: 'success' | 'warning' | 'error'; msg: string } | null }) {\n      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 189 |     if (!status) return null\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 190 |     return (\n      …\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 207 |     )\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 208 |   }\n      | ^^^^ The component is created during render here\n  209 |\n  210 |   return (\n  211 |     <div className=\"min-h-screen p-6 md:p-8\">",
+      "<StatusBanner status={stripeStatus} />"
+    ],
+    "count": 1
+  },
+  "0b6ed8ed1795c839f9c337858ed4b5577002658fb873acb23bb28e770522182c": {
+    "key": [
+      "src/app/(admin)/admin/keys/keys.client.tsx",
+      "react-hooks/static-components",
+      2,
+      "Error: Cannot create components during render\n\nComponents created during render will reset their state each time they are created. Declare components outside of render.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\(admin)\\admin\\keys\\keys.client.tsx:526:14\n  524 |\n  525 |           <div className=\"px-6 py-5\">\n> 526 |             <StatusBanner status={metaStatus} />\n      |              ^^^^^^^^^^^^ This component is created during render\n  527 |\n  528 |             {isMetaConfigured && maskedMetaId && (\n  529 |               <div className=\"mb-5 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3\">\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\(admin)\\admin\\keys\\keys.client.tsx:188:3\n  186 |     'w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 placeholder:text-slate-400 font-mono'\n  187 |\n> 188 |   function StatusBanner({ status }: { status: { type: 'success' | 'warning' | 'error'; msg: string } | null }) {\n      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 189 |     if (!status) return null\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 190 |     return (\n      …\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 207 |     )\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 208 |   }\n      | ^^^^ The component is created during render here\n  209 |\n  210 |   return (\n  211 |     <div className=\"min-h-screen p-6 md:p-8\">",
+      "<StatusBanner status={metaStatus} />"
+    ],
+    "count": 1
+  },
+  "43a7a3618dfd9dc9a70f3ca63d081b4b9fdc9d70bd10a5d96e038f17a94f86ce": {
+    "key": [
+      "src/app/(admin)/admin/orders/orders.client.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "7cf8c4a52c66cb487337f7ea9dc6192e6a39de29ef6741ddca75c41a00e77126": {
+    "key": [
+      "src/app/(admin)/admin/products/products.client.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "variables: any[]"
+    ],
+    "count": 1
+  },
+  "4a1984e1084963bcb9dce84c062d27cd0f36e0bf852a245e7b10f67ba537e8a2": {
+    "key": [
+      "src/app/(admin)/admin/products/products.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'create' is assigned a value but never used.",
+      "create,"
+    ],
+    "count": 1
+  },
+  "5866073387a139a5f1e8d0f18c372dc8552a708c22c3fd80131c493305a694fd": {
+    "key": [
+      "src/app/(admin)/admin/products/products.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'setImageIndexes' is assigned a value but never used.",
+      "const [imageIndexes, setImageIndexes] = useState<Record<ID, number>>({})"
+    ],
+    "count": 1
+  },
+  "40c560381760dd860b42ebd498e7afb6444222ea6204dc9962a7483fa10ed701": {
+    "key": [
+      "src/app/(admin)/admin/users/actions.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 3
+  },
+  "b2a0d691f8baf80112460972b8319401c0d278e9cdf7d36c8a502e276634b187": {
+    "key": [
+      "src/app/(admin)/admin/users/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 1
+  },
+  "6efc049d0929d31042f9095236b747e2944adf367baf5016050676764a957a3f": {
+    "key": [
+      "src/app/(admin)/admin/users/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "return res.map((r: any) => ({"
+    ],
+    "count": 1
+  },
+  "3f3514b74d565ee2dd6c1c72aee146124e36bb16387ea1982f8d89a7f665fb42": {
+    "key": [
+      "src/app/(admin)/admin/variables/variables.client.tsx",
+      "jsx-a11y/alt-text",
+      1,
+      "Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.",
+      "<Image className=\"h-5 w-5 text-blue-600\" />"
+    ],
+    "count": 1
+  },
+  "879bce51813342da4ff09fdfd16352832eb5bb8fba83c89d63b040986395557d": {
+    "key": [
+      "src/app/(admin)/admin/variables/variables.client.tsx",
+      "jsx-a11y/alt-text",
+      1,
+      "Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.",
+      "<Image className=\"mx-auto mb-3 h-12 w-12 text-slate-300\" />"
+    ],
+    "count": 1
+  },
+  "e4c529f7d105e30727f90e08fabb41680eb5a026124917ac942e6c03b7a1a001": {
+    "key": [
+      "src/app/(admin)/admin/variables/variables.client.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "9f04cc164ca50638458d9ab3324f35f5b42b99c9fa65fb3074924ee6e7a96b53": {
+    "key": [
+      "src/app/about/about.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'Link' is defined but never used.",
+      "import Link from \"next/link\""
+    ],
+    "count": 1
+  },
+  "2ece22d4d9c207e2bb9442d460a3cd35db2b90062e877c321e1bb9f011156121": {
+    "key": [
+      "src/app/about/about.client.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "wanted something that felt like a real meal, packed serious protein, and didn't"
+    ],
+    "count": 1
+  },
+  "6bfb0c3c8e1785c8634535659a6238a077167e687cb2593192215ad5bfb26c05": {
+    "key": [
+      "src/app/about/about.client.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "The answer didn't come from a nutrition lab — it came from our own kitchen. One"
+    ],
+    "count": 1
+  },
+  "0781bf7bf0910438858f6be88c5bbc69a8bca3b1d249a01200dbbd6a7018754d": {
+    "key": [
+      "src/app/about/about.client.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "seeds, quality MCT oil, and natural flavors we actually loved. Chia Charged wasn't"
+    ],
+    "count": 1
+  },
+  "b0faa8c182b964243a56aac9ab3cacc56c0ab43a2b84fdba1468ecff3508c6be": {
+    "key": [
+      "src/app/about/about.client.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.",
+      "\"We believe great nutrition."
+    ],
+    "count": 1
+  },
+  "a7914675e5a52fee7d0558780afa3a45be3001c8067729fb903436b0d66c117a": {
+    "key": [
+      "src/app/about/about.client.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "shouldn't taste like{\" \"}"
+    ],
+    "count": 1
+  },
+  "28d7e8c52e4c6e6b7b1463b53cd9284d84154aa7e9131420fc1ccc0b51d717ae": {
+    "key": [
+      "src/app/about/about.client.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.",
+      "punishment.\""
+    ],
+    "count": 1
+  },
+  "3bde0874c1ee970f060e5a462b696450cfee1f86b16169efd37288445962a0df": {
+    "key": [
+      "src/app/account/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) { setInfoMsg({ type: 'err', text: err?.message || 'Could not update profile.' }) }"
+    ],
+    "count": 1
+  },
+  "416002bfa1c1af7d1aadf7981bf47d2ddbb5da1db19a436411fce5813a379363": {
+    "key": [
+      "src/app/account/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) { setEmailMsg({ type: 'err', text: err?.message || 'Could not update email.' }) }"
+    ],
+    "count": 1
+  },
+  "d756086e314da4e20e5ed2860f7896622b2fba4c7eb53d3c090e78f0060eb984": {
+    "key": [
+      "src/app/account/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) { setPwMsg({ type: 'err', text: err?.message || 'Could not change password.' }) }"
+    ],
+    "count": 1
+  },
+  "2e724a4ad68efb2cea8dfd2306db684cebad0ccc806593612d7371d34b53fb47": {
+    "key": [
+      "src/app/account/page.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) { setAddrMsg({ type: 'err', text: err?.message || 'Could not add address.' }) }"
+    ],
+    "count": 1
+  },
+  "51a37c11b1af961889ebfabe7aafa13f57be6d7710ad8a466f64833ab3582339": {
+    "key": [
+      "src/app/api/admin/orders/latest/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} as any)"
+    ],
+    "count": 1
+  },
+  "5660027f865bcbf013f24d48d7c22eeb244d7c78416b40c73e69fcc90d73b170": {
+    "key": [
+      "src/app/api/admin/push-subscriptions/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "166afd691aedb898a9f173e1ce44b40f7d1c6c9604237e1b75ad5718afb17816": {
+    "key": [
+      "src/app/api/auth/confirm-reset/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "485e20c73c8d7091d9a2a00f6db20563fe9bb108231f715c29fd4599a67bdd7a": {
+    "key": [
+      "src/app/api/auth/login/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 2
+  },
+  "969fb0bf2b1491b75bf23f44873105fd8d95cc2a74d877b502efb352e4e99a64": {
+    "key": [
+      "src/app/api/auth/oauth/google/route.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'_req' is defined but never used.",
+      "export async function GET(_req: NextRequest) {"
+    ],
+    "count": 1
+  },
+  "1f5d3e0a6343a34696f71d3893d78fb4709d6b5613082185c7b37ecaa5291857": {
+    "key": [
+      "src/app/api/auth/password/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 1
+  },
+  "427f8da2fb344dd73b89a40cf4749b51e5246d6d7b6b996dac75f70e7309e4c0": {
+    "key": [
+      "src/app/api/auth/password/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "d0189a92e4cae8052e6c1eabd52a99589f519148b68d0abf0c658737a81a798b": {
+    "key": [
+      "src/app/api/auth/profile/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "function extractPocketBaseMessage(error: any) {"
+    ],
+    "count": 1
+  },
+  "8748dd3301df4af07a56ad1fae8fa83817bea8ea3f1b0c27536b54473dba6254": {
+    "key": [
+      "src/app/api/auth/profile/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 1
+  },
+  "9f0dff71d560845560e030d091dd589a34b2eb6c5fc66c29ea0e0ca3582ec1ea": {
+    "key": [
+      "src/app/api/auth/profile/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "0873aee173c0413ceaadc663f4f811cdf14b246483c0409eb5a803aebf4351d4": {
+    "key": [
+      "src/app/api/auth/register/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "f68486ce4f2992229aa944d78ce3452b47c6e7aa03db4b9a2be79d25c079e508": {
+    "key": [
+      "src/app/api/auth/sync/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(body.token, body.user as any)"
+    ],
+    "count": 1
+  },
+  "dd278f79c42b1040c27b2ab8ed7f025dfe58c1bfb36bca8aba8166733f6155a8": {
+    "key": [
+      "src/app/api/auth/sync/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "55e137f38cfc6c55d6c48392a5b9093075d437c87e87c6c5e99a3ebe4395f016": {
+    "key": [
+      "src/app/api/auth/update-info/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 1
+  },
+  "833545ade78f1aa25b6d45c5247957e47991eafd5862ec2f4e1042942075f4b1": {
+    "key": [
+      "src/app/api/auth/update-info/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "ee3176167209916c4d53607c5374a37e90a17add3dc85e25e81d21b66465e4e3": {
+    "key": [
+      "src/app/api/pb-files/[collection]/[recordId]/[filename]/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "if (session?.user.role === 'admin') catalog.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 1
+  },
+  "3665fdfc5c5e40a20a50b099c08ee25bff66729b236c6be36f259b1f65c5006a": {
+    "key": [
+      "src/app/api/shop/addresses/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(session.token, session.user as any)"
+    ],
+    "count": 3
+  },
+  "4bbc468b4436853e3e491ec396fb5dc9cb6a8159ccddae31497fe84b55ea8bd2": {
+    "key": [
+      "src/app/api/shop/addresses/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const items = rows.map((row: any) => ({"
+    ],
+    "count": 1
+  },
+  "57acf9ae897878f005f2589f03ce59d84b2303b2da6c5f57c07d0fb19dd4530f": {
+    "key": [
+      "src/app/api/shop/addresses/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 3
+  },
+  "ecba8726efe301092f9400f5fadb43d989b0ab7d941e449eb27e1db4def8110b": {
+    "key": [
+      "src/app/api/shop/cart/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 2
+  },
+  "395c820d1351e3ce90310c374d44f6dfb985aaae169d29c039935e975b90a7c9": {
+    "key": [
+      "src/app/api/shop/orders/[id]/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "d65ffd550d0200a0ed79ca2be52aab053b82c21afa68a80d2359f7075a979c20": {
+    "key": [
+      "src/app/api/shop/orders/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "5503a1c6f35f449e0602d53a8f855f05db86af3d164a4a92e940b904f2e57f47": {
+    "key": [
+      "src/app/api/shop/products/id/[id]/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "function normalizeProduct(record: any) {"
+    ],
+    "count": 1
+  },
+  "3c5d98fff9b35b505b5e5fc72789013cf074f762ed42ae64019afbd855a995e2": {
+    "key": [
+      "src/app/api/shop/stripe/checkout/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) {"
+    ],
+    "count": 1
+  },
+  "a2b31a85973aa5d00af69e8613e3ce0e9130103b8a247f4808e993cbc31d0eef": {
+    "key": [
+      "src/app/api/shop/stripe/webhook/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "let event: any"
+    ],
+    "count": 1
+  },
+  "93a84e4c12ac21c0bcc90bf4e6aa06324951f75d2a268ab67fe76e604945af03": {
+    "key": [
+      "src/app/api/shop/stripe/webhook/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) {"
+    ],
+    "count": 2
+  },
+  "3ee54e06278042a0d3df54f552fcaa5447a88a6b1fe25a5ea59c16737ea64ab9": {
+    "key": [
+      "src/app/api/shop/stripe/webhook/route.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const stockMap = new Map(products.map((p: any) => [p.id as string, p.stock as number]))"
+    ],
+    "count": 1
+  },
+  "4cd03769b5d7db77a4894d892e3540050a39cdb76f12971579a3bd295c6100a4": {
+    "key": [
+      "src/app/checkout/confirmation/page.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\checkout\\confirmation\\page.tsx:231:7\n  229 |   useEffect(() => {\n  230 |     if (!orderId) {\n> 231 |       setError('Missing order ID.')\n      |       ^^^^^^^^ Avoid calling setState() directly within an effect\n  232 |       setLoading(false)\n  233 |       return\n  234 |     }",
+      "setError('Missing order ID.')"
+    ],
+    "count": 1
+  },
+  "066dc4cc340f1b9f3895dbeeb7bd3c460c93fca51cbce183b244e2f0cba7cec7": {
+    "key": [
+      "src/app/home-client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'Categories' is defined but never used.",
+      "import Categories from \"@/components/categories\""
+    ],
+    "count": 1
+  },
+  "3621a85fb9d126066eea1b5d5ab537dc5cececf6b60438dacdb9eaa33305fb37": {
+    "key": [
+      "src/app/home-client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'NewArrive' is defined but never used.",
+      "import NewArrive from \"@/components/newArrive\""
+    ],
+    "count": 1
+  },
+  "313a7c51c4b735d71955cf917fddeace1829b2918f22c067b9b0cc83a81bcd21": {
+    "key": [
+      "src/app/layout.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'_geist' is assigned a value but never used.",
+      "const _geist = Geist({ subsets: [\"latin\"] });"
+    ],
+    "count": 1
+  },
+  "69910f35ceee73ff54cb9f42222f8e98f53d27b6079e37702fcf71b93401db6a": {
+    "key": [
+      "src/app/layout.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'_geistMono' is assigned a value but never used.",
+      "const _geistMono = Geist_Mono({ subsets: [\"latin\"] });"
+    ],
+    "count": 1
+  },
+  "903de7bd22cd4701e879f0ace10f6af136351d1cec7242f2002980af53d1a94a": {
+    "key": [
+      "src/app/orders/_components/orders-list.client.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const statusConfig: Record<CustomerOrderStatus, { label: string; bg: string; text: string; icon: any }> = {"
+    ],
+    "count": 1
+  },
+  "dd420c040943132c7b84f010bf82c1e2c50ae73a0d6ac602363f145e9cba7832": {
+    "key": [
+      "src/app/page.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'LandingShowcase' is defined but never used.",
+      "import LandingShowcase from '@/components/landing/landing-showcase'"
+    ],
+    "count": 1
+  },
+  "f26bdeba88503b5a708050af6c7b62c0b22bc3657a69a61a3cf9422c1e170961": {
+    "key": [
+      "src/app/page.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'LandingCta' is defined but never used.",
+      "import LandingCta from '@/components/landing/landing-cta'"
+    ],
+    "count": 1
+  },
+  "720227e9187e1d31cf2981e06a3a951452269c2710b54c14defec5fbf7f48a9e": {
+    "key": [
+      "src/app/reset-password/page.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\reset-password\\page.tsx:29:7\n  27 |   useEffect(() => {\n  28 |     if (!token) {\n> 29 |       setError('Lien invalide. Veuillez recommencer depuis la page de connexion.')\n     |       ^^^^^^^^ Avoid calling setState() directly within an effect\n  30 |     }\n  31 |   }, [token])\n  32 |",
+      "setError('Lien invalide. Veuillez recommencer depuis la page de connexion.')"
+    ],
+    "count": 1
+  },
+  "1e8dbbd9c97556d31e5a66671fcb95bd10b6f704bd7f4342bc4037e8ed46abbc": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'ChevronLeft' is defined but never used.",
+      "import { ShoppingCart, ChevronLeft, ChevronRight, X, Beaker, GlassWater, Timer, Sparkles } from 'lucide-react'"
+    ],
+    "count": 1
+  },
+  "0bbfc08f0363adcca6c3f7b5e68b7c571944de56504a5810d3d6e42a0e3a0da3": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'ChevronRight' is defined but never used.",
+      "import { ShoppingCart, ChevronLeft, ChevronRight, X, Beaker, GlassWater, Timer, Sparkles } from 'lucide-react'"
+    ],
+    "count": 1
+  },
+  "d28182c0abf6e0a04cc2d60ad0b14d0e45f3c202897a90c5bb11f050582c3276": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'InstallationSteps' is defined but never used.",
+      "import InstallationSteps from '@/components/shop/installation-steps'"
+    ],
+    "count": 1
+  },
+  "92f411dae6e971c6477c3736c1dc3dada6b191ee44f0be0c7deaa38c83dcca0d": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'ShopProductCard' is defined but never used.",
+      "import ShopProductCard from '@/app/shop/_components/shop-product-card'"
+    ],
+    "count": 1
+  },
+  "b81ee262c920791ccf5f1f7bafb65cc19d35846f4ab5e685ec761f50fe50e3d9": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'BreadcrumbItem' is defined but never used.",
+      "type BreadcrumbItem = {"
+    ],
+    "count": 1
+  },
+  "454e6db6a96c33870aed86617b63d1124df46e1ad525336bc9c3d689c27ce039": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "react-hooks/exhaustive-deps",
+      1,
+      "React Hook useEffect has a missing dependency: 'handleClose'. Either include it or remove the dependency array.",
+      "}, [onClose])"
+    ],
+    "count": 1
+  },
+  "9de535fdbfffb3fc299ee268a383b0c048e653cd8ef35e05d67e59446889ab80": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'isWishlisted' is assigned a value but never used.",
+      "const [isWishlisted, setIsWishlisted] = useState(false)"
+    ],
+    "count": 1
+  },
+  "5428ac4731b60ee85e5c2398abd8132f32f62439db3f577b2346e1ed2e3fa141": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'addMessage' is assigned a value but never used.",
+      "const [addMessage, setAddMessage] = useState<string | null>(null)"
+    ],
+    "count": 1
+  },
+  "195c45670577e3f00e56865e74fab3ca12679bba842ba9df21ae00502503b8d7": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'isWishLoading' is assigned a value but never used.",
+      "const [isWishLoading, setIsWishLoading] = useState(false)"
+    ],
+    "count": 1
+  },
+  "eae79e51649a93d57c6b40bf8cfbdd6a354d7bd36a55f9ea126a542d1a41e519": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'isAddingRelatedId' is assigned a value but never used.",
+      "const [isAddingRelatedId, setIsAddingRelatedId] = useState<string | null>(null)"
+    ],
+    "count": 1
+  },
+  "f65f83fbd03552698bd9384ff296976267f540014021e1331667090716e55914": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'isRelatedCartStatusReady' is assigned a value but never used.",
+      "const [isRelatedCartStatusReady, setIsRelatedCartStatusReady] = useState(false)"
+    ],
+    "count": 1
+  },
+  "9783d805568416274b2113814bd9308423a9e04ff7dd8bf4490b76c0a9d63c5c": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'shareCopied' is assigned a value but never used.",
+      "const [shareCopied, setShareCopied] = useState(false)"
+    ],
+    "count": 1
+  },
+  "33452a909900189ecb700c6abf159da1e0008031f27f86a3fcca69ef796b11f1": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\[slug]\\product.client.tsx:591:21\n  589 |\n  590 |   const [selectedVariant, setSelectedVariant] = useState<ProductWithDetails | null>(defaultVariant)\n> 591 |   useEffect(() => { setSelectedVariant(defaultVariant) }, [defaultVariant])\n      |                     ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  592 |\n  593 |   const details = useMemo<DetailItem[]>(() => {\n  594 |     if (!Array.isArray(product.details)) return []",
+      "useEffect(() => { setSelectedVariant(defaultVariant) }, [defaultVariant])"
+    ],
+    "count": 1
+  },
+  "22a010e86854c6d38d4a81c18ec2370eda76f3a83a81bd83289b90542a1a2003": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\[slug]\\product.client.tsx:606:49\n  604 |   const hasDetails = details.length > 0\n  605 |   useEffect(() => {\n> 606 |     if (!hasDetails && activeTab === 'details') setActiveTab('description')\n      |                                                 ^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  607 |   }, [activeTab, hasDetails])\n  608 |\n  609 |   const isInStock = availability.inStock",
+      "if (!hasDetails && activeTab === 'details') setActiveTab('description')"
+    ],
+    "count": 1
+  },
+  "25face52d1dfe4e52b6d519790f1df7fab69d515edd47c41380ad67e414ddc66": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'mainCategory' is assigned a value but never used.",
+      "const mainCategory = useMemo(() => {"
+    ],
+    "count": 1
+  },
+  "3427ef2c809be4fdd986071a0bf9fd6ebcc49879dc973538dcd769230a14de40": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'shouldRenderInstallationSteps' is assigned a value but never used.",
+      "const shouldRenderInstallationSteps = useMemo("
+    ],
+    "count": 1
+  },
+  "30820cb7b4e366ad7bd9c1747c12bded35640b69dfc78e8ed4da0e8f982f100e": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'installationStep3Image' is assigned a value but never used.",
+      "const installationStep3Image = useMemo(() => {"
+    ],
+    "count": 1
+  },
+  "cd2ad15bd7301f97cf71fa1ea2477bbb1d9aa33399e73aea7dcfab5206ad9b07": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'fromPromotions' is assigned a value but never used.",
+      "const fromPromotions = searchParams.get('promotions') === '1'"
+    ],
+    "count": 1
+  },
+  "3ef4dcf4faece9715b64257ef59a05306ad7d790236c3ab256c1a58973a95763": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'fromNouveautes' is assigned a value but never used.",
+      "const fromNouveautes = searchParams.get('nouveautes') === '1'"
+    ],
+    "count": 1
+  },
+  "0048ad3bc1a570c5a5a88ec96c48366e7ce4ffe69ff2a1143130988b1e9a61c0": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'fromWishlist' is assigned a value but never used.",
+      "const fromWishlist = searchParams.get('wishlist') === '1'"
+    ],
+    "count": 1
+  },
+  "6a6ef644fe377d8e3888dabddcfd1519c027eeaca14ff59ea94c2d765a982e10": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'originCategory' is assigned a value but never used.",
+      "const originCategory = useMemo(() => {"
+    ],
+    "count": 1
+  },
+  "3db27ce0be292efc0bf7c4a5b20ca16d7f1a7eb847e52876ca6da47c1fda5fed": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\[slug]\\product.client.tsx:741:21\n  739 |   }, [alsoLikeProducts])\n  740 |\n> 741 |   useEffect(() => { setAlsoLikeSlide(0) }, [alsoLikePages.length])\n      |                     ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  742 |\n  743 |   useEffect(() => {\n  744 |     if (currentImageIdx === displayImageIdx) return",
+      "useEffect(() => { setAlsoLikeSlide(0) }, [alsoLikePages.length])"
+    ],
+    "count": 1
+  },
+  "dfe34dbb5635f972dc461c2dfdd8c05cce2551a04069953faeddf3611f36c5c3": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\[slug]\\product.client.tsx:745:5\n  743 |   useEffect(() => {\n  744 |     if (currentImageIdx === displayImageIdx) return\n> 745 |     setIsImageFading(true)\n      |     ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  746 |     const t = window.setTimeout(() => {\n  747 |       setDisplayImageIdx(currentImageIdx)\n  748 |       window.requestAnimationFrame(() => setIsImageFading(false))",
+      "setIsImageFading(true)"
+    ],
+    "count": 1
+  },
+  "d0ab605fa97ebda9c5a52875a003bb764b4135321b7c722232f17ac668c4678e": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\[slug]\\product.client.tsx:764:5\n  762 |\n  763 |   useEffect(() => {\n> 764 |     setQuantity((prev) => Math.max(1, Math.min(prev, maxSelectableQuantity)))\n      |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  765 |   }, [maxSelectableQuantity])\n  766 |\n  767 |   // Pin left panel when cart drawer opens (same fix as nutrition modal scroll-lock)",
+      "setQuantity((prev) => Math.max(1, Math.min(prev, maxSelectableQuantity)))"
+    ],
+    "count": 1
+  },
+  "38da0ef398a6fe24db88f10e1897942e68f343aeafba05b3e1daba61a0a034dc": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'handleAlsoLikeScroll' is assigned a value but never used.",
+      "const handleAlsoLikeScroll = () => {"
+    ],
+    "count": 1
+  },
+  "6bbe43414f073e7fe2c1407213f75eaa0fc25b4fb51668f3f959daacde08218e": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'scrollAlsoLike' is assigned a value but never used.",
+      "const scrollAlsoLike = (direction: 'prev' | 'next') => {"
+    ],
+    "count": 1
+  },
+  "baac1096af81bbddb8a19e7e145b02b467510f9bbaa75aea67b0bbdcbf69c85a": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'handleWishlistClick' is assigned a value but never used.",
+      "const handleWishlistClick = async () => {"
+    ],
+    "count": 1
+  },
+  "a33144f7192cbbf80d8906d49edc6f208cd79d5b2fabf295ced6def3603532d2": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'handleAddRelatedToCart' is assigned a value but never used.",
+      "const handleAddRelatedToCart = async (relatedProductId: string) => {"
+    ],
+    "count": 1
+  },
+  "101109a80852ce65930d0c2b5e8d9f1b531c267a280ab780834bb322f3776261": {
+    "key": [
+      "src/app/shop/[slug]/product.client.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'handleShareClick' is assigned a value but never used.",
+      "const handleShareClick = async () => {"
+    ],
+    "count": 1
+  },
+  "2d080b3cdefb3d02c5cf0a61c58d5b82b1d5240706eb0f74d8620de9be44cd26": {
+    "key": [
+      "src/app/shop/_components/shop-product-card.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\_components\\shop-product-card.tsx:41:5\n  39 |   useEffect(() => {\n  40 |     const signedIn = getPb(true).authStore.isValid\n> 41 |     setIsSignedIn(signedIn)\n     |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  42 |   }, [])\n  43 |\n  44 |   useEffect(() => {",
+      "setIsSignedIn(signedIn)"
+    ],
+    "count": 1
+  },
+  "f9c81777cc24d54157363e335903f6d18e4c380e5afd7d8119cbdeaa503af123": {
+    "key": [
+      "src/app/shop/_components/shop-product-card.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\_components\\shop-product-card.tsx:46:7\n  44 |   useEffect(() => {\n  45 |     if (!isSignedIn || !enableWishlist) {\n> 46 |       setIsWishlisted(false)\n     |       ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  47 |       return\n  48 |     }\n  49 |     setIsWishlisted(initialWishlisted)",
+      "setIsWishlisted(false)"
+    ],
+    "count": 1
+  },
+  "b0397a24cf7d1e7d46050fb36dcee5bac24b9a58d59e5c082ea273d54264bd71": {
+    "key": [
+      "src/app/shop/_components/shop-product-card.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "<p className=\"text-[10px] lg:text-[11px] text-muted-foreground font-bold\">*Disponible dans d'autres modeles</p>"
+    ],
+    "count": 1
+  },
+  "19e9cf6565dde97e63446e6a15830921f0e3b39ef02aa6208b5f01e0f208994c": {
+    "key": [
+      "src/app/shop/shop.client.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\shop.client.tsx:125:5\n  123 |\n  124 |   useEffect(() => {\n> 125 |     setProducts(data.products)\n      |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  126 |     setPagination(data.pagination)\n  127 |     setIsFetchingMore(false)\n  128 |     setLoadMoreError(null)",
+      "setProducts(data.products)"
+    ],
+    "count": 1
+  },
+  "a25bc33bb65e65dcd699fc124c4bbbf8acbfd88f9227e2224378f31baf97dda3": {
+    "key": [
+      "src/app/shop/shop.client.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\shop.client.tsx:178:7\n  176 |   useEffect(() => {\n  177 |     if (!isSignedIn) {\n> 178 |       setWishlistIds(new Set())\n      |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  179 |       return\n  180 |     }\n  181 |",
+      "setWishlistIds(new Set())"
+    ],
+    "count": 1
+  },
+  "678ddf9feaffaa37c1ced84205dc31038a1147dcc85f6c37d068e5aef7672adc": {
+    "key": [
+      "src/app/shop/shop.client.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setIsFetchingMore`, but the source dependencies were [currentQuery, pagination]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\shop.client.tsx:304:32\n  302 |   )\n  303 |\n> 304 |   const loadMore = useCallback(async () => {\n      |                                ^^^^^^^^^^^^^\n> 305 |     const now = Date.now()\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 306 |     if (isFetchingRef.current || !pagination.hasNextPage) return\n      …\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 338 |     }\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 339 |   }, [currentQuery, pagination])\n      | ^^^^ Could not preserve existing manual memoization\n  340 |\n  341 |   useEffect(() => {\n  342 |     const node = sentinelRef.current",
+      "const loadMore = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "07b7f2142136143a94325a16c668331556d0c49b83984045fe1ca30b0734451e": {
+    "key": [
+      "src/app/shop/shop.client.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setLoadMoreError`, but the source dependencies were [currentQuery, pagination]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\shop.client.tsx:304:32\n  302 |   )\n  303 |\n> 304 |   const loadMore = useCallback(async () => {\n      |                                ^^^^^^^^^^^^^\n> 305 |     const now = Date.now()\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 306 |     if (isFetchingRef.current || !pagination.hasNextPage) return\n      …\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 338 |     }\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 339 |   }, [currentQuery, pagination])\n      | ^^^^ Could not preserve existing manual memoization\n  340 |\n  341 |   useEffect(() => {\n  342 |     const node = sentinelRef.current",
+      "const loadMore = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "f57ad594f1be5de10d3ca590827120962ef1833e1d56b73de7f6585f13f2520c": {
+    "key": [
+      "src/app/shop/shop.client.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setProducts`, but the source dependencies were [currentQuery, pagination]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\shop.client.tsx:304:32\n  302 |   )\n  303 |\n> 304 |   const loadMore = useCallback(async () => {\n      |                                ^^^^^^^^^^^^^\n> 305 |     const now = Date.now()\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 306 |     if (isFetchingRef.current || !pagination.hasNextPage) return\n      …\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 338 |     }\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 339 |   }, [currentQuery, pagination])\n      | ^^^^ Could not preserve existing manual memoization\n  340 |\n  341 |   useEffect(() => {\n  342 |     const node = sentinelRef.current",
+      "const loadMore = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "64a6ce7897f74d81b90db80fbfe12a0d73b77e3c009328b90a5ea5785c25d6b6": {
+    "key": [
+      "src/app/shop/shop.client.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setPagination`, but the source dependencies were [currentQuery, pagination]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\app\\shop\\shop.client.tsx:304:32\n  302 |   )\n  303 |\n> 304 |   const loadMore = useCallback(async () => {\n      |                                ^^^^^^^^^^^^^\n> 305 |     const now = Date.now()\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 306 |     if (isFetchingRef.current || !pagination.hasNextPage) return\n      …\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 338 |     }\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 339 |   }, [currentQuery, pagination])\n      | ^^^^ Could not preserve existing manual memoization\n  340 |\n  341 |   useEffect(() => {\n  342 |     const node = sentinelRef.current",
+      "const loadMore = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "245f2cdb699c8077a45634a6847b530f93f7c36f535681a2ba3335757c63aabb": {
+    "key": [
+      "src/app/shop/shop.client.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "8e74ed9e3aa03476ed09c1b4e644561727e677240ffd7b723f2c496a4c84b491": {
+    "key": [
+      "src/app/sitemap.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "let categories: any[] = []"
+    ],
+    "count": 1
+  },
+  "873e5e16ab1881f67bf88c3eea3da8369984d91395b62666f23f6bb9ac9b5e42": {
+    "key": [
+      "src/app/sitemap.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "let products: any[] = []"
+    ],
+    "count": 1
+  },
+  "f9557b32196511989ae091288f2cbefdeb3faf529d6786b86f14d3c7c431f416": {
+    "key": [
+      "src/app/sitemap.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      ".filter((c: any) => Boolean(c.slug))"
+    ],
+    "count": 1
+  },
+  "abb8c099b53e0f2aaa5a14b7c8bafc6bb03b35355797d93122237dd4462b6d6b": {
+    "key": [
+      "src/app/sitemap.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      ".map((c: any) => ({"
+    ],
+    "count": 1
+  },
+  "b23d20e43647b27495592bd5634fb4b7e8676a25e17b84cdd86d43eaabbcceac": {
+    "key": [
+      "src/app/sitemap.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      ".filter((p: any) => Boolean(p.slug))"
+    ],
+    "count": 1
+  },
+  "27a058b0fa06f8abd98112f6f8f51900504d4a94745d648b048e8d8f370610de": {
+    "key": [
+      "src/app/sitemap.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      ".map((p: any) => ({"
+    ],
+    "count": 1
+  },
+  "7aa3ca5e606aa50791d8852c8603b2b2de818d03adda9ab6434bb12680ca6959": {
+    "key": [
+      "src/components/admin/AdminToast.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'useEffect' is defined but never used.",
+      "import { useEffect, useState, useCallback } from 'react'"
+    ],
+    "count": 1
+  },
+  "9f47fcd5521d863386a054ea5390d7a300f80c199da5af25718a64b2262c0b62": {
+    "key": [
+      "src/components/admin/BestSellingProducts.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [products, setProducts] = useState<any[]>([]);"
+    ],
+    "count": 1
+  },
+  "64b8dee4fae8205a817544b32b30a84425337e9842fe1c5713afc35939845510": {
+    "key": [
+      "src/components/admin/BestSellingProducts.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'totalOrdersCount' is assigned a value but never used.",
+      "const totalOrdersCount = products.reduce((sum, p) => sum + p.orders, 0);"
+    ],
+    "count": 1
+  },
+  "e528b384a0807fde63860a4e3f059d0d6f8625b2f4864c1b513fbd4b7a5704b3": {
+    "key": [
+      "src/components/admin/BestSellingProducts.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "1ceb3cdba557ce81a4884af529e58cb632d95fd17254104202ec9a3337ccda9b": {
+    "key": [
+      "src/components/admin/ChartsRow.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [data, setData] = useState<any>(null);"
+    ],
+    "count": 1
+  },
+  "21f9b6cefcb30948365bde3f8af4f98bed1093790358b6d214dd2d499487763d": {
+    "key": [
+      "src/components/admin/ChartsRow.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\ChartsRow.tsx:41:21\n  39 |   }\n  40 |\n> 41 |   useEffect(() => { load() }, []);\n     |                     ^^^^ Avoid calling setState() directly within an effect\n  42 |\n  43 |   if (loading) {\n  44 |     return (",
+      "useEffect(() => { load() }, []);"
+    ],
+    "count": 1
+  },
+  "215aaf0b9401b05a955619cca36d0ae1ae29a1e559b2a069f08a921fdd861656": {
+    "key": [
+      "src/components/admin/OrdersStatsClient.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\OrdersStatsClient.tsx:65:21\n  63 |   }\n  64 |\n> 65 |   useEffect(() => { fetchOrders() }, [])\n     |                     ^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  66 |\n  67 |   if (error) {\n  68 |     return (",
+      "useEffect(() => { fetchOrders() }, [])"
+    ],
+    "count": 1
+  },
+  "0b4f83560e60bd3de790e4e67865ef133651c2b8cfcf25d0f8e016609975cabc": {
+    "key": [
+      "src/components/admin/OrdersTrendChart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [data, setData] = useState<any[] | null>(null);"
+    ],
+    "count": 1
+  },
+  "95f01d5e811afb17b115ebb9a286765364b33e56d52ad36793443fffde8674d7": {
+    "key": [
+      "src/components/admin/OrdersTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setLoading`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\OrdersTrendChart.tsx:29:32\n  27 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  28 |\n> 29 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 30 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 31 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 45 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 46 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  47 |\n  48 |   useEffect(() => {\n  49 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "4401031f37123f3714411e4142504168662d14e8d83ae40a64403af90c53dd72": {
+    "key": [
+      "src/components/admin/OrdersTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setChartError`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\OrdersTrendChart.tsx:29:32\n  27 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  28 |\n> 29 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 30 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 31 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 45 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 46 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  47 |\n  48 |   useEffect(() => {\n  49 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "7f567dfb68fb5e6db06b0b5e5498122e1a778e77e9740850a85652ce85cadec7": {
+    "key": [
+      "src/components/admin/OrdersTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setData`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\OrdersTrendChart.tsx:29:32\n  27 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  28 |\n> 29 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 30 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 31 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 45 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 46 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  47 |\n  48 |   useEffect(() => {\n  49 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "5ba22b78709a9cd143ef04d92f00976831fec67aa40f8612ef1360d80c3388db": {
+    "key": [
+      "src/components/admin/OrdersTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setTotals`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\OrdersTrendChart.tsx:29:32\n  27 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  28 |\n> 29 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 30 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 31 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 45 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 46 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  47 |\n  48 |   useEffect(() => {\n  49 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "436366e3695a042dab1a76c42b95ed8afccb4fc51dafaf5bc11e969f7483486d": {
+    "key": [
+      "src/components/admin/OrdersTrendChart.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\OrdersTrendChart.tsx:49:10\n  47 |\n  48 |   useEffect(() => {\n> 49 |     void loadData();\n     |          ^^^^^^^^ Avoid calling setState() directly within an effect\n  50 |   }, [loadData]);\n  51 |\n  52 |   return (",
+      "void loadData();"
+    ],
+    "count": 1
+  },
+  "fd9fd71b08b41a0be734c87789db111b4d9918beab1eaff51ab77c0ecaa86311": {
+    "key": [
+      "src/components/admin/ParentHeader.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "parent: any"
+    ],
+    "count": 1
+  },
+  "273289f71303b5528e9e63de73d509f2bb5cba9a92d8f116a710321775f3f07d": {
+    "key": [
+      "src/components/admin/ParentHeader.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "variables: any[]"
+    ],
+    "count": 1
+  },
+  "59a8f373e265157ee85ad2af9b151916c80b7d244fad22a2d28ab77f06187a11": {
+    "key": [
+      "src/components/admin/ProductCard.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "variables: any[]"
+    ],
+    "count": 1
+  },
+  "4bdfbf6167f59a740f1ff4e373199cf589b280d09c993b6d809e9a94e9c32b37": {
+    "key": [
+      "src/components/admin/ProductCard.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "f4b7e8a306035e1c3f2eef7d153084f16e3358efffe23c3b47a5a104c425da3c": {
+    "key": [
+      "src/components/admin/ProductCard.tsx",
+      "prefer-const",
+      2,
+      "'startX' is never reassigned. Use 'const' instead.",
+      "let startX = e.pageX - slider.offsetLeft"
+    ],
+    "count": 1
+  },
+  "e4697da5f05b2dfd9a569f973bb65653bcfdc451f0605709b80c622b600c70b0": {
+    "key": [
+      "src/components/admin/ProductCard.tsx",
+      "prefer-const",
+      2,
+      "'scrollLeft' is never reassigned. Use 'const' instead.",
+      "let scrollLeft = slider.scrollLeft"
+    ],
+    "count": 1
+  },
+  "58908e9ed3ce25473b1453357834735711b3b691525e0c47e1e9794688b27e09": {
+    "key": [
+      "src/components/admin/ProductCard.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "type={(pk.value as any) ?? \"any\"}"
+    ],
+    "count": 1
+  },
+  "0017d79bc97663d46dedc801c02feade05982fbc46bf5c5eccd6e4eacb40f6d5": {
+    "key": [
+      "src/components/admin/ProductForm.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "{item.src && <img src={item.src} alt=\"\" className=\"h-full w-full object-cover\" />}"
+    ],
+    "count": 1
+  },
+  "49b3936d61ed44bd43ee8a04b096716064189e7c48be9ea111f1162f083c45ca": {
+    "key": [
+      "src/components/admin/ProductForm.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img src={mainImageSrc} alt=\"\" className=\"h-full w-full object-cover\" />"
+    ],
+    "count": 1
+  },
+  "f141f90feb7f7dbe701b6ef4871812bce132fbfd287d994c0fa4fe177954e9c3": {
+    "key": [
+      "src/components/admin/ProductVariantField.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "4035dee64ac26f99e770e00c724182ec8c3fe6a476802cc7fad8b29aa92c12f6": {
+    "key": [
+      "src/components/admin/SalesTrendChart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [data, setData] = useState<any[] | null>(null);"
+    ],
+    "count": 1
+  },
+  "b82de926947f9232eb17f9a57d6305f91911116bbfbc42a7b0e248e4a8c15d69": {
+    "key": [
+      "src/components/admin/SalesTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setLoading`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\SalesTrendChart.tsx:27:32\n  25 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  26 |\n> 27 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 28 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 29 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 42 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 43 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  44 |\n  45 |   useEffect(() => {\n  46 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "22162a7465c5a376afbd39c6131a55cfb73136c3460f4be320f362ba40ca528f": {
+    "key": [
+      "src/components/admin/SalesTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setChartError`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\SalesTrendChart.tsx:27:32\n  25 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  26 |\n> 27 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 28 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 29 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 42 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 43 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  44 |\n  45 |   useEffect(() => {\n  46 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "de3f43f1fb462e56d0336a17991324cb70081a691af474d1515b08b17787bae1": {
+    "key": [
+      "src/components/admin/SalesTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setData`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\SalesTrendChart.tsx:27:32\n  25 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  26 |\n> 27 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 28 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 29 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 42 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 43 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  44 |\n  45 |   useEffect(() => {\n  46 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "dc176e2f8d0a0cc769015a340723483201c25fb4148dc7f271205f5e3930d430": {
+    "key": [
+      "src/components/admin/SalesTrendChart.tsx",
+      "react-hooks/preserve-manual-memoization",
+      2,
+      "Compilation Skipped: Existing memoization could not be preserved\n\nReact Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `setTotalRevenue`, but the source dependencies were [viewMode, selectedMonth, selectedYear]. Inferred different dependency than source.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\SalesTrendChart.tsx:27:32\n  25 |   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i);\n  26 |\n> 27 |   const loadData = useCallback(async () => {\n     |                                ^^^^^^^^^^^^^\n> 28 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 29 |     setChartError(false);\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 42 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 43 |   }, [viewMode, selectedMonth, selectedYear]);\n     | ^^^^ Could not preserve existing manual memoization\n  44 |\n  45 |   useEffect(() => {\n  46 |     void loadData();",
+      "const loadData = useCallback(async () => {"
+    ],
+    "count": 1
+  },
+  "6a8ba5a876c602ef833423fcd83c9af91023bb5299d327b678e2f53688800ae1": {
+    "key": [
+      "src/components/admin/SalesTrendChart.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\SalesTrendChart.tsx:46:10\n  44 |\n  45 |   useEffect(() => {\n> 46 |     void loadData();\n     |          ^^^^^^^^ Avoid calling setState() directly within an effect\n  47 |   }, [loadData]);\n  48 |\n  49 |   const formatCurrency = (val: number) =>",
+      "void loadData();"
+    ],
+    "count": 1
+  },
+  "01b7cde6db10f87d9cc929d65916e7a4a00f57f52f7ff6e4b0ce3378d91a9e95": {
+    "key": [
+      "src/components/admin/StatsGrid.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [data, setData] = useState<any>(null)"
+    ],
+    "count": 1
+  },
+  "cca00a97cb34ee1add3c653e9ac1b284c376c29d431c297413e6b882b0fc6a5b": {
+    "key": [
+      "src/components/admin/StatsGrid.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\StatsGrid.tsx:13:5\n  11 |\n  12 |   useEffect(() => {\n> 13 |     setError(false)\n     |     ^^^^^^^^ Avoid calling setState() directly within an effect\n  14 |     getExtendedStatsAction()\n  15 |       .then(setData)\n  16 |       .catch(() => setError(true))",
+      "setError(false)"
+    ],
+    "count": 1
+  },
+  "93f7829f47898fb9d8bcffc91daf8cefb5207704e10e59ba0f6b210356f92074": {
+    "key": [
+      "src/components/admin/StatsGrid.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "}: any) {"
+    ],
+    "count": 1
+  },
+  "35f718f0796ed50d535cd54d19f46b125aea0a9b729cf96fba36bdeeb1165da7": {
+    "key": [
+      "src/components/admin/VariantAttributesEditor.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'Button' is defined but never used.",
+      "import Button from '@/components/admin/button'"
+    ],
+    "count": 1
+  },
+  "1c2ff660e0f10c531220b642bba6ff12e25fc1fd53ce807b60d9a1c5867a1c5b": {
+    "key": [
+      "src/components/admin/order-notifications.tsx",
+      "@next/next/no-location-assign-relative-destination",
+      1,
+      "Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination",
+      "window.location.href = '/admin/orders'"
+    ],
+    "count": 1
+  },
+  "45a496386270db9b360a8698096f268556fe221a33c9f1d4672540f0a5624bc1": {
+    "key": [
+      "src/components/admin/order-notifications.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\order-notifications.tsx:188:5\n  186 |   useEffect(() => {\n  187 |     const initialEnabled = readEnabledFlag()\n> 188 |     setEnabled(initialEnabled)\n      |     ^^^^^^^^^^ Avoid calling setState() directly within an effect\n  189 |     if (initialEnabled && typeof window !== 'undefined' && 'Notification' in window && Notification.permission !== 'granted') {\n  190 |       writeEnabledFlag(false)\n  191 |       setEnabled(false)",
+      "setEnabled(initialEnabled)"
+    ],
+    "count": 1
+  },
+  "1b5697bca182e21ad83dd7f2f4eef8ab6304b8a3e346f51dbb88bb7e3be4096b": {
+    "key": [
+      "src/components/admin/order-notifications.tsx",
+      "react-hooks/exhaustive-deps",
+      1,
+      "React Hook useMemo has an unnecessary dependency: 'enabled'. Either exclude it or remove the dependency array.",
+      "}, [enabled])"
+    ],
+    "count": 1
+  },
+  "9b0d51a305a36b13665415d633ea730235ffef931566f33b68276e7b35fc04d1": {
+    "key": [
+      "src/components/admin/order-notifications.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\order-notifications.tsx:280:7\n  278 |     if (active && typeof window !== 'undefined' && 'Notification' in window && Notification.permission !== 'granted') {\n  279 |       writeEnabledFlag(false)\n> 280 |       setEnabled(false)\n      |       ^^^^^^^^^^ Avoid calling setState() directly within an effect\n  281 |       return\n  282 |     }\n  283 |     setEnabled(active)",
+      "setEnabled(false)"
+    ],
+    "count": 1
+  },
+  "3237c4d2787550da60af398c6d02e5c03a4e6abe9235dd1db8b220ee4ae42376": {
+    "key": [
+      "src/components/admin/variant-value-selector.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'Button' is defined but never used.",
+      "import Button from \"@/components/admin/button\""
+    ],
+    "count": 1
+  },
+  "7e844046f122bf4cfdb0f4d5770012186449eeb64c5246475d03fa747c7d30d9": {
+    "key": [
+      "src/components/admin/variant-value-selector.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\admin\\variant-value-selector.tsx:32:6\n  30 |   // Sync internalValue when parent value changes\n  31 |   useEffect(() => {\n> 32 |      setInternalValue(value ?? \"\")\n     |      ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  33 |   }, [value])\n  34 |\n  35 |   // Determine if internalValue corresponds to a variable",
+      "setInternalValue(value ?? \"\")"
+    ],
+    "count": 1
+  },
+  "a8fb80b2262e02a4db2cb02f5e5bc68c3eeefc4e3923e1a5db11b091ce7153b0": {
+    "key": [
+      "src/components/admin/variant-value-selector.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 2
+  },
+  "2514023d5b88579e67a3e8b247a4ba661330277017d0ac1cb9b0634b43911474": {
+    "key": [
+      "src/components/best-sellers.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const intervalRef = useRef<any>(null)"
+    ],
+    "count": 1
+  },
+  "616cb06e3ce8ed2de25d11fb0604f063c5ef5796cb7b92cbc54ffd2277031747": {
+    "key": [
+      "src/components/best-sellers.tsx",
+      "react-hooks/exhaustive-deps",
+      1,
+      "React Hook useEffect has missing dependencies: 'animateCurrentPage' and 'startAuto'. Either include them or remove the dependency array.",
+      "}, [pageCount])"
+    ],
+    "count": 1
+  },
+  "78628f26db4076017c0ef415d1084d3a6bf47421266001d641aa18666e1acaa9": {
+    "key": [
+      "src/components/blog/mdx-components.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "4732f1735d1da5983343f3cddf01034851a87f343167c7d85e83a8e287b04974": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'CreditCard' is defined but never used.",
+      "CreditCard,"
+    ],
+    "count": 1
+  },
+  "207f4e93371e14032d3841acc174d8a14599d3a70bf3080211c3b3e86031718a": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\checkout-content.tsx:187:26\n  185 |   }\n  186 |\n> 187 |   useEffect(() => { void loadShipping() }, [])\n      |                          ^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  188 |\n  189 |   useEffect(() => {\n  190 |     const threshold = 8",
+      "useEffect(() => { void loadShipping() }, [])"
+    ],
+    "count": 1
+  },
+  "aad23151c7847824874f015d94484ffaaeb8e8513ecfb48e11a7204276dcb973": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const applyModel = (model: Record<string, any> | null) => {"
+    ],
+    "count": 1
+  },
+  "752321bbd870e5fec18c970e47cc8e4d95645ea0bc8f59f685075c5091efec1b": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\checkout-content.tsx:279:5\n  277 |     const isDismissed =\n  278 |       !!dismissedUntilRaw && Number.isFinite(dismissedUntil) && Date.now() < dismissedUntil\n> 279 |     setIsPromoBannerVisible(!isLoggedIn && !isDismissed)\n      |     ^^^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  280 |   }, [isLoggedIn])\n  281 |\n  282 |   useEffect(() => {",
+      "setIsPromoBannerVisible(!isLoggedIn && !isDismissed)"
+    ],
+    "count": 1
+  },
+  "0d32b21072f010c1f273ee5f5222c4539883db47fb7bd4ae1a337e2f4962c653": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\checkout-content.tsx:284:7\n  282 |   useEffect(() => {\n  283 |     if (!isLoggedIn) {\n> 284 |       setAddresses([])\n      |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  285 |       setSelectedAddressId(\"new\")\n  286 |       return\n  287 |     }",
+      "setAddresses([])"
+    ],
+    "count": 1
+  },
+  "c5489cf468156d2bc3c638b873d56d1426394e56e7ef9fa26e025808d0fc44b5": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const mapped: UserAddress[] = rows.map((row: any) => ({"
+    ],
+    "count": 1
+  },
+  "c99ed5b1069ee2794544ed85171d2a67489ac218cb81f7fad0a7c904417c94a0": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) {"
+    ],
+    "count": 4
+  },
+  "a3de71b3fe18a34a1c5b4adf5d634269d0056b9402082379ffda3e34ad379e96": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\checkout-content.tsx:338:7\n  336 |     if (!selected) return\n  337 |     if (selected.country && selected.country.toUpperCase() !== \"US\") {\n> 338 |       setOrderError(\"Please enter a US delivery address.\")\n      |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  339 |       setSelectedAddressId(\"new\")\n  340 |       return\n  341 |     }",
+      "setOrderError(\"Please enter a US delivery address.\")"
+    ],
+    "count": 1
+  },
+  "759f34cf1509130df139deaff18e47c028d501265d11e7e2096408944460d97f": {
+    "key": [
+      "src/components/checkout-content.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const mapped: CartItem[] = items.map((it: any) => {"
+    ],
+    "count": 1
+  },
+  "0196ec6de5a0a006449548c2e6ae1994877459b6fb1c34fd7297242938fe8fbd": {
+    "key": [
+      "src/components/hero-content.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'atmospheriqueFont' is assigned a value but never used.",
+      "const atmospheriqueFont = Playfair_Display({"
+    ],
+    "count": 1
+  },
+  "cc44ca1dabf6f65b7b71f7ec2487a843ec14bb07e7d65b8c6cbc8f09959ede2b": {
+    "key": [
+      "src/components/hero-content.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'isSignupPromoActive' is assigned a value but never used.",
+      "const [isSignupPromoActive, setIsSignupPromoActive] = useState(false)"
+    ],
+    "count": 1
+  },
+  "fbaf02a556ca5070f6dfa7d28e12a859bdd88cf05a69db1121dd15c8f2eccf15": {
+    "key": [
+      "src/components/hero-content.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "8222baaa3346c1878c64a34df5e7ba047260995314a434a8e23181ca8daf5a03": {
+    "key": [
+      "src/components/hero.tsx",
+      "react-hooks/exhaustive-deps",
+      1,
+      "React Hook useEffect has a missing dependency: 'BG_IMAGES.length'. Either include it or remove the dependency array.",
+      "}, [])"
+    ],
+    "count": 1
+  },
+  "290374ba4dd3c85df0ea3837a74c6a39ab07c7e4119490e96eee77dea4b1ced9": {
+    "key": [
+      "src/components/hero.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "1e0c5d31e48b79f099fa60cc6aa6d9a5a8deb8dee7ce9d5f4fa697b9f1995786": {
+    "key": [
+      "src/components/hero.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img src=\"/aboutimg.webp\" alt=\"lamp\" className=\"max-h-[100vh] max-w-full h-auto w-auto object-contain\" />"
+    ],
+    "count": 1
+  },
+  "1385738e164265097c97c5af7b03392e0e69d0febed6374585b7e8b6bb365d76": {
+    "key": [
+      "src/components/home/home-categories-section.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\home\\home-categories-section.tsx:72:7\n  70 |\n  71 |     if (windowWithHeroReady.__homeHeroReady) {\n> 72 |       setIsHeroReady(true)\n     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  73 |       return\n  74 |     }\n  75 |",
+      "setIsHeroReady(true)"
+    ],
+    "count": 1
+  },
+  "2e10e1b841c010e17d141402be09a0a0398d8ca6b0ebdd545116949e2ee668c7": {
+    "key": [
+      "src/components/landing/landing-about.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "The solution didn't come from a lab—it came from our own kitchen. We started"
+    ],
+    "count": 1
+  },
+  "d38b99f4d0d56283ef29e6df7837b950e369d8600e3ebe3690ceec72dfadad80": {
+    "key": [
+      "src/components/landing/landing-cta-banner.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "Join the hundreds of people who've swapped bad snacks for something that actually works."
+    ],
+    "count": 1
+  },
+  "0a213f7fce6f9b21aee8c1bf7e0b1f0db886bb5b3b033780e4b767049b5000da": {
+    "key": [
+      "src/components/landing/landing-cta-fuel.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.",
+      "Join the hundreds of people who've swapped bad snacks for something that actually works."
+    ],
+    "count": 1
+  },
+  "0250535f6f61a46246cf1f342d274bd0950b619b02f3bf48630fb040c8264b69": {
+    "key": [
+      "src/components/landing/landing-showcase.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'GRADIENT' is assigned a value but never used.",
+      "const GRADIENT = \"linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)\""
+    ],
+    "count": 1
+  },
+  "c5e938ff0be683ebb599ac30e559abcdf2a9962fd0d63d7d9e9fdb870bdf18df": {
+    "key": [
+      "src/components/lifestyle-gallery.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "4bb5a4287f0ae2d5fa95b185bec794972dfa1842adeeb506f81b7ccdb0599051": {
+    "key": [
+      "src/components/mega-menu.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\mega-menu.tsx:55:7\n  53 |   useEffect(() => {\n  54 |     if (isOpen && rootCategories.length > 0 && !activeCategory) {\n> 55 |       setActiveCategory(rootCategories[0].slug)\n     |       ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  56 |     }\n  57 |   }, [isOpen, rootCategories, activeCategory])\n  58 |",
+      "setActiveCategory(rootCategories[0].slug)"
+    ],
+    "count": 1
+  },
+  "8546b0f60160c67ab80cca44a28b53739f12167537f5581f403e8397d96e3c37": {
+    "key": [
+      "src/components/mega-menu.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\mega-menu.tsx:61:7\n  59 |   useEffect(() => {\n  60 |     if (!isOpen) {\n> 61 |       setActiveCategory(null)\n     |       ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  62 |       setProducts([])\n  63 |     }\n  64 |   }, [isOpen])",
+      "setActiveCategory(null)"
+    ],
+    "count": 1
+  },
+  "4c4d398b05bd05744a50f5d9a53887c82c01dac6b85a21fba937ba48bcc55614": {
+    "key": [
+      "src/components/mega-menu.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "(data.products ?? []).slice(0, 10).map((p: any) => ({"
+    ],
+    "count": 1
+  },
+  "16a256cc898893dc49a1831d09b0ed065a5132bdcab2d94f462d6b281a7b110b": {
+    "key": [
+      "src/components/mega-menu.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\mega-menu.tsx:115:25\n  113 |\n  114 |   useEffect(() => {\n> 115 |     if (activeCategory) fetchProducts(activeCategory)\n      |                         ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  116 |   }, [activeCategory, fetchProducts])\n  117 |\n  118 |   const handleCategoryHover = (slug: string) => {",
+      "if (activeCategory) fetchProducts(activeCategory)"
+    ],
+    "count": 1
+  },
+  "e705021163eb06cce41bd93c6fded6e2209be2fde9578ac38edf9cc3d94c179e": {
+    "key": [
+      "src/components/navbar-cart.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\navbar-cart.tsx:86:21\n  84 |   const [isMounted, setIsMounted] = useState(false)\n  85 |\n> 86 |   useEffect(() => { setIsMounted(true) }, [])\n     |                     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  87 |\n  88 |   useEffect(() => {\n  89 |     if (typeof document === \"undefined\") return",
+      "useEffect(() => { setIsMounted(true) }, [])"
+    ],
+    "count": 1
+  },
+  "4dfc1d7c57e8a50b8ba88e11a6f56328413cdeaa806b86ab10525b29d42a5dcf": {
+    "key": [
+      "src/components/navbar-cart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const mapped: CartItem[] = items.map((it: any) => {"
+    ],
+    "count": 1
+  },
+  "6d18ce42ee2ae3d350291bb160129c0526a8e199bcdd183810d349105b811cbb": {
+    "key": [
+      "src/components/navbar-cart.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'remaining' is assigned a value but never used.",
+      "const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cartSubtotal)"
+    ],
+    "count": 1
+  },
+  "78a63e7fcdee8210c12a1a503bb12f7ef872fb88c1952e25a7ed4348cb6bb824": {
+    "key": [
+      "src/components/navbar-with-categories.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const categories: Category[] = catRes.map((c: any) => ({"
+    ],
+    "count": 1
+  },
+  "679b76d522e52e2da566f6edc02f9f6c239d31b19f785e568619a39e31da709f": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'Globe' is defined but never used.",
+      "Globe,"
+    ],
+    "count": 1
+  },
+  "eda1ce0e40de0be49ccc8d80952d37dad05d87b3568f5309d4ea945dcb9d1514": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'LANGUAGE_OPTIONS' is assigned a value but never used.",
+      "const LANGUAGE_OPTIONS = ["
+    ],
+    "count": 1
+  },
+  "9513e5f058ba153798fa9305e281713f40793c3581d3af436a2af01dc410ea21": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'language' is assigned a value but never used.",
+      "const [language, setLanguage] = useState(\"EN\")"
+    ],
+    "count": 1
+  },
+  "cf1e726ff7c52f18f36e9412bfd3abed2349a1e8dc8d362054edc27f6bf4afed": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'isAuthResolved' is assigned a value but never used.",
+      "const [isAuthResolved, setIsAuthResolved] = useState(false)"
+    ],
+    "count": 1
+  },
+  "ca224e5c7667f540e5c9097a901893fa1bcbc0a8e4575bc2660c3ffbad944075": {
+    "key": [
+      "src/components/navbar.tsx",
+      null,
+      1,
+      "Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps').",
+      "// eslint-disable-next-line react-hooks/exhaustive-deps"
+    ],
+    "count": 1
+  },
+  "b5ee7ffeffb7c7a00ae55fdbee4eb0b4c9747187d79f673300b95b11ef635c82": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const mapped: Category[] = items.map((c: any) => ({"
+    ],
+    "count": 1
+  },
+  "b486fb030c78b68de550ba74e07ac234c3ac2d397c5ef050eac5c5e1b089228c": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) {"
+    ],
+    "count": 1
+  },
+  "cf2b5ba3582c4c2e09b22fb0fc8edbff57104566a638fbdba447661ef249d34a": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'rootCategories' is assigned a value but never used.",
+      "const rootCategories = internalCategories.filter((cat) => {"
+    ],
+    "count": 1
+  },
+  "159af68b8cc1e9a60e4903f15fc572d6a696942abeb2580a4109133676127f24": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-unused-expressions",
+      1,
+      "Expected an assignment or function call and instead saw an expression.",
+      "next.has(id) ? next.delete(id) : next.add(id)"
+    ],
+    "count": 1
+  },
+  "83ef1fa583f0fe03e7d7e59bae762209b5a485300799009e85389ce41019dcb6": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'handleLanguageSelect' is assigned a value but never used.",
+      "const handleLanguageSelect = (code: string) => {"
+    ],
+    "count": 1
+  },
+  "fa2e9fb9772d67642baa4d666097ffe2be160dc5d6103218ddd7fe1766a2f439": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "[cat.id]: (data.products ?? []).slice(0, 6).map((p: any) => ({"
+    ],
+    "count": 1
+  },
+  "ad85217c4dd4abf40bbdb10d3fcc75ef6f43b7f40cebbd5cf2e84b726ed6fff2": {
+    "key": [
+      "src/components/navbar.tsx",
+      "@next/next/no-img-element",
+      1,
+      "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "<img"
+    ],
+    "count": 1
+  },
+  "362f97ca38d3cfd41ed4ea017c516868b151432042f4dde2d1854d917deede3e": {
+    "key": [
+      "src/components/newArrive.tsx",
+      "react-hooks/exhaustive-deps",
+      1,
+      "React Hook useEffect has a missing dependency: 'startAuto'. Either include it or remove the dependency array.",
+      "}, [pageCount]);"
+    ],
+    "count": 1
+  },
+  "794be1f3d4a5534f6dff30f0a89e4c37915d7b342d4d16f3d53f8ad73d4bab30": {
+    "key": [
+      "src/components/newArrive.tsx",
+      "react-hooks/exhaustive-deps",
+      1,
+      "React Hook useEffect has a missing dependency: 'animateCurrentPage'. Either include it or remove the dependency array.",
+      "}, [pageCount]);"
+    ],
+    "count": 1
+  },
+  "e823fbd3dc7589b9a9b7ffb05bd35595872f64a7c44ec7d0d70eb0dbc9fadc63": {
+    "key": [
+      "src/components/reviews.tsx",
+      "react/no-unescaped-entities",
+      2,
+      "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.",
+      "\"{testimonial.text}\""
+    ],
+    "count": 2
+  },
+  "18953da5df9441389662f6878150770c99593958a23c390ee5f33907a0651d2f": {
+    "key": [
+      "src/components/shop/filters-sidebar.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\shop\\filters-sidebar.tsx:68:5\n  66 |\n  67 |   useEffect(() => {\n> 68 |     setLocal(value)\n     |     ^^^^^^^^ Avoid calling setState() directly within an effect\n  69 |   }, [value])\n  70 |\n  71 |   function patch(p: Partial<ShopFilters>) {",
+      "setLocal(value)"
+    ],
+    "count": 1
+  },
+  "600664a1fbd7303a17b901477e9f2e5bc4a3681409e5773ae2ce906bdb7032b5": {
+    "key": [
+      "src/components/shop/product-card.tsx",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\shop\\product-card.tsx:67:5\n  65 |\n  66 |   useEffect(() => {\n> 67 |     setLiked(initialWishlisted)\n     |     ^^^^^^^^ Avoid calling setState() directly within an effect\n  68 |   }, [initialWishlisted])\n  69 |\n  70 |   const imageSrc = imageCount > 0 ? imageUrls[0] : '/aboutimg.webp'",
+      "setLiked(initialWishlisted)"
+    ],
+    "count": 1
+  },
+  "ea70f1b43bafb97dd07961f6782820b4a3c8f4b186d93c28ee9aec3b039e07e7": {
+    "key": [
+      "src/components/ui/chart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "payload?: Array<Record<string, any>>"
+    ],
+    "count": 2
+  },
+  "315352201739422e9f4f6b83ce98fb651add930241e682ad242f3ff856a31c9d": {
+    "key": [
+      "src/components/ui/chart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "labelFormatter?: (value: React.ReactNode, payload: Array<Record<string, any>>) => React.ReactNode"
+    ],
+    "count": 1
+  },
+  "00db650c9d2562d083e4a44a9e7fc071fe941ca5aa8c0667fcc62c4cf7e8e43f": {
+    "key": [
+      "src/components/ui/chart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "value: any,"
+    ],
+    "count": 1
+  },
+  "eaaad5b7e18819934ce1efc75f9c6d47b7311ade605a312ef6dfa2e7426cb14d": {
+    "key": [
+      "src/components/ui/chart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "item: Record<string, any>,"
+    ],
+    "count": 1
+  },
+  "eb976369f092e06dcd1f526851d3242f2591e5a66ea27b3893e1756e10c3f92c": {
+    "key": [
+      "src/components/ui/chart.tsx",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "payload: Record<string, any>"
+    ],
+    "count": 1
+  },
+  "54bb8cdf5604db66eb8eea7fa819525dba348997b10e69bc3795a722e7525d1f": {
+    "key": [
+      "src/components/ui/sidebar.tsx",
+      "react-hooks/purity",
+      2,
+      "Error: Cannot call impure function during render\n\n`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\components\\ui\\sidebar.tsx:611:26\n  609 |   // Random width between 50 to 90%.\n  610 |   const width = React.useMemo(() => {\n> 611 |     return `${Math.floor(Math.random() * 40) + 50}%`\n      |                          ^^^^^^^^^^^^^ Cannot call impure function\n  612 |   }, [])\n  613 |\n  614 |   return (",
+      "return `${Math.floor(Math.random() * 40) + 50}%`"
+    ],
+    "count": 1
+  },
+  "cb5487f13b5d28bf4559f182e213502f14493b4a17d1d6964a65cfe994597400": {
+    "key": [
+      "src/components/ui/use-toast.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'actionTypes' is assigned a value but only used as a type.",
+      "const actionTypes = {"
+    ],
+    "count": 1
+  },
+  "da52c39bf29c73c9d329a6fdee4f9d4c2de35e6c3145676caebde83817b52b50": {
+    "key": [
+      "src/hooks/useOrders.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "items: any[]"
+    ],
+    "count": 1
+  },
+  "a835d354411d74e6b014fc79046758c062934e815aed04b861b8446968d1751f": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [parent, setParent] = useState<any>(null)"
+    ],
+    "count": 1
+  },
+  "e5899e581701f62942ed8a201ceb98d34cd35f60fd29e1565e010f9f10f953d4": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [variants, setVariants] = useState<any[]>([])"
+    ],
+    "count": 1
+  },
+  "720139e8dfb9b11241af7f6f39a3ea91fcf6bd1553e582fc70773f8618f059ec": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [categories, setCategories] = useState<any[]>([])"
+    ],
+    "count": 1
+  },
+  "f289cc1519561bb102e6f412840db8d01ff02d554bdc58776c2b2a6ce367e534": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const [variables, setVariables] = useState<any[]>([])"
+    ],
+    "count": 1
+  },
+  "d7e82ae782b2257924a63b7f2fd0417e5cf36fbaabbea715d676c55595a7406e": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "function normalizeVariantKey(input: any): Record<string, string> {"
+    ],
+    "count": 1
+  },
+  "d373ca96bb147db36665edd7c710ca5207703e6f006725c10ad84724a3a634ea": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "v.items.map((r: any) => ({"
+    ],
+    "count": 1
+  },
+  "70b5a063a60524ef8249dfc33f3827d26ddc34e5598ff5c74d14fe74eaabb5b2": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "? r.expand.category.map((c: any) => c.id)"
+    ],
+    "count": 1
+  },
+  "4c535a81f8b686ef0c3160b3c58535b469c56b203322e3057e8bee83993551cf": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "setCategories(cats.map((c: any) => ({ id: c.id, name: c.name ?? '' })))"
+    ],
+    "count": 1
+  },
+  "663982e331665d5873fe440e84af47b63db5bb0e71d2d515869c835de891d6f6": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "vars.map((v: any) => ({"
+    ],
+    "count": 1
+  },
+  "7d0b924f812b69847983efa226022f149fb8f69da7b599770d47f0118c468d70": {
+    "key": [
+      "src/hooks/useProductVariants.ts",
+      "react-hooks/set-state-in-effect",
+      2,
+      "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\hooks\\useProductVariants.ts:84:5\n  82 |\n  83 |   useEffect(() => {\n> 84 |     fetchData()\n     |     ^^^^^^^^^ Avoid calling setState() directly within an effect\n  85 |   }, [fetchData])\n  86 |\n  87 |   // ✅ Return the refetch function",
+      "fetchData()"
+    ],
+    "count": 1
+  },
+  "12f0af106350cc80d57eb0d70431927204d8a5550e44647e0a8b3265258e936c": {
+    "key": [
+      "src/hooks/useProducts.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'allCategories' is defined but never used.",
+      "allCategories,"
+    ],
+    "count": 1
+  },
+  "faa391bceab274722e9775617dd7567cb937d87b9712457691a0046efc03f01e": {
+    "key": [
+      "src/hooks/useProducts.ts",
+      "react-hooks/exhaustive-deps",
+      1,
+      "React Hook useCallback has a missing dependency: 'setTimedNotice'. Either include it or remove the dependency array.",
+      "}, ["
+    ],
+    "count": 1
+  },
+  "e82d7dda3ac6d0eed9da84979ba7b924f2672025f24528748e2b8940b4fdc1a3": {
+    "key": [
+      "src/lib/admin/actions.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} as any)"
+    ],
+    "count": 1
+  },
+  "d6eaa2192b519d759cf7bba389a62b2af007f162d835062a3aac5bf5106c21e7": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "function mapAdminVedetteProduct(record: any): AdminVedetteProductOption {"
+    ],
+    "count": 1
+  },
+  "0eb51470eea921fbb3c23572d0a4d69212d28ddc83735495b6962d49a00756c4": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} as any)"
+    ],
+    "count": 1
+  },
+  "c3408fd268d7496f4b976626939bc5fb90466d8798837fb71fec55066bed5d19": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "return res.items.map((r: any) => ({"
+    ],
+    "count": 1
+  },
+  "ca93d527e4d79cca20819e094b9b514bdfc49f1405cf3c37e1707c89c67e566a": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "for (const p of productsRes as any[]) {"
+    ],
+    "count": 1
+  },
+  "91029c1d389edf0252a04e8a8c23cf2a05744b8f4f3d9ca5f9a0710f11fd38cb": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "for (const variable of variables as any[]) {"
+    ],
+    "count": 2
+  },
+  "2dffaa1c028835eccec03b06c2d32c5142ebba38b4fa04fde92ebee71bf07431": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const allCategories = catRes.map((c: any) => ({ id: c.id, name: c.name }))"
+    ],
+    "count": 1
+  },
+  "320f00f98c29105fb9b4bcb7e71b45881bdf5e41ee66047488e5ab9c8ac3d1f8": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const products: AdminInventoryProductStock[] = productsRes.map((p: any) => ({"
+    ],
+    "count": 1
+  },
+  "0c04f1ed17bce7e410eee138c73f63bb9b10236c524877fd824440fde17565c9": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "? p.expand.category.map((c: any) => c.id)"
+    ],
+    "count": 1
+  },
+  "5ba49404852dd3e6f66df2ac7b0333a441b49f3ff13123f99b4c41f3640ec051": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const products = productRecords.map((record: any) => mapAdminVedetteProduct(record))"
+    ],
+    "count": 1
+  },
+  "f3e808583ada5e36a374acb9442c25261dc6ac2ca2ddb3184e763d4a3f7d0d73": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "for (const item of vedettesRes.items as any[]) {"
+    ],
+    "count": 1
+  },
+  "92000ec9babb022157cd52df4173d1c4a89e1919e3aac1b4d27b56344f5109fe": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      ".flatMap((order: any) =>"
+    ],
+    "count": 1
+  },
+  "c33b20ae21280f946a4e5ae0b39f3954d1e948aafedda0a779ac191db5ac3276": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "? order.items.map((item: any) => (typeof item?.productId === 'string' ? item.productId : ''))"
+    ],
+    "count": 1
+  },
+  "40690738d496d02d73048982a014669c8dd11f8291c12a31e6934ed041f228db": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "for (const product of products as any[]) {"
+    ],
+    "count": 2
+  },
+  "5b8f80a6addcea73cebc41bedf0c48171c6a056ea18b2d7c24b6211e2eed5f8d": {
+    "key": [
+      "src/lib/admin/data.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const itemsWithImages = rawItems.map((item: any) => {"
+    ],
+    "count": 1
+  },
+  "158eb7d5cdcb1804aec54781afcd977cbc9ea36234ae9d16b110e662cef34e75": {
+    "key": [
+      "src/lib/api/products.pb.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'cookies' is defined but never used.",
+      "import { cookies, headers } from 'next/headers'"
+    ],
+    "count": 1
+  },
+  "2f2f4cefd692985d60a5d91fec61a6027882090cdea57efbfb47149127814098": {
+    "key": [
+      "src/lib/api/products.pb.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'headers' is defined but never used.",
+      "import { cookies, headers } from 'next/headers'"
+    ],
+    "count": 1
+  },
+  "dacf83ada8e90c0c2bec918098fb3b8b4f99e71deb31177d20726c9350d25b5c": {
+    "key": [
+      "src/lib/api/products.pb.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "pb.authStore.save(adminToken, null as any) // bearer token"
+    ],
+    "count": 1
+  },
+  "765b17b7badca3af17e09fcde1490f3a5dc8f723d0ba356f0044e4c756603667": {
+    "key": [
+      "src/lib/api/products.pb.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "expand?: Record<string, any>"
+    ],
+    "count": 1
+  },
+  "9dda6055c9014b2db3336cd852eb0ed2613e49d5494f82c68f5d62b450fb433f": {
+    "key": [
+      "src/lib/auth/client.ts",
+      "react-hooks/immutability",
+      2,
+      "Error: Cannot access variable before it is declared\n\n`checkAuth` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\lib\\auth\\client.ts:21:5\n  19 |\n  20 |   useEffect(() => {\n> 21 |     checkAuth()\n     |     ^^^^^^^^^ `checkAuth` accessed before it is declared\n  22 |   }, [])\n  23 |\n  24 |   const checkAuth = async () => {\n\nC:\\Users\\oubay\\Documents\\chia charged\\ecommerce-scaffold\\src\\lib\\auth\\client.ts:24:3\n  22 |   }, [])\n  23 |\n> 24 |   const checkAuth = async () => {\n     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 25 |     try {\n     | ^^^^^^^^^\n> 26 |       let res = await fetch('/api/auth/session')\n     …\n     | ^^^^^^^^^\n> 56 |     }\n     | ^^^^^^^^^\n> 57 |   }\n     | ^^^^ `checkAuth` is declared here\n  58 |\n  59 |   const login = useCallback(async (email: string, password: string, redirectTo?: string) => {\n  60 |     try {",
+      "checkAuth()"
+    ],
+    "count": 1
+  },
+  "13b09d8162269e017bf251d692cf4861ea57e52d68741ed9308222507795b8ba": {
+    "key": [
+      "src/lib/auth/client.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 2
+  },
+  "03d409e11670417627206a2d435331c744a6bb96cb247ef21db3bee1e01a65cf": {
+    "key": [
+      "src/lib/bestSellers.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const productIds = res.items.map((r: any) => r.id);"
+    ],
+    "count": 1
+  },
+  "e64e0d2e700498f253a57bb6d35e73b1c758e1477d1aa395399738b8a1e4d5eb": {
+    "key": [
+      "src/lib/bestSellers.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "return res.items.map((r: any): Product => ({"
+    ],
+    "count": 1
+  },
+  "0a35ddd93b6827b630b8eacdf0cf12015619b911ed878145b81ccf57fbc57768": {
+    "key": [
+      "src/lib/categories.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const categories: Category[] = items.map((c: any) => ({"
+    ],
+    "count": 1
+  },
+  "8f8d5fb1008930f7c9ad9af4ea73b911aee75ad8465bab4bc4d44858aabd22eb": {
+    "key": [
+      "src/lib/pb.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'_persistSession' is assigned a value but never used.",
+      "export function getPb(_persistSession = false) {"
+    ],
+    "count": 1
+  },
+  "4388e7bd785cbdf2d7b4fa0787b29007166e785d661830aec51044d1a9aa2806": {
+    "key": [
+      "src/lib/push/admin-order-push.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (error: any) {"
+    ],
+    "count": 1
+  },
+  "5661efff5c441970641ea8c4faf4b64c23dfd1f105ba926697fc41cc93a8221a": {
+    "key": [
+      "src/lib/services/orders.service.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'PB_ID_REGEX' is assigned a value but never used.",
+      "const PB_ID_REGEX = /^[a-zA-Z0-9]{15}$/"
+    ],
+    "count": 1
+  },
+  "b85a8bec76fc0fe89a796e6f488dee61877009aade6989fd85e679f6d7e27482": {
+    "key": [
+      "src/lib/services/orders.service.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} as any)"
+    ],
+    "count": 1
+  },
+  "bc74e3c02d419e6683dfcefef5c6c731f3d36662d9894e6c6aa5d9201ec509d0": {
+    "key": [
+      "src/lib/services/shop-user.service.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "const prod = (it as any).expand?.product as Record<string, unknown> | undefined"
+    ],
+    "count": 1
+  },
+  "af94273732234365f8443d3ac9da98462f2329492a39c9130d949fefaf707553": {
+    "key": [
+      "src/lib/services/shop-user.service.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "if (String((existing as any).user ?? '') !== auth.userId) {"
+    ],
+    "count": 2
+  },
+  "65a1176a5689144dd1b334a1eb5371fd6ce898a4d4c00610fd4f8b4654213167": {
+    "key": [
+      "src/lib/services/shop-user.service.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      ";(err as any).status = 403"
+    ],
+    "count": 2
+  },
+  "fe1735d89d9a5a3fd7e0f8ef5a61885b53ad5955471ad88d45ee882f41afa480": {
+    "key": [
+      "src/lib/services/stats.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'error' is defined but never used.",
+      "} catch (error) {"
+    ],
+    "count": 1
+  },
+  "cc3c769e05486b019700c6a0172db99c32a70a94d408f044f1f5efb5aa7cb71f": {
+    "key": [
+      "src/lib/services/stats.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "return records.items.map((r: any) => {"
+    ],
+    "count": 1
+  },
+  "10bb7a8ae35100b07643b54d2705e9095aac696cbd2f40a45ed471605ee97879": {
+    "key": [
+      "src/lib/services/stats.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "status: r.status as any,"
+    ],
+    "count": 1
+  },
+  "b881ad27cb461618e019a0fc34fec3b8634d950d393ef85aa7ab4909ef6832b5": {
+    "key": [
+      "src/lib/services/stats.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "items.forEach((item: any) => {"
+    ],
+    "count": 1
+  },
+  "1824665ca9aa68efaed596805b398b7a49637803a6bb1c0fab1bfd263ea83ea5": {
+    "key": [
+      "src/lib/services/stats.ts",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'e' is defined but never used.",
+      "} catch (e) {"
+    ],
+    "count": 1
+  },
+  "e6682c50bfcd13947a4ad9f6c22a4454470ad8d6795072a2ea65f257801e46ee": {
+    "key": [
+      "src/lib/wishlist.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "} catch (err: any) {"
+    ],
+    "count": 2
+  },
+  "59fb1792846fd2fc5eaed674eabc4838b08fcbff04a1c6cc4b55e1c321f46759": {
+    "key": [
+      "src/types/product.types.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "variantKey: Record<string, any> | null"
+    ],
+    "count": 1
+  },
+  "44e5561cfc717fe079f43ca14341843a30dc16e41c8e9a110016b2204706d972": {
+    "key": [
+      "src/types/product.types.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "category?: any"
+    ],
+    "count": 1
+  },
+  "10924e677fccf38aa5353233e564b11c39b0294664a4e6c5b9e01855a5091a08": {
+    "key": [
+      "src/types/product.types.ts",
+      "@typescript-eslint/no-explicit-any",
+      2,
+      "Unexpected any. Specify a different type.",
+      "parent?: any"
+    ],
+    "count": 1
+  },
+  "4b120e673f6c243f051b242ecdf12358ed0ea244818ba50766148778e2e60467": {
+    "key": [
+      "tests/credentials.test.cjs",
+      "@typescript-eslint/no-unused-vars",
+      1,
+      "'policy' is assigned a value but never used.",
+      "const policy = load('src/lib/url-policy.ts');"
+    ],
+    "count": 1
+  }
+}

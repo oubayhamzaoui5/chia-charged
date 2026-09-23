@@ -1,72 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chia Charged storefront
 
-## Getting Started
+Next.js storefront and admin dashboard backed by PocketBase, Stripe card payments and Redis rate limits. US delivery; USD catalog; admin-managed shipping and first-order discount.
 
-First, run the development server:
+**Status:** local development/verification. Not approved for public production. Complete local acceptance, then test on the owner's VPS, then hand the verified release to the business hoster. No live credentials or business database are included.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Local preview
+
+Use Node **22.23.2** (`.nvmrc`) and npm. PocketBase **0.31.0** is the pinned tested backend; installer supports Windows/Linux x64.
+
+```sh
+npm ci
+npm run setup:backend
+npm run preview:local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the URL printed by the launcher (normally http://127.0.0.1:3100). Preview uses an isolated synthetic database under `.local-preview/`, demo products, and no live payment/email configuration. See [preview accounts and instructions](docs/local-preview.md). Never point test/preview tools at business data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Admin Order Push Notifications (Works When Site Is Closed)
-
-This project supports background admin order notifications via Web Push.
-
-1. Install dependencies:
-```bash
-npm install
+```sh
+npm test
+npm run lint
+npm run build:check
 ```
 
-2. Generate VAPID keys:
-```bash
-npx web-push generate-vapid-keys
-```
+`npm test` exercises disposable PocketBase instances and mocked provider boundaries. `lint` rejects new findings against recorded historical debt; it does **not** mean full lint is clean. `build:check` uses synthetic configuration and is not the deployable production build. Real SMTP, Stripe and Redis integration require staging checks.
 
-3. Add these env vars to `.env.local`:
-```env
-PB_ADMIN_EMAIL=your_pocketbase_superuser_email
-PB_ADMIN_PASSWORD=your_pocketbase_superuser_password
-WEB_PUSH_SUBJECT=mailto:you@example.com
-WEB_PUSH_PUBLIC_KEY=generated_public_key
-WEB_PUSH_PRIVATE_KEY=generated_private_key
-NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY=generated_public_key
-```
+## Architecture
 
-4. In PocketBase, create collection `admin_push_subscriptions` with fields:
-- `adminUserId` (text)
-- `endpoint` (text, unique)
-- `p256dh` (text)
-- `auth` (text)
+For a fresh **disposable Linux x64 checkout**, run `bash scripts/verify-linux.sh` as a non-root user. It downloads a checksum-verified, temporary pinned Node runtime and runs installation, backend setup, dependency audit, lint, tests and build verification. Requires `curl`, `tar`, `sha256sum` and `unzip`. It refuses checkout environment files and does not replace system Node or configure production services.
 
-5. Login as admin, open dashboard, and enable "Notifications commandes".
+- `src/app/`: storefront, admin, API routes; canonical products under `/product/[slug]`.
+- `src/lib/`: pricing, session authorization, encrypted credential storage, configuration and shared validation.
+- `backend/pb_migrations/`: versioned schema/security changes; many intentionally forward-only.
+- `backend/pb_hooks/`: atomic stock/order/refund operations, notification worker, visit retention.
+- `tests/`: isolated integration and runtime tests. `scripts/`: installer, preview and verification tools.
+- PocketBase persists customer/catalog/order data and images. Next runs with a private backend service account. Browser permissions remain restricted independently of dashboard visibility.
+- Stripe signed webhooks establish paid state; fulfillment and refunds have separate audited transitions.
+- Redis is required for production rate-limited routes. Protected requests are denied during Redis failure.
 
-Notes:
-- Push requires HTTPS in production (localhost works in development).
-- If env vars or collection are missing, in-page polling notifications still work while admin pages are open.
+## Configuration and startup
+
+[`.env.example`](.env.example) lists required settings without secrets. Public URLs are build-time configuration: rebuild after changing them. Use `npm run build` with actual target configuration, then `npm start` behind HTTPS ingress. Start PocketBase separately with the versioned hooks/migrations and a persistent data directory. Detailed sequence: [hoster runbook](docs/hoster-handover.md).
+
+Encrypted provider credentials live outside the release folder. With `OAUTH_ENCRYPTION_KEY` securely loaded, initialize a **new** private file using `node scripts/provision-credentials.cjs init ABSOLUTE_DESTINATION`. Never overwrite an existing credential store or lose its encryption key. [Credential operations](docs/step-3-credentials.md).
+
+## Owner and operator guides
+
+- [Owner dashboard setup](docs/owner-setup.md): products, labels, policies, discounts, testimonials.
+- [Email delivery](docs/email-delivery.md): SMTP worker, retries, guest links and recovery.
+- [Runtime safety](docs/runtime-safety.md): Redis, trusted ingress and retention.
+- [Hoster handover and launch gates](docs/hoster-handover.md).
+- [Remaining plan](docs/production-readiness-plan.md) and [implementation progress](docs/production-readiness-progress.md). Earlier step reports are historical; later progress entries supersede them.
+
+## Release exclusions
+
+Do not ship `.env.local`, private keys, `secrets/`, `.local-preview/`, `.local-tools/`, `backend/pb_data/`, or `node_modules/`. Include source, lockfile, migrations, hooks, tests and documentation. Transfer runtime secrets separately through a secure channel. Do not publish customer data in the repository.
+
+## Outstanding release gates
+
+Clean-install/VPS verification, actual payment/email/Redis tests, backup restoration, monitoring, performance review and mobile/accessibility acceptance remain required. Existing lint/type-looseness debt is documented, not waived. Owner confirms product facts, quoted testimonials and legal/business text before activation.

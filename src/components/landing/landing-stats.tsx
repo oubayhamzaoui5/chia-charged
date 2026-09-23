@@ -1,17 +1,18 @@
 "use client"
 
+import { useStoreSettings } from "@/hooks/useStoreSettings"
 import { motion } from "framer-motion"
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 
-const stats = [
-  { value: "500+", label: "Happy Customers" },
-  { value: "22g", label: "Protein Per Serving" },
-  { value: "100%", label: "Natural Ingredients" },
-  { value: "4.8", label: "Average Rating", suffix: "★" },
-]
-
 export default function LandingStats() {
+  const { socialProof } = useStoreSettings()
+  const stats = [
+    ...(socialProof.ratingsEnabled ? [{ value: socialProof.customerCount, label: "Happy Customers", suffix: "" }] : []),
+    { value: "22g", label: "Protein Per Serving", suffix: "" },
+    { value: "Whey", label: "Contains Milk", suffix: "" },
+    ...(socialProof.ratingsEnabled ? [{ value: String(socialProof.averageRating), label: "Average Rating", suffix: "★" }] : []),
+  ]
   return (
     <section className="relative border-b-3 border-black">
       <div className="mx-auto max-w-[1400px] px-6 py-6 md:py-12">

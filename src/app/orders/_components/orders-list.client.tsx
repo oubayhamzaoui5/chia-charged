@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { CreditCard, PackageCheck, Truck, ShoppingBag, RotateCcw, Pause } from 'lucide-react'
+import { PackageCheck, Truck, ShoppingBag, RotateCcw, Pause } from 'lucide-react'
 import type { CustomerOrder, CustomerOrderStatus } from '@/lib/services/orders.service'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
@@ -11,11 +11,10 @@ const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%
 type Props = { orders: CustomerOrder[] }
 
 const statusConfig: Record<CustomerOrderStatus, { label: string; bg: string; text: string; icon: any }> = {
-  paid: { label: 'Paid', bg: '#E8F5E9', text: '#2E7D32', icon: CreditCard },
+  'on hold': { label: 'On hold', bg: '#ECEFF1', text: '#37474F', icon: Pause },
   delivering: { label: 'Out for delivery', bg: '#EDE7F6', text: '#6A1B9A', icon: Truck },
   delivered: { label: 'Delivered', bg: '#E3F2FD', text: '#1565C0', icon: PackageCheck },
-  refunded: { label: 'Refunded', bg: '#FCE4EC', text: '#AD1457', icon: RotateCcw },
-  'on hold': { label: 'On hold', bg: '#ECEFF1', text: '#37474F', icon: Pause },
+  cancelled: { label: 'Cancelled', bg: '#FCE4EC', text: '#AD1457', icon: RotateCcw },
 }
 
 const rotations = ['-0.6deg', '0.4deg', '-0.3deg', '0.5deg', '-0.4deg']

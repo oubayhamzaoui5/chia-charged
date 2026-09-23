@@ -1,11 +1,8 @@
+import { authCookieOptions } from '@/lib/auth/cookie-options'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import PocketBase from 'pocketbase'
+import { createServerPb } from '@/lib/pb'
 
-const PB_URL =
-  process.env.POCKETBASE_URL ??
-  process.env.NEXT_PUBLIC_PB_URL ??
-  'http://127.0.0.1:8090'
 
 type SyncBody = {
   token?: string
@@ -30,12 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Invalid sync payload' }, { status: 400 })
     }
 
-    const isHttpsRequest =
-      request.headers.get('x-forwarded-proto') === 'https' ||
-      request.nextUrl.protocol === 'https:' ||
-      process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https://') === true
-
-    const pb = new PocketBase(PB_URL)
+    const pb = createServerPb()
     pb.authStore.save(body.token, body.user as any)
 
     const refreshed = await pb.collection('users').authRefresh()
@@ -55,19 +47,14 @@ export async function POST(request: NextRequest) {
         username: record.username,
         role: record.role || 'customer',
         isActive: record.isActive !== false,
+        canManageAdmins: record.canManageAdmins === true,
         verified: record.verified || false,
         avatar: record.avatar || undefined,
       },
     })
 
     const cookieStore = await cookies()
-    cookieStore.set('pb_auth', authCookie, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' && isHttpsRequest,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
+    cookieStore.set('pb_auth', authCookie, authCookieOptions())
 
     return NextResponse.json({
       user: {
@@ -79,6 +66,7 @@ export async function POST(request: NextRequest) {
         username: record.username,
         role: record.role || 'customer',
         isActive: record.isActive !== false,
+        canManageAdmins: record.canManageAdmins === true,
         verified: record.verified || false,
         avatar: record.avatar || undefined,
       },

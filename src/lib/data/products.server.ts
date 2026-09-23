@@ -8,6 +8,8 @@ import {
 } from '@/types/product.server.types'
 import type { Product, CategoryOption, Variable } from '@/types/product.types'
 import { normalizeRelationIds } from '@/utils/product.utils'
+import { resolveCatalogPrice } from '@/lib/catalog-pricing'
+import { normalizeProductNutrition } from '@/lib/product-nutrition'
 
 function buildPbFileUrl(collection: string, id: string, file?: string): string | undefined {
   if (!file || !file.trim()) return undefined
@@ -39,26 +41,11 @@ function resolvePromoPrice(
   categoryIds: string[],
   categoryPromoById?: Map<string, { promo: number; activeAll: boolean }>
 ): number | null {
-  const directPromo = productPromo != null && productPromo > 0 && productPromo < price ? productPromo : null
-  if (!categoryPromoById || categoryIds.length === 0) return directPromo
-
-  const overriding = categoryIds
-    .map((id) => categoryPromoById.get(id))
-    .filter((c): c is { promo: number; activeAll: boolean } => !!c && c.activeAll)
-
-  if (overriding.length === 0) return directPromo
-
-  let best: number | null = null
-  for (const cat of overriding) {
-    const pct = Number(cat.promo ?? 0)
-    if (!Number.isFinite(pct) || pct <= 0) continue
-    const safePct = Math.min(100, Math.max(0, pct))
-    const candidate = Number((price * (1 - safePct / 100)).toFixed(2))
-    if (candidate <= 0 || candidate >= price) continue
-    if (best == null || candidate < best) best = candidate
-  }
-
-  return best
+  const resolved = resolveCatalogPrice(price, productPromo, categoryIds.map((id) => {
+    const category = categoryPromoById?.get(id)
+    return { id, percent: Number(category?.promo ?? 0), active: category?.activeAll === true }
+  }))
+  return resolved && resolved.unitPriceCents < resolved.baseUnitPriceCents ? resolved.unitPriceCents / 100 : null
 }
 
 /**
@@ -97,6 +84,9 @@ function normalizeProduct(
           .filter((item) => item.label || item.value)
       : [],
     relatedProducts: normalizeRelationIds(r.related_products ?? r.expand?.related_products),
+    ingredients: r.ingredients,
+    allergenStatement: r.allergenStatement,
+    nutritionFacts: normalizeProductNutrition(r.nutritionFacts),
   }
 }
 

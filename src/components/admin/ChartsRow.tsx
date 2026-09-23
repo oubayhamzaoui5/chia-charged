@@ -20,7 +20,7 @@ export default function ChartsRow() {
     return labels;
   }, []);
 
-  const formatDT = (amount: number) => {
+  const formatCurrency = (amount: number) => {
     return amount.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -69,7 +69,7 @@ export default function ChartsRow() {
         <div className="flex items-end justify-between gap-6">
           <div className="flex flex-col justify-end pb-2">
             <p className="text-3xl font-bold text-slate-800 mb-1">
-              ${formatDT(data.weeklySalesTotal)}
+              ${formatCurrency(data.weeklySalesTotal)}
             </p>
             <span className={`inline-flex items-center text-sm font-medium ${data.salesGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {data.salesGrowth}% &nbsp;
@@ -80,7 +80,7 @@ export default function ChartsRow() {
             {hoveredDay !== null && (
               <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap pointer-events-none z-10 shadow-lg">
                 {/* FIXED: Using dynamicDays instead of static array */}
-                {dynamicDays[hoveredDay]}: ${formatDT(data.weeklySalesData[hoveredDay])}
+                {dynamicDays[hoveredDay]}: ${formatCurrency(data.weeklySalesData[hoveredDay])}
               </div>
             )}
             {data.weeklySalesData.map((val: number, i: number) => {

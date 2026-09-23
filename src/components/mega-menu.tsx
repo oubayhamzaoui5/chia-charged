@@ -98,7 +98,7 @@ export function MegaMenu({ isOpen, categories, onClose }: MegaMenuProps) {
             name: p.name,
             price: p.price,
             promoPrice: p.promoPrice,
-            currency: p.currency ?? "DT",
+            currency: p.currency ?? "USD",
             imageUrls: p.imageUrls ?? (p.imageUrl ? [p.imageUrl] : []),
             isNew: p.isNew ?? false,
           }))
@@ -194,7 +194,7 @@ export function MegaMenu({ isOpen, categories, onClose }: MegaMenuProps) {
                     return (
                       <Link
                         key={cat.id}
-                        href={`/shop/category/${cat.slug}`}
+                        href="/#flavors"
                         onClick={onClose}
                         onMouseEnter={() => handleCategoryHover(cat.slug)}
                         className="relative block px-4 py-3 transition-colors duration-150"

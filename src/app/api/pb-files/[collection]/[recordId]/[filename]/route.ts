@@ -1,3 +1,6 @@
+import { getServerPbOrigin } from '@/lib/url-policy'
+import { getSession } from '@/lib/auth/server'
+import { createServerPb } from '@/lib/pb'
 import type { NextRequest } from 'next/server'
 
 type RouteContext = {
@@ -9,7 +12,7 @@ type RouteContext = {
 }
 
 function getPbBaseUrl(): string {
-  return process.env.POCKETBASE_URL ?? process.env.NEXT_PUBLIC_PB_URL ?? 'http://127.0.0.1:8090'
+  return getServerPbOrigin()
 }
 
 export const runtime = 'nodejs'
@@ -21,18 +24,32 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return new Response('Not found', { status: 404 })
   }
 
+  // Anonymous view-rule check also covers collection IDs used by existing URLs.
+  const catalog = createServerPb()
+  const session = await getSession()
+  if (session?.user.role === 'admin') catalog.authStore.save(session.token, session.user as any)
+  let record
+  try { record = await catalog.collection(collection).getOne(recordId, { requestKey: null }) }
+  catch { return new Response('Not found', { status: 404 }) }
+  const imageField: Record<string, string> = { products: 'images', categories: 'coverImage', posts: 'coverImage', variables: 'image' }
+  const field = imageField[record.collectionName]
+  const files = field ? [record[field]].flat() : []
+  if (!files.includes(filename)) return new Response('Not found', { status: 404 })
+
   const target = new URL(
     `/api/files/${encodeURIComponent(collection)}/${encodeURIComponent(recordId)}/${encodeURIComponent(filename)}`,
     getPbBaseUrl()
   )
 
+  if (session?.user.role === 'admin') target.searchParams.set('token', await catalog.files.getToken())
   const searchParams = request.nextUrl.searchParams
   for (const [key, value] of searchParams.entries()) {
-    target.searchParams.append(key, value)
+    if (key === 'thumb' || key === 'download') target.searchParams.append(key, value)
   }
 
   const upstream = await fetch(target.toString(), {
     method: 'GET',
+    redirect: 'error',
     headers: {
       accept: request.headers.get('accept') ?? '*/*',
     },
@@ -49,6 +66,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (value) responseHeaders.set(header, value)
   }
 
+  responseHeaders.set('cache-control', 'private, no-store')
+  responseHeaders.set('x-content-type-options', 'nosniff')
   return new Response(upstream.body, {
     status: upstream.status,
     headers: responseHeaders,

@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { CheckCircle2, Package, MapPin, Phone, CreditCard, ArrowRight, ArrowLeft, Truck, Download } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import Footer from '@/components/footer'
+import { mergeGuestCartAfterAuth } from '@/lib/shop/client-api'
 
 const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
@@ -25,6 +26,9 @@ type Order = {
   id: string
   created: string
   status: string
+  fulfillmentStatus: string
+  paymentStatus: string
+  isGuest: boolean
   firstName: string
   lastName: string
   phone: string
@@ -33,31 +37,77 @@ type Order = {
   postalCode: string
   paymentMode: string
   total: number
+  shipping?: number | null
+  subtotal?: number | null
+  discount?: number | null
+  itemsTotal?: number | null
+  tax?: number | null
+  taxStatus?: string
+  country?: string
+  state?: string
   currency: string
   items: OrderItem[]
 }
 
 const statusLabels: Record<string, string> = {
-  paid: 'Paid',
+  'on hold': 'On hold',
   delivering: 'Delivering',
   delivered: 'Delivered',
-  refunded: 'Refunded',
-  'on hold': 'On hold',
+  cancelled: 'Cancelled',
+}
+
+const GUEST_CART_KEY = 'guest_cart'
+const RECONCILED_ORDER_PREFIX = 'guest_cart_reconciled_'
+const CHECKOUT_ATTEMPT_KEY = 'checkout_attempt_v1'
+
+function reconcilePaidGuestCart(order: Order) {
+  if (!order.isGuest || order.paymentStatus !== 'paid' || typeof window === 'undefined') return
+  const marker = `${RECONCILED_ORDER_PREFIX}${order.id}`
+  if (window.localStorage.getItem(marker) === '1') return
+  try {
+    const current = JSON.parse(window.localStorage.getItem(GUEST_CART_KEY) || '[]')
+    if (!Array.isArray(current)) return
+    const purchased = new Map<string, number>()
+    for (const item of order.items) {
+      if (item.productId) purchased.set(item.productId, (purchased.get(item.productId) || 0) + Math.max(1, item.quantity))
+    }
+    const next = current.flatMap((item: { productId?: unknown; quantity?: unknown }) => {
+      const productId = typeof item.productId === 'string' ? item.productId : ''
+      const quantity = Number(item.quantity)
+      if (!productId || !Number.isSafeInteger(quantity) || quantity < 1) return []
+      const remaining = Math.max(0, quantity - (purchased.get(productId) || 0))
+      return remaining > 0 ? [{ productId, quantity: remaining }] : []
+    })
+    window.localStorage.setItem(GUEST_CART_KEY, JSON.stringify(next))
+    window.localStorage.setItem(marker, '1')
+    window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY)
+    window.dispatchEvent(new Event('cart:updated'))
+  } catch { /* Keep cart if local storage is unavailable. */ }
+}
+
+function paymentHeading(status: string) {
+  if (status === 'paid') return { title: 'Confirmed!', message: 'Thanks for your purchase — payment is verified.' }
+  if (status === 'failed' || status === 'expired' || status === 'checkout_failed') return { title: 'Not completed', message: 'Payment was not completed. Your cart remains available to retry.' }
+  return { title: 'Processing', message: 'Your order is saved while payment confirmation completes.' }
+}
+
+const paymentStatusLabels: Record<string, string> = {
+  pending: 'Payment pending', paid: 'Paid', failed: 'Payment failed', expired: 'Payment expired',
+  checkout_failed: 'Checkout failed', refunded: 'Refunded', legacy_unverified: 'Payment needs review',
 }
 
 const paymentLabels: Record<string, string> = {
-  cash_on_delivery: 'Cash on delivery',
   stripe: 'Card payment',
-  test_mode: 'Test mode',
 }
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('id')
+  const isEmailRecovery = searchParams.get('recovery') === '1'
 
   const [order, setOrder] = useState<Order | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(Boolean(orderId))
+  const [error, setError] = useState<string | null>(() => orderId ? null : 'Missing order ID.')
   const [downloading, setDownloading] = useState(false)
 
   const handleDownloadInvoice = async (o: Order) => {
@@ -125,12 +175,11 @@ function OrderConfirmationContent() {
       doc.setFont('helvetica', 'normal')
       doc.setFontSize(8.5)
       doc.setTextColor(80, 80, 80)
-      const pm: Record<string, string> = { cash_on_delivery: 'Cash on delivery', stripe: 'Card payment', test_mode: 'Test mode' }
+      const pm: Record<string, string> = { stripe: 'Card payment' }
       doc.text(pm[o.paymentMode] ?? o.paymentMode, col2, ry); ry += 5
       doc.setFont('helvetica', 'bold')
       doc.setTextColor(17, 17, 17)
-      const statusLabelsLocal: Record<string, string> = { pending: 'Pending', confirmed: 'Confirmed', delevering: 'Out for delivery', delivered: 'Delivered', cancelled: 'Cancelled' }
-      doc.text(`Status: ${statusLabelsLocal[o.status] ?? o.status}`, col2, ry)
+      doc.text(`Payment: ${paymentStatusLabels[o.paymentStatus] ?? o.paymentStatus}`, col2, ry)
 
       // Divider
       y = Math.max(y, ry) + 8
@@ -178,7 +227,10 @@ function OrderConfirmationContent() {
       y += 4
 
       // ── Totals ──
-      const subtotal = o.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
+      const itemTotal = o.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
+      const subtotal = o.subtotal ?? itemTotal
+      const discount = o.discount ?? 0
+      const tax = o.tax ?? 0
       const totalsX = W - margin - 60
 
       doc.setFontSize(8.5)
@@ -188,9 +240,19 @@ function OrderConfirmationContent() {
       doc.text(`$${subtotal.toFixed(2)}`, W - margin, y, { align: 'right' })
       y += 6
 
+      if (discount > 0) {
+        doc.text('Discount', totalsX, y)
+        doc.text(`-$${discount.toFixed(2)}`, W - margin, y, { align: 'right' })
+        y += 6
+      }
+
       doc.text('Shipping', totalsX, y)
       doc.setTextColor(46, 125, 50)
-      doc.text(`+$${(o.total - subtotal).toFixed(2)}`, W - margin, y, { align: 'right' })
+      doc.text(`+$${(o.shipping ?? Math.max(0, o.total - itemTotal)).toFixed(2)}`, W - margin, y, { align: 'right' })
+      y += 6
+      doc.setTextColor(100, 100, 100)
+      doc.text('Tax', totalsX, y)
+      doc.text(o.taxStatus === 'complete' ? `$${tax.toFixed(2)}` : 'Calculated by Stripe', W - margin, y, { align: 'right' })
       y += 2
 
       doc.setDrawColor(200, 200, 200)
@@ -224,35 +286,40 @@ function OrderConfirmationContent() {
   }
 
   useEffect(() => {
-    if (!orderId) {
-      setError('Missing order ID.')
-      setLoading(false)
-      return
-    }
+    if (!orderId) return
 
     let cancelled = false
+    let retryTimer: ReturnType<typeof setTimeout> | undefined
+    let attempts = 0
     const load = async () => {
+      attempts += 1
       try {
         const res = await fetch(`/api/shop/orders/${orderId}`, { cache: 'no-store' })
         if (!res.ok) {
-          setError('Order not found.')
+          if (!cancelled) setError('Order not found.')
           return
         }
         const data = await res.json()
         if (!cancelled && data.order) {
-          setOrder(data.order)
-          void handleDownloadInvoice(data.order)
+          const nextOrder = data.order as Order
+          setOrder(nextOrder)
+          if (!isEmailRecovery) reconcilePaidGuestCart(nextOrder)
+          if (nextOrder.isGuest && nextOrder.paymentStatus === 'paid') void mergeGuestCartAfterAuth()
+          if (!nextOrder.isGuest && nextOrder.paymentStatus === 'paid') window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY)
+          if (['failed', 'expired', 'checkout_failed'].includes(nextOrder.paymentStatus)) window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY)
+          if (nextOrder.paymentStatus === 'pending' && attempts < 30) retryTimer = setTimeout(load, 2000)
         }
       } catch {
-        if (!cancelled) setError('Unable to load the order.')
+        if (!cancelled && attempts < 30) retryTimer = setTimeout(load, 2000)
+        else if (!cancelled) setError('Unable to load the order.')
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
 
     void load()
-    return () => { cancelled = true }
-  }, [orderId])
+    return () => { cancelled = true; if (retryTimer) clearTimeout(retryTimer) }
+  }, [orderId, isEmailRecovery])
 
   return (
     <div
@@ -317,16 +384,16 @@ function OrderConfirmationContent() {
                 className="text-[2.4rem] font-black uppercase leading-none tracking-tighter md:text-[3.2rem]"
                 style={{ fontFamily: FONT, fontWeight: 900, letterSpacing: '-0.03em', color: '#111' }}
               >
-                Order{' '}
+                Payment{' '}
                 <span style={{ background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  Confirmed!
+                  {paymentHeading(order.paymentStatus).title}
                 </span>
               </h1>
               <p
                 className="mt-2 text-[9px] font-black uppercase tracking-[0.2em]"
                 style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.35)' }}
               >
-                Thanks for your purchase — your order has been received.
+                {paymentHeading(order.paymentStatus).message}
               </p>
             </header>
 
@@ -353,7 +420,7 @@ function OrderConfirmationContent() {
                   className="text-xs font-black uppercase tracking-[0.15em]"
                   style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}
                 >
-                  Your order has been placed successfully.
+                  {paymentStatusLabels[order.paymentStatus] ?? order.paymentStatus}
                 </p>
                 <div>
                   <span
@@ -452,9 +519,15 @@ function OrderConfirmationContent() {
                     className="text-sm font-black"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#111' }}
                   >
-                    ${order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0).toFixed(2)}
+                    ${(order.subtotal ?? order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)).toFixed(2)}
                   </span>
                 </div>
+                {(order.discount ?? 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-wider" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}>Discount</span>
+                    <span className="text-sm font-black" style={{ fontFamily: FONT, color: '#2E7D32' }}>-${(order.discount ?? 0).toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span
                     className="text-[10px] font-black uppercase tracking-wider"
@@ -466,7 +539,13 @@ function OrderConfirmationContent() {
                     className="text-sm font-black"
                     style={{ fontFamily: FONT, fontWeight: 900, color: '#2E7D32' }}
                   >
-                    +${(order.total - order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)).toFixed(2)}
+                    +${(order.shipping ?? Math.max(0, order.total - order.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0))).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}>Tax</span>
+                  <span className="text-sm font-black" style={{ fontFamily: FONT, color: '#111' }}>
+                    {order.taxStatus === 'complete' ? `$${(order.tax ?? 0).toFixed(2)}` : 'Calculated by Stripe'}
                   </span>
                 </div>
                 <div className="flex items-end justify-between border-t-2 border-black/10 pt-3">
@@ -520,7 +599,7 @@ function OrderConfirmationContent() {
                   className="text-xs font-bold uppercase tracking-wider"
                   style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.5)' }}
                 >
-                  {order.city}{order.postalCode ? ` ${order.postalCode}` : ''}
+                  {order.city}{order.state ? `, ${order.state}` : ""}{order.postalCode ? ` ${order.postalCode}` : ''}
                 </p>
                 {order.phone && (
                   <div className="flex items-center gap-2 pt-1">
@@ -573,7 +652,7 @@ function OrderConfirmationContent() {
                     boxShadow: '2px 2px 0 #111',
                   }}
                 >
-                  {statusLabels[order.status] ?? order.status}
+                  {paymentStatusLabels[order.paymentStatus] ?? order.paymentStatus} · {statusLabels[order.fulfillmentStatus] ?? order.fulfillmentStatus}
                 </div>
                 <Link
                   href="/orders"
@@ -596,12 +675,12 @@ function OrderConfirmationContent() {
             <div className="flex flex-col gap-4 sm:flex-row">
               <button
                 onClick={() => handleDownloadInvoice(order)}
-                disabled={downloading}
+                disabled={downloading || order.paymentStatus !== 'paid'}
                 className="flex flex-1 cursor-pointer items-center justify-center gap-2 border-3 border-black bg-white px-6 py-3.5 text-xs font-black uppercase tracking-[0.12em] text-black transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 disabled:opacity-50"
                 style={{ fontFamily: FONT, fontWeight: 900, boxShadow: '4px 4px 0 #111' }}
               >
                 <Download className="h-4 w-4" />
-                {downloading ? 'Generating…' : 'Download Invoice'}
+                {downloading ? 'Generating…' : order.paymentStatus === 'paid' ? 'Download receipt' : 'Receipt after payment'}
               </button>
               <Link
                 href="/orders"

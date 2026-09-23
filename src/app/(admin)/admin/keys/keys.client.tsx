@@ -5,6 +5,7 @@ import { CheckCircle, AlertCircle, Eye, EyeOff, Key, Trash2, ExternalLink, Shiel
 import { saveKeysAction, deleteKeysAction, saveStripeKeysAction, deleteStripeKeysAction, saveMetaPixelAction, deleteMetaPixelAction } from './actions'
 
 interface Props {
+  callbackUrl: string
   googleConfigured: boolean
   googleClientIdMasked: string | null
   stripeConfigured: boolean
@@ -13,7 +14,31 @@ interface Props {
   metaPixelIdMasked: string | null
 }
 
+function StatusBanner({ status }: { status: { type: 'success' | 'warning' | 'error'; msg: string } | null }) {
+  if (!status) return null
+  return (
+    <div
+      className={`mb-5 flex items-start gap-3 rounded-lg px-4 py-3 text-sm ${
+        status.type === 'success'
+          ? 'bg-emerald-50 text-emerald-800'
+          : status.type === 'warning'
+          ? 'bg-amber-50 text-amber-800'
+          : 'bg-red-50 text-red-800'
+      }`}
+    >
+      {status.type === 'success' ? (
+        <CheckCircle size={16} className="mt-0.5 shrink-0" />
+      ) : (
+        <AlertCircle size={16} className="mt-0.5 shrink-0" />
+      )}
+      <p>{status.msg}</p>
+    </div>
+  )
+}
+
+
 export default function KeysClient({
+  callbackUrl,
   googleConfigured,
   googleClientIdMasked,
   stripeConfigured,
@@ -119,7 +144,7 @@ export default function KeysClient({
   }
 
   async function handleStripeDelete() {
-    if (!confirm('Remove Stripe keys? Checkout will fall back to test mode.')) return
+    if (!confirm('Remove Stripe keys? Card checkout will be unavailable.')) return
     setStripeStatus(null)
     setStripeDeleting(true)
     try {
@@ -183,27 +208,6 @@ export default function KeysClient({
   const inputCls =
     'w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 placeholder:text-slate-400 font-mono'
 
-  function StatusBanner({ status }: { status: { type: 'success' | 'warning' | 'error'; msg: string } | null }) {
-    if (!status) return null
-    return (
-      <div
-        className={`mb-5 flex items-start gap-3 rounded-lg px-4 py-3 text-sm ${
-          status.type === 'success'
-            ? 'bg-emerald-50 text-emerald-800'
-            : status.type === 'warning'
-            ? 'bg-amber-50 text-amber-800'
-            : 'bg-red-50 text-red-800'
-        }`}
-      >
-        {status.type === 'success' ? (
-          <CheckCircle size={16} className="mt-0.5 shrink-0" />
-        ) : (
-          <AlertCircle size={16} className="mt-0.5 shrink-0" />
-        )}
-        <p>{status.msg}</p>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen p-6 md:p-8">
@@ -350,7 +354,7 @@ export default function KeysClient({
               <li>
                 3. Add{' '}
                 <code className="rounded bg-slate-200 px-1 py-0.5 font-mono text-slate-600">
-                  {process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/api/auth/oauth/callback
+                  {callbackUrl}
                 </code>{' '}
                 as an authorized redirect URI
               </li>

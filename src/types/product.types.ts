@@ -1,3 +1,5 @@
+import type { ProductNutritionFacts } from '@/lib/product-nutrition'
+
 // Client-side types
 export type ID = string
 export type ProductDetail = {
@@ -23,6 +25,9 @@ export type Product = {
   variantKey: Record<string, any> | null
   details: ProductDetail[]
   relatedProducts: string[]
+  ingredients: string
+  allergenStatement: string
+  nutritionFacts: ProductNutritionFacts
   expand?: {
     category?: any
     parent?: any

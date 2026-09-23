@@ -316,8 +316,8 @@ export function FiltersSidebar({
                   onValueChange={(v) => patch({ priceRange: [v[0], v[1]] as [number, number] })}
                 />
                 <div className="flex justify-between text-xs text-foreground/70">
-                  <span>{local.priceRange[0]} DT</span>
-                  <span>{local.priceRange[1]} DT</span>
+                  <span>${local.priceRange[0]}</span>
+                  <span>${local.priceRange[1]}</span>
                 </div>
               </div>
             </AccordionContent>

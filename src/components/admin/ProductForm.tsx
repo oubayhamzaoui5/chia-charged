@@ -5,6 +5,7 @@ import { X, Plus as PlusIcon, Trash2, Search, ChevronDown } from "lucide-react"
 import ProductVariantsEditor from "./ProductVariantsEditor"
 import { filePreview, fileUrl } from "@/utils/product.utils"
 import { CategoryOption } from "@/types/product.types"
+import type { ProductNutritionFacts, ProductNutritionRow } from "@/lib/product-nutrition"
 
 type ProductFormProps = {
   open: boolean
@@ -22,6 +23,9 @@ type ProductFormProps = {
     existing: string[]
     files: File[]
     categories: string[]
+    ingredients: string
+    allergenStatement: string
+    nutritionFacts: ProductNutritionFacts
   }
   setForm: React.Dispatch<
     React.SetStateAction<{
@@ -37,6 +41,9 @@ type ProductFormProps = {
       existing: string[]
       files: File[]
       categories: string[]
+      ingredients: string
+      allergenStatement: string
+      nutritionFacts: ProductNutritionFacts
     }>
   >
   allCategories: CategoryOption[]
@@ -246,6 +253,51 @@ export default function ProductForm({
     setCategorySearch("")
   }
 
+  function updateNutritionField<K extends keyof Omit<ProductNutritionFacts, 'rows'>>(
+    key: K,
+    value: ProductNutritionFacts[K]
+  ) {
+    setForm((prev) => ({
+      ...prev,
+      nutritionFacts: { ...prev.nutritionFacts, [key]: value },
+    }))
+  }
+
+  function updateNutritionRow(index: number, patch: Partial<ProductNutritionRow>) {
+    setForm((prev) => ({
+      ...prev,
+      nutritionFacts: {
+        ...prev.nutritionFacts,
+        rows: prev.nutritionFacts.rows.map((row, rowIndex) =>
+          rowIndex === index ? { ...row, ...patch } : row
+        ),
+      },
+    }))
+  }
+
+  function addNutritionRow() {
+    setForm((prev) => ({
+      ...prev,
+      nutritionFacts: {
+        ...prev.nutritionFacts,
+        rows: [
+          ...prev.nutritionFacts.rows,
+          { label: '', dailyValue: '', indent: 0, bold: false, dividerBefore: false },
+        ],
+      },
+    }))
+  }
+
+  function removeNutritionRow(index: number) {
+    setForm((prev) => ({
+      ...prev,
+      nutritionFacts: {
+        ...prev.nutritionFacts,
+        rows: prev.nutritionFacts.rows.filter((_, rowIndex) => rowIndex !== index),
+      },
+    }))
+  }
+
   const isVariantCreate = editState.mode === "create" && isVariant
   const unchangedParentSku =
     isVariantCreate &&
@@ -424,6 +476,157 @@ export default function ProductForm({
               rows={8}
             />
           </div>
+
+          <section className="space-y-5 rounded-2xl border border-slate-200 bg-slate-50/50 p-5">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Nutrition &amp; ingredients</h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Shown in the product Nutrition Facts panel. Variants can have their own values.
+              </p>
+            </div>
+
+            <div>
+              <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Ingredients
+              </label>
+              <textarea
+                value={form.ingredients}
+                maxLength={5000}
+                rows={5}
+                placeholder="List ingredients in descending order by weight..."
+                onChange={(e) => setForm({ ...form, ingredients: e.target.value })}
+                className={`${inputClasses} resize-y`}
+              />
+            </div>
+
+            <div>
+              <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Allergen statement
+              </label>
+              <textarea
+                value={form.allergenStatement}
+                maxLength={2000}
+                rows={3}
+                placeholder="Contains milk. Produced in a facility..."
+                onChange={(e) => setForm({ ...form, allergenStatement: e.target.value })}
+                className={`${inputClasses} resize-y`}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div>
+                <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Servings</label>
+                <input
+                  value={form.nutritionFacts.servingsPerContainer}
+                  maxLength={120}
+                  onChange={(e) => updateNutritionField('servingsPerContainer', e.target.value)}
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Serving size</label>
+                <input
+                  value={form.nutritionFacts.servingSize}
+                  maxLength={120}
+                  onChange={(e) => updateNutritionField('servingSize', e.target.value)}
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Calories</label>
+                <input
+                  value={form.nutritionFacts.calories}
+                  maxLength={30}
+                  inputMode="numeric"
+                  onChange={(e) => updateNutritionField('calories', e.target.value)}
+                  className={inputClasses}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Nutrient rows</p>
+                  <p className="mt-0.5 text-xs text-slate-400">Value and optional % Daily Value</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={addNutritionRow}
+                  disabled={form.nutritionFacts.rows.length >= 30}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <PlusIcon className="h-3.5 w-3.5" /> Add row
+                </button>
+              </div>
+
+              {form.nutritionFacts.rows.map((row, index) => (
+                <div key={index} className="grid grid-cols-[minmax(0,1fr)_5.5rem] gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-[minmax(0,1fr)_5.5rem_5.5rem_auto_auto_auto] sm:items-center">
+                  <input
+                    value={row.label}
+                    maxLength={120}
+                    aria-label={`Nutrient row ${index + 1}`}
+                    placeholder="Total Fat 14g"
+                    onChange={(e) => updateNutritionRow(index, { label: e.target.value })}
+                    className="min-w-0 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-600"
+                  />
+                  <input
+                    value={row.dailyValue}
+                    maxLength={30}
+                    aria-label={`Daily value for row ${index + 1}`}
+                    placeholder="18%"
+                    onChange={(e) => updateNutritionRow(index, { dailyValue: e.target.value })}
+                    className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-600"
+                  />
+                  <select
+                    value={row.indent}
+                    aria-label={`Indent for row ${index + 1}`}
+                    onChange={(e) => updateNutritionRow(index, { indent: Number(e.target.value) as 0 | 1 | 2 })}
+                    className="rounded-lg border border-slate-200 px-2 py-2 text-xs outline-none focus:border-blue-600"
+                  >
+                    <option value={0}>No indent</option>
+                    <option value={1}>Indent 1</option>
+                    <option value={2}>Indent 2</option>
+                  </select>
+                  <label className="flex items-center gap-2 text-xs font-medium text-slate-600">
+                    <input
+                      type="checkbox"
+                      checked={row.bold}
+                      onChange={(e) => updateNutritionRow(index, { bold: e.target.checked })}
+                    />
+                    Bold
+                  </label>
+                  <label className="flex items-center gap-2 text-xs font-medium text-slate-600">
+                    <input
+                      type="checkbox"
+                      checked={row.dividerBefore}
+                      onChange={(e) => updateNutritionRow(index, { dividerBefore: e.target.checked })}
+                    />
+                    Divider
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => removeNutritionRow(index)}
+                    aria-label={`Remove nutrient row ${index + 1}`}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div>
+              <label className="ml-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Nutrition footnote</label>
+              <textarea
+                value={form.nutritionFacts.footnote}
+                maxLength={1000}
+                rows={3}
+                onChange={(e) => updateNutritionField('footnote', e.target.value)}
+                className={`${inputClasses} resize-y`}
+              />
+            </div>
+          </section>
 
           <div className="relative">
             <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Categories</label>

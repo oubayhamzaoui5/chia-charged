@@ -6,14 +6,17 @@ import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ShoppingCart, ChevronLeft, ChevronRight, X, Beaker, GlassWater, Timer, Sparkles } from 'lucide-react'
 
+import LandingTestimonials from '@/components/landing/landing-testimonials'
 import Footer from '@/components/footer'
 import { Navbar } from '@/components/navbar'
-import LandingTestimonials from '@/components/landing/landing-testimonials'
 import InstallationSteps from '@/components/shop/installation-steps'
 import ShopProductCard from '@/app/shop/_components/shop-product-card'
 import { getPb } from '@/lib/pb'
 import { hasInstallationStepsCategory } from '@/lib/shop/product-category-match'
 import type { ProductListItem, ShopCategory } from '@/lib/services/product.service'
+import {
+  type ProductNutritionFacts,
+} from '@/lib/product-nutrition'
 import {
   addToCartForUser,
   fetchIsInCart,
@@ -55,9 +58,13 @@ type VariantResolved = {
 function NutritionModal({
   onClose,
   ingredientsText,
+  allergenStatement,
+  nutritionFacts,
 }: {
   onClose: () => void
   ingredientsText: string
+  allergenStatement: string
+  nutritionFacts: ProductNutritionFacts
 }) {
   // Close on backdrop click
   const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -313,7 +320,9 @@ function NutritionModal({
         .nf-section.allergen .maycontain { font-weight: 600; color: #111; font-size: 0.79rem; }
 
         @media (max-width: 1023px) {
-          .nf-title { font-size: 2.4rem; padding: 0; }
+          .nf-title { font-size: clamp(1.9rem, 9.5vw, 2.3rem); line-height: 0.92; padding: 0; }
+          .nf-close { top: 10px; right: 8px; width: 34px; height: 34px; }
+          .nf-close svg { width: 30px; height: 30px; }
           .nf-label h2 { font-size: 1.1rem; }
           .nf-small { font-size: 0.62rem; }
           .nf-rowline { font-size: 0.65rem; }
@@ -354,48 +363,46 @@ function NutritionModal({
           <div style={{ textAlign: 'center', padding: '4px 0 44px', clear: 'both' }}>
             <h1 className="nf-title">NUTRITION &<br />INGREDIENTS</h1>
           </div>
-          <div className="nf-label">
+          {nutritionFacts.rows.length > 0 && nutritionFacts.servingSize && nutritionFacts.calories ? <div className="nf-label">
             <h2>Nutrition Facts</h2>
-            <div className="nf-small">8 servings per container</div>
+            <div className="nf-small">{nutritionFacts.servingsPerContainer}</div>
             <div className="nf-small" style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>Serving size</span>
-              <span>1/4 cup (57g)</span>
+              <span>{nutritionFacts.servingSize}</span>
             </div>
             <div className="nf-rule-mid" />
             <div className="nf-small">Amount per serving</div>
             <div className="nf-calories">
               <span className="label">Calories</span>
-              <span className="value">280</span>
+              <span className="value">{nutritionFacts.calories}</span>
             </div>
             <div className="nf-rule-thick" />
             <div className="nf-dv">% Daily Value*</div>
-            <div className="nf-rowline bold"><span>Total Fat 14g</span><span>18%</span></div>
-            <div className="nf-rowline indent"><span>Saturated Fat 5g</span><span>25%</span></div>
-            <div className="nf-rowline indent"><span>Trans Fat 0g</span><span /></div>
-            <div className="nf-rowline bold"><span>Cholesterol 60mg</span><span>20%</span></div>
-            <div className="nf-rowline bold"><span>Sodium 55mg</span><span>2%</span></div>
-            <div className="nf-rowline bold"><span>Total Carbohydrate 16g</span><span>6%</span></div>
-            <div className="nf-rowline indent"><span>Dietary Fiber 12g</span><span>43%</span></div>
-            <div className="nf-rowline indent"><span>Total Sugars 2g</span><span /></div>
-            <div className="nf-rowline subindent"><span>Includes 2g Added Sugars</span><span>4%</span></div>
-            <div className="nf-rowline bold"><span>Protein 22g</span><span /></div>
-            <div className="nf-rule-mid" />
-            <div className="nf-rowline"><span>Vitamin D 0mcg</span><span>0%</span></div>
-            <div className="nf-rowline"><span>Calcium 250mg</span><span>20%</span></div>
-            <div className="nf-rowline"><span>Iron 2.3mg</span><span>15%</span></div>
-            <div className="nf-rowline"><span>Potassium 330mg</span><span>8%</span></div>
+            {nutritionFacts.rows.map((row, index) => (
+              <div key={`${row.label}-${index}`}>
+                {row.dividerBefore && <div className="nf-rule-mid" />}
+                <div
+                  className={`nf-rowline${row.bold ? ' bold' : ''}${row.indent === 1 ? ' indent' : row.indent === 2 ? ' subindent' : ''}`}
+                >
+                  <span>{row.label}</span>
+                  <span>{row.dailyValue}</span>
+                </div>
+              </div>
+            ))}
             <div className="nf-foot">
-              *The % Daily Value tells you how much a nutrient in a serving of food contributes to a daily diet.
-              2,000 calories a day is used for general nutrition advice.
+              {nutritionFacts.footnote}
             </div>
-          </div>
+          </div> : <p>Nutrition information has not been published for this product.</p>}
           <div className="nf-section" style={{ maxWidth: 760, margin: '16px auto 0' }}>
             <h3>Ingredients</h3>
             <p>{ingredientsText}</p>
           </div>
-          <div className="nf-section" style={{ maxWidth: 760, margin: '10px auto 24px' }}>
-            <p>Contains milk. Produced in a facility with tree nuts, peanuts, soybeans, milk, eggs, wheat and sesame.</p>
-          </div>
+          {allergenStatement && (
+            <div className="nf-section allergen" style={{ maxWidth: 760, margin: '10px auto 24px' }}>
+              <h3>Allergen information</h3>
+              <p>{allergenStatement}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -588,7 +595,11 @@ export default function ProductClient({
   }, [product.variantKey, variants])
 
   const [selectedVariant, setSelectedVariant] = useState<ProductWithDetails | null>(defaultVariant)
-  useEffect(() => { setSelectedVariant(defaultVariant) }, [defaultVariant])
+  useEffect(() => {
+    // Route data can update without remounting this client component.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedVariant(defaultVariant)
+  }, [defaultVariant])
 
   const details = useMemo<DetailItem[]>(() => {
     if (!Array.isArray(product.details)) return []
@@ -603,7 +614,11 @@ export default function ProductClient({
 
   const hasDetails = details.length > 0
   useEffect(() => {
-    if (!hasDetails && activeTab === 'details') setActiveTab('description')
+    if (!hasDetails && activeTab === 'details') {
+      // Keep the visible tab valid when product data changes in place.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveTab('description')
+    }
   }, [activeTab, hasDetails])
 
   const isInStock = availability.inStock
@@ -680,28 +695,11 @@ export default function ProductClient({
     })
   }, [categoryName, categories, product.categories])
 
-  const selectedFlavorName = useMemo(() => {
-    const activeVariantKey = selectedVariant?.variantKey ?? product.variantKey
-    if (!activeVariantKey) return ''
-    const entry = Object.entries(activeVariantKey).find(([key]) => isFlavorKey(key))
-    if (!entry) return ''
-
-    const [key, rawValue] = entry
-    const resolved = variantValuesMap[key]?.find((item) => item.value === rawValue)?.resolvedValue?.value
-    return (resolved ?? rawValue ?? '').trim()
-  }, [selectedVariant, product.variantKey, variantValuesMap])
-
-  const nutritionIngredientsText = useMemo(() => {
-    const flavor = selectedFlavorName.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
-    const isChocolateChipFlavor =
-      flavor.includes('chocolate') && (flavor.includes('chip') || flavor.includes('chips'))
-
-    if (isChocolateChipFlavor) {
-      return 'Chia Seed, Whey Protein Concentrate, Chocolate Chips (Chocolate, Cane Sugar, Cocoa Butter, Sunflower Lecithin), Medium Chain Coconut Oil Triglycerides, Natural Flavor, Cocoa Powder (Alkaline Process), Stevia Leaf Glycosides, Monk Fruit Extract.'
-    }
-
-    return 'Chia Seed, Whey Protein Concentrate, Medium Chain Coconut Oil Triglycerides, Freeze Dried Strawberry Slices, Vanilla Flavor With Other Natural Flavors, Stevia Leaf Glycosides, Monk Fruit Extract.'
-  }, [selectedFlavorName])
+  const activeNutritionProduct = selectedVariant ?? product
+  const nutritionIngredientsText = activeNutritionProduct.ingredients
+  const nutritionAllergenStatement = activeNutritionProduct.allergenStatement
+  const nutritionFacts = activeNutritionProduct.nutritionFacts ?? product.nutritionFacts
+  const hasNutritionPanel = isProteinPuddingCategory && Boolean(nutritionIngredientsText)
 
   const installationStep3Image = useMemo(() => {
     const productCategoryIds = new Set(product.categories ?? [])
@@ -738,10 +736,16 @@ export default function ProductClient({
     return pages
   }, [alsoLikeProducts])
 
-  useEffect(() => { setAlsoLikeSlide(0) }, [alsoLikePages.length])
+  useEffect(() => {
+    // Reset paging when recommendation count changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAlsoLikeSlide(0)
+  }, [alsoLikePages.length])
 
   useEffect(() => {
     if (currentImageIdx === displayImageIdx) return
+    // Begin the transition before swapping the image after a short delay.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsImageFading(true)
     const t = window.setTimeout(() => {
       setDisplayImageIdx(currentImageIdx)
@@ -751,16 +755,8 @@ export default function ProductClient({
   }, [currentImageIdx, displayImageIdx])
 
   useEffect(() => {
-    const el = mobileCarouselRef.current
-    if (!el) return
-    const W = el.clientWidth
-    const itemWidth = W * 0.8
-    const gap = 12
-    const scrollLeft = currentImageIdx * (itemWidth + gap)
-    el.scrollTo({ left: scrollLeft, behavior: 'smooth' })
-  }, [currentImageIdx])
-
-  useEffect(() => {
+    // Stock may change after variant selection; keep quantity purchasable.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuantity((prev) => Math.max(1, Math.min(prev, maxSelectableQuantity)))
   }, [maxSelectableQuantity])
 
@@ -957,9 +953,11 @@ export default function ProductClient({
       <Navbar />
 
       {/* ── Nutrition Modal ── */}
-      {showNutrition && isProteinPuddingCategory && (
+      {showNutrition && hasNutritionPanel && (
         <NutritionModal
           ingredientsText={nutritionIngredientsText}
+          allergenStatement={nutritionAllergenStatement}
+          nutritionFacts={nutritionFacts}
           onClose={() => {
             setShowNutrition(false)
             requestAnimationFrame(() => setPanelFixedStyle(null))
@@ -995,7 +993,7 @@ export default function ProductClient({
           <div className="block lg:hidden" style={{ height: 'var(--navbar-offset-mobile, 60px)' }} />
 
           {/* Mobile: category + product name */}
-          <div className="block lg:hidden w-full px-6 pt-4 pb-1 z-10 relative">
+          <div className="relative z-10 mx-auto w-full max-w-[560px] px-4 pb-4 pt-6 lg:hidden">
             {categoryName && (
               <p className="text-xs font-black uppercase tracking-[0.15em] mb-1" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, color: '#888' }}>{categoryName}</p>
             )}
@@ -1006,26 +1004,20 @@ export default function ProductClient({
             </h1>
           </div>
 
-          {/* Mobile: peek carousel */}
-          <div className="block lg:hidden w-full z-10 relative pt-2 pb-2">
+          {/* Mobile: centered gallery, aligned with the heading and purchase card. */}
+          <div className="relative z-10 mx-auto w-full max-w-[560px] px-4 lg:hidden">
             <div
               ref={mobileCarouselRef}
-              className="flex"
+              className="hide-scrollbar flex gap-3"
               style={{
-                overflowX: 'scroll',
+                overflowX: 'auto',
                 scrollSnapType: 'x mandatory',
                 scrollbarWidth: 'none',
                 WebkitOverflowScrolling: 'touch',
-                paddingLeft: '6%',
-                paddingRight: '6%',
-                gap: '10px',
               } as React.CSSProperties}
               onScroll={(e) => {
                 const el = e.currentTarget
-                const W = el.clientWidth
-                const itemWidth = W * 0.88
-                const gap = 10
-                const idx = Math.round(el.scrollLeft / (itemWidth + gap))
+                const idx = Math.round(el.scrollLeft / (el.clientWidth + 12))
                 const clamped = Math.max(0, Math.min(idx, imageUrls.length - 1))
                 if (clamped !== currentImageIdx) setCurrentImageIdx(clamped)
               }}
@@ -1033,13 +1025,13 @@ export default function ProductClient({
               {imageUrls.map((url, i) => (
                 <div
                   key={url + i}
-                  style={{ flexShrink: 0, width: '88%', scrollSnapAlign: 'center' }}
+                  className="w-full shrink-0 snap-center"
                 >
                   <div
                     style={{
-                      borderRadius: '20px',
+                      borderRadius: '16px',
                       background: 'linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)',
-                      aspectRatio: '1',
+                      aspectRatio: '6 / 5',
                       position: 'relative',
                       overflow: 'hidden',
                     }}
@@ -1049,12 +1041,31 @@ export default function ProductClient({
                       alt={`${product.name} ${i + 1}`}
                       fill
                       unoptimized
-                      className="object-contain p-6 drop-shadow-2xl"
+                      className="object-contain p-3 drop-shadow-2xl sm:p-4"
                     />
                   </div>
                 </div>
               ))}
             </div>
+            {imageUrls.length > 1 && (
+              <div className="flex justify-center" aria-label="Product images">
+                {imageUrls.map((url, i) => (
+                  <button
+                    key={url + i}
+                    type="button"
+                    aria-label={`View image ${i + 1} of ${imageUrls.length}`}
+                    aria-current={currentImageIdx === i ? 'true' : undefined}
+                    className="flex h-11 w-11 items-center justify-center"
+                    onClick={() => {
+                      const gallery = mobileCarouselRef.current
+                      if (gallery) gallery.scrollTo({ left: i * (gallery.clientWidth + 12), behavior: 'smooth' })
+                    }}
+                  >
+                    <span className={`h-2 w-2 rounded-full ${currentImageIdx === i ? 'bg-violet-700' : 'bg-black/25'}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Desktop: single image with fade */}
@@ -1106,7 +1117,7 @@ export default function ProductClient({
 
         {/* RIGHT: Cream bg */}
         <div
-          className="nav-offset-top-desktop flex flex-col px-4 pb-8 pt-4 lg:w-[45%] lg:px-10 xl:px-14"
+          className="nav-offset-top-desktop @container flex min-w-0 flex-col px-4 pb-8 pt-4 lg:w-[45%] lg:px-10 xl:px-14"
           style={{
             backgroundColor: '#f7f3ed',
             backgroundImage: "url('/texture.webp')",
@@ -1120,14 +1131,14 @@ export default function ProductClient({
             )}
           </div>
 
-          <h1 className="mb-6 hidden lg:block text-[2.1rem] font-black uppercase leading-[0.88] tracking-tighter md:text-[3.1rem] lg:text-[4.1rem]" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, letterSpacing: '-0.03em' }}>
+          <h1 className="mb-6 hidden font-black uppercase leading-[0.88] tracking-tighter lg:block lg:text-[clamp(2rem,10cqw,4.1rem)]" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, letterSpacing: '-0.03em' }}>
             <span style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               {product.name}
             </span>
           </h1>
 
           {/* Selection card */}
-          <div className="overflow-visible rounded-md border-3 border-black" style={{ background: "rgba(255,255,255,0.8)" }}>
+          <div className="mx-auto w-full max-w-[528px] overflow-visible rounded-md border-3 border-black lg:max-w-none" style={{ background: "rgba(255,255,255,0.8)" }}>
             <div className="p-5 space-y-5">
 
               {/* Summary + price */}
@@ -1254,8 +1265,6 @@ export default function ProductClient({
                 </div>
               )}
 
-              {variants.length === 0 && <Price p={product} />}
-
               {product.description && (
                 <p className="text-sm font-black uppercase leading-relaxed mt-3 text-bold -mb-5" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 600 }}>{product.description}</p>
               )}
@@ -1279,8 +1288,8 @@ export default function ProductClient({
             </div>
 
             {/* Accent strip — qty + add to bag */}
-            <div className="relative flex items-stretch gap-3 px-3 py-8" style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)" }}>
-              <div className="flex items-center overflow-hidden rounded-md border-3 border-black bg-white">
+            <div className="relative flex items-stretch gap-2 px-3 py-8 text-sm sm:gap-3 sm:text-base" style={{ background: "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)" }}>
+              <div className="flex shrink-0 items-center overflow-hidden rounded-md border-3 border-black bg-white">
                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={!isInStock || quantity <= 1} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity <= 1 ? 'not-allowed' : 'pointer' }}>−</button>
                 <span className="w-8 text-center text-sm font-black text-black" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900 }}>{quantity}</span>
                 <button onClick={() => setQuantity((prev) => Math.min(prev + 1, maxSelectableQuantity))} disabled={!isInStock || quantity >= maxSelectableQuantity} className="flex h-12 w-10 items-center justify-center text-lg font-black text-black transition-all duration-150 hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white active:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] active:text-white disabled:opacity-30" style={{ fontFamily: "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif", fontWeight: 900, cursor: !isInStock || quantity >= maxSelectableQuantity ? 'not-allowed' : 'pointer' }}>+</button>
@@ -1303,7 +1312,7 @@ export default function ProductClient({
             </div>
 
             {/* ── Nutrition Facts + Ingredients trigger ── */}
-            {isProteinPuddingCategory && (
+            {hasNutritionPanel && (
               <div className="pt-4 pb-5 flex items-center justify-center">
                 <button
                   type="button"
@@ -1354,11 +1363,10 @@ export default function ProductClient({
         </div>
       </div>
 
-      <LandingTestimonials />
-
   
 
 
+      <LandingTestimonials />
       <Footer />
     </div>
   )

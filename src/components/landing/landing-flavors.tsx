@@ -27,7 +27,6 @@ const flavors = [
     badge: "NEW !",
     image: "/strawberry.webp",
     href: "/product/strawberries-n-cream-cc-str-4",
-    price: "14.90",
     accent: "#E8446A",
     rotate: "-1.2deg",
   },
@@ -39,7 +38,6 @@ const flavors = [
     badge: "NEW !",
     image: "/chocolate.webp",
     href: "/product/chocolate-chip-cc-chklt-4",
-    price: "14.90",
     accent: "#D4813A",
     rotate: "1.2deg",
   },
@@ -109,10 +107,10 @@ export default function LandingFlavors({
         <div className="flex snap-x snap-mandatory gap-6 px-5 pb-6 pt-4 md:grid md:grid-cols-2 md:snap-none md:px-0 md:pb-0 md:pt-0">
           {flavors.map((flavor, i) => {
             const dynamicPricing = flavorPriceBySlug[flavor.slug]
-            const displayCurrency = dynamicPricing?.currency ?? "$"
+            const displayCurrency = dynamicPricing?.currency ?? ""
             const displayPrice = dynamicPricing
               ? dynamicPricing.price.toFixed(2)
-              : flavor.price
+              : "Price unavailable"
             const hasPromo = Boolean(dynamicPricing?.hasPromo)
             const oldPrice = hasPromo ? `${displayCurrency}${dynamicPricing!.basePrice.toFixed(2)}` : null
 

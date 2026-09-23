@@ -2,7 +2,7 @@ import 'server-only'
 
 import { requireAdmin } from '@/lib/auth'
 import { createServerPb } from '@/lib/pb'
-import type { OrderRecord, OrderStatus, UserRecord } from '@/types/order.types'
+import type { OrderRecord, OrderStatus, PaymentStatus, UserRecord } from '@/types/order.types'
 
 export type AdminCategoryRecord = {
   id: string
@@ -52,24 +52,12 @@ export type AdminVedetteRecord = {
 
 function buildVariableImageUrl(id: string, image?: string) {
   if (!image || !image.trim()) return undefined
-  const base =
-    process.env.NEXT_PUBLIC_PB_URL ??
-    process.env.POCKETBASE_URL ??
-    'http://127.0.0.1:8090'
-  return `${base}/api/files/variables/${id}/${image}`
-}
-
-function getPbBaseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_PB_URL ??
-    process.env.POCKETBASE_URL ??
-    'http://127.0.0.1:8090'
-  )
+  return `/api/pb-files/variables/${id}/${image}`
 }
 
 function buildProductImageUrl(id: string, image?: string) {
   if (!image || !image.trim()) return undefined
-  return `${getPbBaseUrl()}/api/files/products/${id}/${encodeURIComponent(image)}`
+  return `/api/pb-files/products/${id}/${encodeURIComponent(image)}`
 }
 
 const FLAVOR_KEYS = ['saveur', 'flavor', 'flavour', 'gout', 'arome', 'taste', 'parfum']
@@ -284,23 +272,22 @@ export async function getAdminVedettesData(): Promise<{
 }
 
 const allowedStatuses: OrderStatus[] = [
-  'paid',
+  'on hold',
   'delivering',
   'delivered',
-  'refunded',
-  'on hold',
+  'cancelled',
 ]
 
 function normalizeStatus(value: unknown): OrderStatus {
-  if (typeof value !== 'string') return 'paid'
+  if (typeof value !== 'string') return 'on hold'
   return allowedStatuses.includes(value as OrderStatus)
     ? (value as OrderStatus)
-    : 'paid'
+    : 'on hold'
 }
 
 export async function getAdminOrders(): Promise<OrderRecord[]> {
   const pb = await createAdminPb()
-  const res = await pb.collection('orders').getList(1, 200, { sort: '-created' })
+  const res = await pb.collection('orders').getList(1, 200, { sort: '-created', filter: 'archivedAt = ""' })
   const productIds = [
     ...new Set(
       res.items
@@ -434,8 +421,10 @@ export async function getAdminOrders(): Promise<OrderRecord[]> {
         created: String(r.created ?? ''),
         items: itemsWithImages,
         total: Number(r.total ?? 0),
-        currency: typeof r.currency === 'string' ? r.currency : 'DT',
-        status: normalizeStatus(r.status),
+        currency: typeof r.currency === 'string' ? r.currency : 'USD',
+        status: normalizeStatus(r.fulfillmentStatus ?? r.status),
+        fulfillmentStatus: normalizeStatus(r.fulfillmentStatus ?? r.status),
+        paymentStatus: (typeof r.paymentStatus === 'string' ? r.paymentStatus : 'legacy_unverified') as PaymentStatus,
         userId: typeof r.user === 'string' ? r.user : null,
         userName: displayName,
         firstName: firstName || undefined,
@@ -457,6 +446,13 @@ export async function getAdminOrders(): Promise<OrderRecord[]> {
         postalCode,
         notes: typeof r.notes === 'string' ? r.notes : '',
         paymentMode: typeof r.paymentMode === 'string' ? r.paymentMode : '',
+        trackingCarrier: typeof r.trackingCarrier === 'string' ? r.trackingCarrier : '',
+        trackingNumber: typeof r.trackingNumber === 'string' ? r.trackingNumber : '',
+        shippedAt: typeof r.shippedAt === 'string' ? r.shippedAt : '',
+        deliveredAt: typeof r.deliveredAt === 'string' ? r.deliveredAt : '',
+        refundStatus: typeof r.refundStatus === 'string' ? r.refundStatus : '',
+        refundedAt: typeof r.refundedAt === 'string' ? r.refundedAt : '',
+        archivedAt: typeof r.archivedAt === 'string' ? r.archivedAt : '',
         user: userRecord,
       }
     })

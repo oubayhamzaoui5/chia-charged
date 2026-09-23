@@ -1,15 +1,15 @@
 import PocketBase from 'pocketbase'
+import { getServerPbOrigin, getPublicPbOrigin } from '@/lib/url-policy'
 
 let clientPb: PocketBase | null = null
 
 export function createServerPb() {
-  const serverUrl =
-    process.env.POCKETBASE_URL ??
-    process.env.NEXT_PUBLIC_PB_URL ??
-    'http://127.0.0.1:8090'
+  const serverUrl = getServerPbOrigin()
 
   const pb = new PocketBase(serverUrl)
   pb.autoCancellation(false)
+  // Never resend authentication bodies to a redirect target.
+  pb.beforeSend = (url, options) => ({ url, options: { ...options, redirect: 'error' } })
   return pb
 }
 
@@ -21,10 +21,7 @@ export function getPb(_persistSession = false) {
 
   if (clientPb) return clientPb
 
-  const clientUrl =
-    process.env.NEXT_PUBLIC_PB_URL ??
-    process.env.POCKETBASE_URL ??
-    'http://127.0.0.1:8090'
+  const clientUrl = getPublicPbOrigin()
 
   clientPb = new PocketBase(clientUrl)
   clientPb.autoCancellation(false)

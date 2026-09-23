@@ -8,9 +8,9 @@ const FONT = "'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
 const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%, rgb(232,68,106) 100%)"
 
 const values = [
-  { icon: Leaf, title: "100% Plant-Based", desc: "No dairy, no eggs, no compromise." },
+  { icon: Leaf, title: "Made With Whey", desc: "Contains milk. Not suitable for vegans." },
   { icon: Zap, title: "22g Protein/Serving", desc: "Fuel your body with every spoonful." },
-  { icon: CircleSlash, title: "0% Junk", desc: "Clean ingredients only, no fillers." },
+  { icon: CircleSlash, title: "Read the Label", desc: "Ingredients and allergens listed by flavor." },
 ]
 
 export default function LandingAbout() {

@@ -27,7 +27,7 @@ export async function getBestSellers(): Promise<Product[]> {
         : Boolean(r.inView),
     description: r.description ?? "",
     images: Array.isArray(r.images) ? r.images : [],
-    currency: r.currency ?? "DT",
+    currency: r.currency ?? "USD",
     categories: Array.isArray(r.categories)
       ? r.categories
       : r.category

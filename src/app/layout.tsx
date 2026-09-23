@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Manrope, Fraunces } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
+import VisitTracker from '@/components/VisitTracker'
 import './globals.css'
 import Providers from './providers'
 
@@ -14,7 +14,7 @@ const logoIconUrl = '/logow.webp?v=20260325'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: 'Chia Charged',
-  description: 'High-protein chia seed pudding with MCT oil and 12g fiber. Fuel your day the delicious way.',
+  description: 'Chia seed pudding mix with whey protein and coconut-derived MCT oil. Contains milk.',
   icons: {
     icon: [
       {
@@ -42,12 +42,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr">
+    <html lang="en">
       <body suppressHydrationWarning className={`${manrope.className} ${fraunces.variable} font-sans antialiased`}>
         <Providers>
           {children}
+          <VisitTracker />
         </Providers>
-        <Analytics />
+
       </body>
     </html>
   )

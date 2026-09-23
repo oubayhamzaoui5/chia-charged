@@ -8,6 +8,23 @@ const GRADIENT = "linear-gradient(135deg, rgb(68,15,195) 0%, rgb(158,38,182) 50%
 
 export default function LandingContact() {
   const [purpose, setPurpose] = useState("general")
+  const [sending, setSending] = useState(false)
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null)
+
+  async function submitMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setSending(true); setResult(null)
+    const form = new FormData(event.currentTarget)
+    try {
+      const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(form)) })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(data?.message || 'Could not save your message.')
+      setResult({ ok: true, text: `Message saved. Reference ${data.reference}.` })
+      event.currentTarget.reset(); setPurpose('general')
+    } catch (error) {
+      setResult({ ok: false, text: error instanceof Error ? error.message : 'Could not save your message.' })
+    } finally { setSending(false) }
+  }
 
   return (
     <section
@@ -109,7 +126,8 @@ export default function LandingContact() {
               Send a Message
             </h3>
 
-            <form className="grid grid-cols-1 gap-5">
+            <form className="grid grid-cols-1 gap-5" onSubmit={submitMessage}>
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
               <label>
                 <span
                   className="mb-2 block text-[10px] font-black uppercase tracking-[0.15em]"
@@ -121,6 +139,7 @@ export default function LandingContact() {
                   className="w-full px-4 py-3 text-sm font-bold outline-none transition-all duration-200"
                   placeholder="Your name"
                   type="text"
+                  name="name" required minLength={2} maxLength={120}
                   style={{ border: "3px solid #111", borderRadius: "8px", background: "rgba(245,239,228,0.5)" }}
                   onFocus={(e) => { e.currentTarget.style.boxShadow = "4px 4px 0 #111"; e.currentTarget.style.transform = "translate(-2px, -2px)" }}
                   onBlur={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none" }}
@@ -138,6 +157,7 @@ export default function LandingContact() {
                   className="w-full px-4 py-3 text-sm font-bold outline-none transition-all duration-200"
                   placeholder="your@email.com"
                   type="email"
+                  name="email" required maxLength={254}
                   style={{ border: "3px solid #111", borderRadius: "8px", background: "rgba(245,239,228,0.5)" }}
                   onFocus={(e) => { e.currentTarget.style.boxShadow = "4px 4px 0 #111"; e.currentTarget.style.transform = "translate(-2px, -2px)" }}
                   onBlur={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none" }}
@@ -154,6 +174,7 @@ export default function LandingContact() {
                 <select
                   className="w-full px-4 py-3 text-sm font-bold outline-none transition-all duration-200"
                   value={purpose}
+                  name="purpose"
                   onChange={(e) => setPurpose(e.target.value)}
                   style={{ border: "3px solid #111", borderRadius: "8px", background: "rgba(245,239,228,0.5)" }}
                   onFocus={(e) => { e.currentTarget.style.boxShadow = "4px 4px 0 #111"; e.currentTarget.style.transform = "translate(-2px, -2px)" }}
@@ -188,6 +209,7 @@ export default function LandingContact() {
                         className="w-full px-4 py-3 text-sm font-bold outline-none transition-all duration-200"
                         placeholder="What is this about?"
                         type="text"
+                        name="subject" maxLength={200}
                         style={{ border: "3px solid #111", borderRadius: "8px", background: "rgba(245,239,228,0.5)" }}
                         onFocus={(e) => { e.currentTarget.style.boxShadow = "4px 4px 0 #111"; e.currentTarget.style.transform = "translate(-2px, -2px)" }}
                         onBlur={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none" }}
@@ -208,6 +230,7 @@ export default function LandingContact() {
                   className="w-full px-4 py-3 text-sm font-bold outline-none transition-all duration-200"
                   placeholder="How can we help?"
                   rows={5}
+                  name="message" required minLength={10} maxLength={5000}
                   style={{ border: "3px solid #111", borderRadius: "8px", background: "rgba(245,239,228,0.5)", resize: "vertical" }}
                   onFocus={(e) => { e.currentTarget.style.boxShadow = "4px 4px 0 #111"; e.currentTarget.style.transform = "translate(-2px, -2px)" }}
                   onBlur={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none" }}
@@ -215,8 +238,9 @@ export default function LandingContact() {
               </label>
 
               <button
-                className="shimmer-btn relative isolate mt-2 inline-flex h-14 w-full items-center justify-center overflow-hidden text-sm font-black uppercase tracking-[0.15em] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#111] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0px_#111]"
+                className="shimmer-btn relative isolate mt-2 inline-flex h-14 w-full items-center justify-center overflow-hidden text-sm font-black uppercase tracking-[0.15em] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#111] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0px_#111] disabled:opacity-60"
                 type="submit"
+                disabled={sending}
                 style={{
                   fontFamily: FONT,
                   fontWeight: 900,
@@ -228,8 +252,9 @@ export default function LandingContact() {
                   cursor: "pointer",
                 }}
               >
-                Send Message &#8594;
+                {sending ? 'Saving...' : 'Send Message →'}
               </button>
+              {result && <p role={result.ok ? 'status' : 'alert'} className={`text-sm font-bold ${result.ok ? 'text-emerald-700' : 'text-red-700'}`}>{result.text}</p>}
             </form>
           </motion.div>
         </div>
