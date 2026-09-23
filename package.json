@@ -21,9 +21,10 @@
     "test:operations": "node scripts/test-shipping.cjs tests/order-operations.test.cjs",
     "preview:local": "node scripts/local-preview.cjs",
     "setup:backend": "node scripts/install-pocketbase.cjs",
-    "test": "npm run test:shipping && npm run test:security && npm run test:credentials && npm run test:payments && npm run test:pricing && npm run test:inventory && npm run test:operations && npm run test:notifications && npm run test:runtime && npm run test:visits && npm run test:restore",
+    "test": "npm run test:shipping && npm run test:security && npm run test:credentials && npm run test:payments && npm run test:pricing && npm run test:inventory && npm run test:operations && npm run test:notifications && npm run test:runtime && npm run test:visits && npm run test:restore && npm run test:blog",
     "build:check": "node scripts/verify-build.cjs",
-    "lint:full": "eslint"
+    "lint:full": "eslint",
+    "test:blog": "node scripts/test-shipping.cjs tests/blog-seed.test.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

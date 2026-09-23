@@ -49,6 +49,12 @@ Encrypted provider credentials live outside the release folder. With `OAUTH_ENCR
 
 ## Owner and operator guides
 
+### Starter blog
+
+Database migration `1790726400_initial_blog_posts.js` installs the three original articles and bundled cover images automatically, including in local preview. Supply both `--migrationsDir` and `--hooksDir` as shown in the hoster runbook; ship the complete `backend/pb_hooks/blog-seed/` directory. Installation needs no connection to the old website. Existing posts matched by slug or title are left untouched, including unpublished posts and admin edits. Once migration is recorded, restarting does not recreate intentionally deleted articles.
+
+For an existing database that needs only the starter articles, run `node scripts/seed-posts.cjs` with explicitly supplied `POCKETBASE_URL`, `PB_ADMIN_EMAIL` and `PB_ADMIN_PASSWORD`. This adds missing posts without applying unrelated schema changes. Edit/unpublish articles through Admin > Blog. Original article text and cover-image claims are preserved; owner must review them against actual ingredients and labels before public launch.
+
 - [Owner dashboard setup](docs/owner-setup.md): products, labels, policies, discounts, testimonials.
 - [Email delivery](docs/email-delivery.md): SMTP worker, retries, guest links and recovery.
 - [Runtime safety](docs/runtime-safety.md): Redis, trusted ingress and retention.

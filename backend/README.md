@@ -10,4 +10,6 @@ From the repository root, run `npm ci`, then `npm run setup:backend`. The instal
 
 `npm run build:check` compiles with synthetic configuration. Its build output is for verification, not deployment.
 
+Starter articles and images live in `pb_hooks/blog-seed/`; the blog migration imports them without replacing existing posts. Always include `--hooksDir=ABSOLUTE_RELEASE/backend/pb_hooks` when applying migrations, including `migrate up`. See the root README for the content-only installer for existing databases.
+
 For a real release, deploy the application, migrations and hooks together after target selection, backup and owner activation approval. Do not point test/preview commands at production. The access-control migration intentionally refuses an automatic rollback to open access rules.
