@@ -26,9 +26,11 @@ npm run build:check
 
 `npm test` exercises disposable PocketBase instances and mocked provider boundaries. `lint` rejects new findings against recorded historical debt; it does **not** mean full lint is clean. `build:check` uses synthetic configuration and is not the deployable production build. Real SMTP, Stripe and Redis integration require staging checks.
 
-## Architecture
-
 For a fresh **disposable Linux x64 checkout**, run `bash scripts/verify-linux.sh` as a non-root user. It downloads a checksum-verified, temporary pinned Node runtime and runs installation, backend setup, dependency audit, lint, tests and build verification. Requires `curl`, `tar`, `sha256sum` and `unzip`. It refuses checkout environment files and does not replace system Node or configure production services.
+
+`npm run test:restore` rehearses an offline backup into a separate temporary PocketBase instance. It checks settings, product stock/prices, uploaded image bytes, write permissions and credential decryption. This synthetic test does not verify the hoster's scheduled backups or restore real order history.
+
+## Architecture
 
 - `src/app/`: storefront, admin, API routes; canonical products under `/product/[slug]`.
 - `src/lib/`: pricing, session authorization, encrypted credential storage, configuration and shared validation.
@@ -59,4 +61,4 @@ Do not ship `.env.local`, private keys, `secrets/`, `.local-preview/`, `.local-t
 
 ## Outstanding release gates
 
-Clean-install/VPS verification, actual payment/email/Redis tests, backup restoration, monitoring, performance review and mobile/accessibility acceptance remain required. Existing lint/type-looseness debt is documented, not waived. Owner confirms product facts, quoted testimonials and legal/business text before activation.
+See [VPS verification evidence](docs/vps-verification.md) for completed checks and their limits. Actual payment/email/Redis tests, deployed backup restoration, monitoring, performance review and mobile/accessibility acceptance remain required. Existing lint/type-looseness debt is documented, not waived. Owner confirms product facts, quoted testimonials and legal/business text before activation.
