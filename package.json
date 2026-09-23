@@ -15,7 +15,7 @@
     "test:pricing": "node scripts/test-shipping.cjs tests/pricing.test.cjs tests/product-nutrition.test.cjs",
     "test:inventory": "node scripts/test-shipping.cjs tests/inventory.test.cjs",
     "test:visits": "node scripts/test-shipping.cjs tests/visits.test.cjs",
-    "test:runtime": "node --test tests/runtime-safety.test.cjs",
+    "test:runtime": "node --test tests/runtime-safety.test.cjs tests/lint-gate.test.cjs",
     "test:notifications": "node scripts/test-shipping.cjs tests/notifications.test.cjs",
     "test:operations": "node scripts/test-shipping.cjs tests/order-operations.test.cjs",
     "preview:local": "node scripts/local-preview.cjs",
