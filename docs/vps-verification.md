@@ -14,7 +14,9 @@ Verification uses a separate checkout under the Ubuntu user's `chia-verification
 
 ## Evidence and remaining checks
 
-Release `6f67d9a` passed GitHub Linux clean installation, pinned PocketBase setup, dependency audit, lint regression check, automated tests and production build verification. Audit reported zero vulnerabilities; lint still contains 234 historical findings. The VPS independently passed installation, audit, lint and automated suites; final build and newly added restore test results are recorded below after completion.
+Release `e6fa5d1` passed both the owner's Ubuntu VPS and [GitHub Linux checks](https://github.com/oubayhamzaoui5/chia-charged/actions/runs/35923025435): clean installation, pinned PocketBase setup, dependency audit, lint regression check, all automated suites including offline backup/restore, and production build/type verification. Audit reported zero vulnerabilities; lint still contains 234 historical findings, with zero new findings.
+
+The restore rehearsal verifies saved settings, product stock/prices, uploaded image bytes, guest write restrictions and encrypted credential recovery with the correct key (and rejection of an incorrect key). It uses a stopped synthetic database and a separate restored instance. It does not test existing business data, scheduled/off-server backups, or full order-history recovery. Raw test output remains private on the owner's server under `chia-verification/verification-e6fa5d1.log`.
 
 The public server URL still serves the previous release. Test checkout is not a deployed production environment. `build:check` uses synthetic configuration; its output must not be promoted to a public release.
 

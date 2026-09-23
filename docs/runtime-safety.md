@@ -12,7 +12,7 @@ Development fallback is per process, bounded to 10,000 active keys, and still en
 
 Daily cleanup at 03:00 uses PocketBase's `$app` handle and deletes at most 10,000 visit rows older than 90 days per run. Large historical backlogs need supervised additional cleanup. It no longer requests disruptive database-wide checkpoint/vacuum operations. Visit collection uses the main database.
 
-Existing visitor collection/analytics accuracy still needs review; fixing retention alone does not complete analytics or privacy work.
+Visitor tracking is now admin-controlled, off by default, and deduplicated per browser/UTC day; browser opt-outs and private-path exclusions are tested. Counts remain approximate. Owner privacy/consent review is still required before activation.
 
 ## UI cleanup
 

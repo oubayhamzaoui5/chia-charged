@@ -59,4 +59,4 @@ Before business-data migrations: maintenance plan, verified backup, exact migrat
 - Pending payment: inspect signed webhook delivery and saved session/amount binding; never manually mark paid without the supported reconciliation procedure.
 - Visitor counts: check admin switch and browser opt-out; one browser/day, no private routes. Browser clearing/bots can affect figures.
 
-No successful VPS deployment or restore drill has been claimed yet.
+Fresh-install verification on the owner's VPS and an automated synthetic offline restore rehearsal are documented in [VPS evidence](vps-verification.md). These checks do not replace actual HTTPS staging deployment, provider integration checks or a restore drill using the deployed backup system.
