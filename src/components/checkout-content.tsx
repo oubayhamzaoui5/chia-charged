@@ -907,30 +907,30 @@ export function CheckoutContent() {
               >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                    <label htmlFor="checkout-firstName" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       First Name <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input type="text" className={inputCls} style={inputStyle} placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                    <input autoComplete="given-name" id="checkout-firstName" name="firstName" type="text" className={inputCls} style={inputStyle} placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                   </div>
                   <div>
-                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                    <label htmlFor="checkout-lastName" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       Last Name <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input type="text" className={inputCls} style={inputStyle} placeholder="Smith" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                    <input autoComplete="family-name" id="checkout-lastName" name="lastName" type="text" className={inputCls} style={inputStyle} placeholder="Smith" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                    <label htmlFor="checkout-email" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       Email <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input type="email" autoComplete="email" required className={inputCls} style={inputStyle} placeholder="you@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => { void syncEmailToProfile(false) }} />
+                    <input id="checkout-email" name="email" type="email" autoComplete="email" required className={inputCls} style={inputStyle} placeholder="you@domain.com" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => { void syncEmailToProfile(false) }} />
                   </div>
                   <div>
-                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                    <label htmlFor="checkout-phone" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       Phone <span style={{ color: 'rgba(0,0,0,0.25)' }}>(optional)</span>
                     </label>
-                    <input type="tel" autoComplete="tel" className={inputCls} style={inputStyle} placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    <input id="checkout-phone" name="phone" type="tel" autoComplete="tel" className={inputCls} style={inputStyle} placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
                   </div>
                 </div>
               </div>
@@ -955,7 +955,7 @@ export function CheckoutContent() {
                   <select
                     className="cursor-pointer border-2 border-black/40 px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-white"
                     style={{ fontFamily: FONT, fontWeight: 900, background: 'rgba(0,0,0,0.25)', borderRadius: '2px' }}
-                    value={selectedAddressId}
+                    aria-label="Saved shipping address" value={selectedAddressId}
                     onChange={(e) => setSelectedAddressId(e.target.value)}
                   >
                     {addresses.map((a) => (
@@ -979,46 +979,46 @@ export function CheckoutContent() {
                 </div>
 
                 <div>
-                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                  <label htmlFor="checkout-address" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Address Line 1 <span style={{ color: '#C62828' }}>*</span>
                   </label>
-                  <input type="text" className={inputCls} style={inputStyle} placeholder="Street, number, apartment..." value={address} onChange={(e) => setAddress(e.target.value)} />
+                  <input autoComplete="address-line1" id="checkout-address" name="address" type="text" className={inputCls} style={inputStyle} placeholder="Street, number, apartment..." value={address} onChange={(e) => setAddress(e.target.value)} />
                 </div>
 
                 <div>
-                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                  <label htmlFor="checkout-address2" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Address Line 2 <span style={{ color: 'rgba(0,0,0,0.25)' }}>(optional)</span>
                   </label>
-                  <input type="text" className={inputCls} style={inputStyle} placeholder="Suite, unit, building, floor..." value={address2} onChange={(e) => setAddress2(e.target.value)} />
+                  <input autoComplete="address-line2" id="checkout-address2" name="address2" type="text" className={inputCls} style={inputStyle} placeholder="Suite, unit, building, floor..." value={address2} onChange={(e) => setAddress2(e.target.value)} />
                 </div>
 
                 <div>
-                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                  <label htmlFor="checkout-state" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     {country === "US" ? "State" : "State / Province / Region"}
                     {country === "US" && <span style={{ color: '#C62828' }}> *</span>}
                   </label>
                   {country === "US" ? (
-                    <select className={inputCls} style={inputStyle} value={state} onChange={(e) => setState(e.target.value)}>
+                    <select autoComplete="address-level1" id="checkout-state" name="state" className={inputCls} style={inputStyle} value={state} onChange={(e) => setState(e.target.value)}>
                       <option value="">Select state...</option>
                       {US_STATES.map((s) => (<option key={s.code} value={s.code}>{s.name}</option>))}
                     </select>
                   ) : (
-                    <input type="text" className={inputCls} style={inputStyle} placeholder="State / Province / Region" value={state} onChange={(e) => setState(e.target.value)} />
+                    <input autoComplete="address-level1" id="checkout-state" name="state" type="text" className={inputCls} style={inputStyle} placeholder="State / Province / Region" value={state} onChange={(e) => setState(e.target.value)} />
                   )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                    <label htmlFor="checkout-city" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       City <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input type="text" className={inputCls} style={inputStyle} placeholder="New York" value={city} onChange={(e) => setCity(e.target.value)} />
+                    <input autoComplete="address-level2" id="checkout-city" name="city" type="text" className={inputCls} style={inputStyle} placeholder="New York" value={city} onChange={(e) => setCity(e.target.value)} />
                   </div>
                   <div>
-                    <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                    <label htmlFor="checkout-postalCode" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                       {country === "US" ? "ZIP Code" : "Postal Code"} <span style={{ color: '#C62828' }}>*</span>
                     </label>
-                    <input
+                    <input autoComplete="postal-code" id="checkout-postalCode" name="postalCode"
                       type="text"
                       inputMode="numeric"
                       className={inputCls}
@@ -1034,10 +1034,10 @@ export function CheckoutContent() {
                 </div>
 
                 <div>
-                  <label className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
+                  <label htmlFor="checkout-notes" className={labelCls} style={{ fontFamily: FONT, fontWeight: 900, color: 'rgba(0,0,0,0.45)' }}>
                     Special instructions
                   </label>
-                  <textarea rows={2} className={inputCls} style={{ ...inputStyle, resize: 'none' }} placeholder="Door code, floor, neighbor..." value={notes} onChange={(e) => setNotes(e.target.value)} />
+                  <textarea id="checkout-notes" name="notes" rows={2} className={inputCls} style={{ ...inputStyle, resize: 'none' }} placeholder="Door code, floor, neighbor..." value={notes} onChange={(e) => setNotes(e.target.value)} />
                 </div>
 
                 {isLoggedIn && (
@@ -1110,7 +1110,7 @@ export function CheckoutContent() {
                 <div className="flex items-center gap-2">
                   <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M6 0L0 2.5v4C0 9.9 2.6 13 6 14c3.4-1 6-4.1 6-7.5v-4L6 0z" fill="rgba(0,0,0,0.2)"/></svg>
                   <span className="text-[9px] font-black uppercase tracking-[0.15em]" style={{ fontFamily: FONT, color: 'rgba(0,0,0,0.35)' }}>
-                    256-bit SSL encrypted — your data is secure
+                    Card payments are processed by Stripe
                   </span>
                 </div>
               </div>
@@ -1158,8 +1158,8 @@ export function CheckoutContent() {
                         <Image src={pbFileUrl(item.product.id, item.product.images[0])} alt={item.product.name} fill className="object-cover" />
                       )}
                       <button
-                        onClick={() => handleRemoveItem(item.id)}
-                        className="absolute left-0.5 top-0.5 border-[2px] border-black bg-white p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label={`Remove ${item.product?.name ?? "product"} from bag`} onClick={() => handleRemoveItem(item.id)}
+                        className="absolute left-0.5 top-0.5 border-[2px] border-black bg-white p-0.5 opacity-100 transition-opacity"
                       >
                         <X size={9} />
                       </button>
@@ -1171,7 +1171,7 @@ export function CheckoutContent() {
                       <div className="mt-1.5 flex items-center justify-between">
                         <div className="flex items-center overflow-hidden rounded-sm border-[3px] border-black bg-white">
                           <button
-                            onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                            aria-label="Decrease quantity" onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                             className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white"
                             style={{ fontFamily: FONT, fontWeight: 900 }}
                           >
@@ -1179,7 +1179,7 @@ export function CheckoutContent() {
                           </button>
                           <span className="w-6 text-center text-xs font-black" style={{ fontFamily: FONT, fontWeight: 900 }}>{item.quantity}</span>
                           <button
-                            onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                            aria-label="Increase quantity" onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                             className="flex h-7 w-7 cursor-pointer items-center justify-center text-sm font-black transition-all hover:[background:linear-gradient(135deg,rgb(68,15,195)_0%,rgb(158,38,182)_50%,rgb(232,68,106)_100%)] hover:text-white"
                             style={{ fontFamily: FONT, fontWeight: 900 }}
                           >

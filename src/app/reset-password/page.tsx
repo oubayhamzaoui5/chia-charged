@@ -1,13 +1,13 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function ReinitialisationPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">Chargement...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">Loading...</div>}>
       <ReinitialisationForm />
     </Suspense>
   )
@@ -24,11 +24,7 @@ function ReinitialisationForm() {
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
 
-  useEffect(() => {
-    if (!token) {
-      setError('Lien invalide. Veuillez recommencer depuis la page de connexion.')
-    }
-  }, [token])
+  const displayError = !token ? 'Invalid reset link. Request a new link from the login page.' : error
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -36,11 +32,11 @@ function ReinitialisationForm() {
     setError('')
 
     if (password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères.')
+      setError('Password must contain at least 8 characters.')
       return
     }
     if (password !== passwordConfirm) {
-      setError('Les mots de passe ne correspondent pas.')
+      setError('Passwords do not match.')
       return
     }
 
@@ -53,13 +49,13 @@ function ReinitialisationForm() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        setError(data?.message ?? 'Une erreur est survenue.')
+        setError(data?.message ?? 'Could not reset your password. Please try again.')
         return
       }
       setDone(true)
-      setTimeout(() => router.push('/?auth=login'), 3000)
+      setTimeout(() => router.push('/login'), 3000)
     } catch {
-      setError('Une erreur est survenue.')
+      setError('Could not reset your password. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -69,40 +65,40 @@ function ReinitialisationForm() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-2xl border border-foreground/10 bg-white p-8 shadow-lg text-black">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent mb-2">
-          Sécurité
+          Account security
         </p>
         <h1 className="text-2xl font-bold tracking-tight mb-1">
-          Nouveau mot de passe
+          New password
         </h1>
         <p className="text-sm text-black/60 mb-6">
-          Choisissez un nouveau mot de passe pour votre compte.
+          Choose a new password for your account.
         </p>
 
         {done ? (
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <CheckCircle2 className="h-12 w-12 text-emerald-500" />
-            <p className="font-semibold text-emerald-700">Mot de passe mis à jour !</p>
-            <p className="text-sm text-black/60">Vous allez être redirigé vers la connexion…</p>
+            <p className="font-semibold text-emerald-700">Password updated!</p>
+            <p className="text-sm text-black/60">Redirecting you to login…</p>
             <Link
-              href="/?auth=login"
+              href="/login"
               className="mt-2 text-sm font-semibold text-accent hover:opacity-80 transition-opacity"
             >
-              Se connecter maintenant
+              Log in now
             </Link>
           </div>
         ) : (
           <>
-            {error && (
+            {displayError && (
               <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
                 <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                <span>{error}</span>
+                <span>{displayError}</span>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <label htmlFor="reset-password" className="text-sm font-medium">
-                  Nouveau mot de passe <span className="text-red-500">*</span>
+                  New password <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="reset-password"
@@ -113,13 +109,13 @@ function ReinitialisationForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={!token}
                   className="w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-accent disabled:opacity-50"
-                  placeholder="Minimum 8 caractères"
+                  placeholder="Minimum 8 characters"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label htmlFor="reset-password-confirm" className="text-sm font-medium">
-                  Confirmer le mot de passe <span className="text-red-500">*</span>
+                  Confirm password <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="reset-password-confirm"
@@ -130,7 +126,7 @@ function ReinitialisationForm() {
                   onChange={(e) => setPasswordConfirm(e.target.value)}
                   disabled={!token}
                   className="w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-accent disabled:opacity-50"
-                  placeholder="Répétez le mot de passe"
+                  placeholder="Repeat your password"
                 />
               </div>
 
@@ -139,13 +135,13 @@ function ReinitialisationForm() {
                 disabled={submitting || !token}
                 className="h-11 w-full rounded-xl bg-accent text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {submitting ? 'Enregistrement...' : 'Enregistrer le mot de passe'}
+                {submitting ? 'Saving...' : 'Save password'}
               </button>
             </form>
 
             <p className="mt-5 text-center text-sm text-black/60">
-              <Link href="/?auth=login" className="font-semibold text-accent hover:opacity-80 transition-opacity">
-                Retour à la connexion
+              <Link href="/login" className="font-semibold text-accent hover:opacity-80 transition-opacity">
+                Back to login
               </Link>
             </p>
           </>

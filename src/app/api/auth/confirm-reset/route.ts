@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   const { allowed } = await rateLimit(`confirm-reset:${ip}`, 5, 15 * 60 * 1000)
   if (!allowed) {
     return NextResponse.json(
-      { message: 'Trop de tentatives. Réessayez dans 15 minutes.' },
+      { message: 'Too many attempts. Try again in 15 minutes.' },
       { status: 429 }
     )
   }
@@ -19,13 +19,13 @@ export async function POST(request: NextRequest) {
     const passwordConfirm = typeof body.passwordConfirm === 'string' ? body.passwordConfirm : ''
 
     if (!token || !password || !passwordConfirm) {
-      return NextResponse.json({ message: 'Tous les champs sont obligatoires.' }, { status: 400 })
+      return NextResponse.json({ message: 'All fields are required.' }, { status: 400 })
     }
     if (password.length < 8) {
-      return NextResponse.json({ message: 'Le mot de passe doit contenir au moins 8 caractères.' }, { status: 400 })
+      return NextResponse.json({ message: 'Password must contain at least 8 characters.' }, { status: 400 })
     }
     if (password !== passwordConfirm) {
-      return NextResponse.json({ message: 'Les mots de passe ne correspondent pas.' }, { status: 400 })
+      return NextResponse.json({ message: 'Passwords do not match.' }, { status: 400 })
     }
 
     const pb = createServerPb()
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
             .map((v) => v?.message)
             .filter(Boolean)
             .join(', ')
-        : 'Lien invalide ou expiré. Veuillez recommencer.'
+        : 'Invalid or expired reset link. Request a new link.'
     return NextResponse.json({ message: msg }, { status: 400 })
   }
 }

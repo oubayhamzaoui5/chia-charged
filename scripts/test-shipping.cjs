@@ -14,6 +14,7 @@ const crypto = require('node:crypto');
   const hooks = path.join(data, 'test-hooks');
   cpSync(path.resolve(app, 'backend/pb_hooks'), hooks, { recursive: true });
   if (process.argv.includes('tests/credentials.test.cjs')) copyFileSync(path.join(app, 'tests/fixtures/provider-check.pb.js'), path.join(hooks, 'provider-check.pb.js'));
+  if (process.argv.includes('tests/smtp-integration.test.cjs')) copyFileSync(path.join(app, 'tests/fixtures/smtp-receipt.pb.js'), path.join(hooks, 'smtp-receipt.pb.js'));
   const flags = [`--dir=${data}`, `--migrationsDir=${migrations}`, `--hooksDir=${hooks}`];
   let server;
   try {
@@ -26,7 +27,10 @@ const crypto = require('node:crypto');
       socket.listen(0, '127.0.0.1', () => { const port = socket.address().port; socket.close(() => resolve(port)); });
     });
     const url = `http://127.0.0.1:${port}`;
-    server = spawn(binary, ['serve', '--automigrate=false', `--http=127.0.0.1:${port}`, ...flags], { stdio: 'ignore', windowsHide: true });
+    server = spawn(binary, ['serve', '--automigrate=false', `--http=127.0.0.1:${port}`, ...flags], {
+      stdio: 'ignore', windowsHide: true,
+      env: { ...process.env, CHIA_MAIL_ENABLED: process.argv.includes('tests/smtp-integration.test.cjs') ? 'true' : 'false', CHIA_PUBLIC_APP_URL: 'https://store.example.test' },
+    });
     server.on('error', () => {});
     let ready = false;
     for (let attempt = 0; attempt < 100; attempt++) {

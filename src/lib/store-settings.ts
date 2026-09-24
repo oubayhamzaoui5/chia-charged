@@ -2,7 +2,14 @@ import { z } from 'zod'
 import { DEFAULT_SOCIAL_PROOF, socialProofSchema } from '@/lib/social-proof'
 
 export const STORE_SETTINGS_ID = 'storeconfig0001'
+const socialUrl = z.string().trim().max(2048).refine(value => {
+  if (!value) return true
+  try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password }
+  catch { return false }
+}, 'Enter a full HTTPS profile URL or leave blank.')
+const socialLinksSchema = z.object({ instagram: socialUrl, facebook: socialUrl, tiktok: socialUrl })
 export const storeSettingsSchema = z.object({
+  socialLinks: socialLinksSchema.default({ instagram: '', facebook: '', tiktok: '' }),
   analyticsEnabled: z.boolean().default(false),
   firstOrderDiscountEnabled: z.boolean(),
   firstOrderDiscountPercent: z.number().int().min(1).max(99),
@@ -19,6 +26,7 @@ export const storeSettingsSchema = z.object({
 })
 export type StoreSettings = z.infer<typeof storeSettingsSchema>
 export const EMPTY_STORE_SETTINGS: StoreSettings = {
+  socialLinks: { instagram: '', facebook: '', tiktok: '' },
   analyticsEnabled: false,
   firstOrderDiscountEnabled: false, firstOrderDiscountPercent: 10,
   businessName: '', supportEmail: '', businessAddress: '',

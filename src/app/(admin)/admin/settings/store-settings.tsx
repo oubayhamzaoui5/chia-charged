@@ -34,6 +34,13 @@ export default function StoreSettingsForm({ initial }: { initial: StoreSettings 
     {!initial && <p role="alert">Settings unavailable. Apply the database migration before saving.</p>}
     <fieldset disabled={saving || !initial} className="space-y-5 disabled:opacity-60">
       <legend className="font-semibold">First-order discount</legend>
+      <div className="space-y-3">
+        <h3 className="font-semibold">Social profiles (optional)</h3>
+        <p className="text-sm text-slate-600">Enter full HTTPS links. Blank profiles are hidden from the website.</p>
+        {(['instagram', 'facebook', 'tiktok'] as const).map(platform => <label className="block capitalize" key={platform}>{platform}
+          <input className={input} type="url" maxLength={2048} value={form.socialLinks[platform]} onChange={e => setForm({ ...form, socialLinks: { ...form.socialLinks, [platform]: e.target.value } })} placeholder="https://" />
+        </label>)}
+      </div>
       <label className="flex items-center gap-3"><input type="checkbox" checked={form.firstOrderDiscountEnabled} onChange={e => setForm({ ...form, firstOrderDiscountEnabled: e.target.checked })} /> Enable first-order discount</label>
       <label className="block">Discount percentage
         <input className={input} type="number" min={1} max={99} step={1} required value={form.firstOrderDiscountPercent} onChange={e => setForm({ ...form, firstOrderDiscountPercent: Number(e.target.value) })} />

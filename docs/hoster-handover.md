@@ -60,3 +60,5 @@ Before business-data migrations: maintenance plan, verified backup, exact migrat
 - Visitor counts: check admin switch and browser opt-out; one browser/day, no private routes. Browser clearing/bots can affect figures.
 
 Fresh-install verification on the owner's VPS and an automated synthetic offline restore rehearsal are documented in [VPS evidence](vps-verification.md). These checks do not replace actual HTTPS staging deployment, provider integration checks or a restore drill using the deployed backup system.
+
+Blog body uploads also need persistent storage: preserve `public/blog-images/` and legacy `public/blog/` across releases and include them in backups. These files are separate from PocketBase cover images. See [handover checklist](../HANDOVER.md).

@@ -1,3 +1,8 @@
+function jsonValue(record, field, fallback) {
+  const raw = record.getString(field)
+  return typeof raw === 'string' ? (raw ? JSON.parse(raw) : fallback) : (raw ?? fallback)
+}
+
 module.exports = {
   enqueue(app, kind, key, recipient, subject, text, extra) {
     const existing = app.findRecordsByFilter('notification_jobs', 'dedupeKey = {:key}', '', 1, 0, { key })
@@ -14,7 +19,7 @@ module.exports = {
     if (kind === 'shipment') text += 'Carrier: ' + order.getString('trackingCarrier') + '\nTracking: ' + order.getString('trackingNumber')
     else text += 'Amount: USD ' + (amount / 100).toFixed(2)
     if (kind === 'receipt') {
-      const items = order.get('items') || []
+      const items = jsonValue(order, 'items', [])
       const money = cents => Number.isSafeInteger(cents) && cents >= 0 ? 'USD ' + (cents / 100).toFixed(2) : 'Unavailable'
       for (const item of items) text += '\n' + String(item.quantity) + ' × ' + String(item.name || 'Item').slice(0, 100) + ' — ' + money(item.unitPriceCents) + ' each; ' + money(item.lineSubtotalCents)
       text += '\n\nSubtotal: ' + money(order.getInt('subtotalCents')) + '\nDiscount: -' + money(order.getInt('discountCents')) + '\nItems after discount: ' + money(order.getInt('itemsTotalCents')) + '\nShipping: ' + money(order.getInt('shippingCents')) + '\nTax: ' + money(order.getInt('taxCents')) + '\nTotal paid: ' + money(amount)
@@ -45,7 +50,7 @@ module.exports = {
         if ($os.getenv('CHIA_MAIL_ENABLED') !== 'true' || !settings.smtp.enabled || !settings.meta.senderAddress || !recipient) {
           job.set('status', 'blocked_configuration'); job.set('lastError', 'Enable CHIA_MAIL_ENABLED, configure SMTP/sender and recipient.'); job.set('nextAttemptAt', new Date(Date.now() + 5 * 60000).toISOString()); app.save(job); continue
         }
-        let payload = job.get('payload') || {}
+        let payload = jsonValue(job, 'payload', {})
         if (job.getString('kind') === 'support_message' && payload.supportMessageId) {
           const message = app.findRecordById('support_messages', payload.supportMessageId)
           payload = { subject: 'Support: ' + message.getString('subject'), text: 'From: ' + message.getString('name') + ' <' + message.getString('email') + '>\n\n' + message.getString('message') }

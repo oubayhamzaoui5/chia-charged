@@ -90,6 +90,16 @@ test('server-owned USD quote and immutable order snapshot', async t => {
   await t.test('first-order discount reaches Stripe, cannot stack, and respects activation and paid history', async () => {
     const settings = root.collection('store_settings');
     const seeded = await settings.getOne('storeconfig0001');
+    const { storeSettingsSchema } = load('src/lib/store-settings.ts');
+    assert.deepEqual(seeded.socialLinks, { instagram: '', facebook: '', tiktok: '' });
+    for (const invalid of ['javascript:alert(1)', 'http://example.com', 'https://name:password@example.com']) {
+      assert.equal(storeSettingsSchema.safeParse({ ...seeded, socialLinks: { ...seeded.socialLinks, instagram: invalid } }).success, false);
+    }
+    const links = { ...seeded.socialLinks, instagram: 'https://www.instagram.com/example/' };
+    assert.equal(storeSettingsSchema.safeParse({ ...seeded, socialLinks: links }).success, true);
+    await settings.update('storeconfig0001', { socialLinks: links });
+    assert.deepEqual((await settings.getOne('storeconfig0001')).socialLinks, links);
+    await assert.rejects(customer.collection('store_settings').update('storeconfig0001', { socialLinks: links }));
     assert.equal(seeded.socialProof.testimonials.length, 3);
     assert.equal(seeded.socialProof.averageRating, 4.8);
     const { socialProofSchema } = load('src/lib/social-proof.ts');

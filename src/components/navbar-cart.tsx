@@ -315,7 +315,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
                 </p>
               </div>
               <Link
-                href="/shop"
+                href="/#flavors"
                 onClick={() => setIsCartOpen(false)}
                 className="inline-flex items-center gap-2 border-[3px] border-black px-5 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-white transition-all hover:-translate-x-0.5 hover:-translate-y-0.5"
                 style={{ fontFamily: FONT, fontWeight: 900, background: GRADIENT, boxShadow: '4px 4px 0 #111' }}
@@ -328,7 +328,7 @@ export function NavbarCart({ currentUser, onOpenChange, children }: NavbarCartPr
             <div className="space-y-3">
               {cartItems.map((item) => {
                 const prod = item.product
-                const productHref = prod?.slug ? `/shop/${prod.slug}` : null
+                const productHref = prod?.slug ? `/product/${prod.slug}` : null
                 const imgSrc = prod && Array.isArray(prod.imageUrls) && prod.imageUrls.length > 0
                   ? prod.imageUrls[0]! : "/placeholder-square.webp"
                 const unitPrice = prod?.promoPrice && typeof prod.promoPrice === "number" && typeof prod.price === "number" && prod.promoPrice < prod.price

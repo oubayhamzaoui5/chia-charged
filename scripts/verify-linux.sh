@@ -38,5 +38,10 @@ npm run setup:backend
 npm audit --audit-level=high
 npm run lint
 npm test
+if [[ -n ${REDIS_TEST_BINARY:-} ]]; then
+  npm run test:redis
+else
+  echo 'Real Redis integration not run: supply REDIS_TEST_BINARY to enable it.'
+fi
 npm run build:check
 echo 'Linux verification passed. Synthetic build only; do not deploy this output.'

@@ -2,7 +2,7 @@
 
 Next.js storefront and admin dashboard backed by PocketBase, Stripe card payments and Redis rate limits. US delivery; USD catalog; admin-managed shipping and first-order discount.
 
-**Status:** local development/verification. Not approved for public production. Complete local acceptance, then test on the owner's VPS, then hand the verified release to the business hoster. No live credentials or business database are included.
+**Status:** technical handover preparation; public launch still requires host configuration and owner acceptance. Start with [HANDOVER.md](HANDOVER.md). No live credentials or business database are included.
 
 ## Local preview
 
@@ -24,7 +24,7 @@ npm run lint
 npm run build:check
 ```
 
-`npm test` exercises disposable PocketBase instances and mocked provider boundaries. `lint` rejects new findings against recorded historical debt; it does **not** mean full lint is clean. `build:check` uses synthetic configuration and is not the deployable production build. Real SMTP, Stripe and Redis integration require staging checks.
+`npm test` exercises disposable PocketBase instances and mocked provider boundaries. `lint` rejects new findings against recorded historical debt; it does **not** mean full lint is clean. `build:check` uses synthetic configuration and is not the deployable production build. The suite also exercises real PocketBase SMTP against a local-only mail catcher. `npm run test:redis` uses a disposable real Redis process when `REDIS_TEST_BINARY` points to its executable. Actual SMTP-provider delivery, Stripe sandbox and deployed Redis still require staging acceptance.
 
 For a fresh **disposable Linux x64 checkout**, run `bash scripts/verify-linux.sh` as a non-root user. It downloads a checksum-verified, temporary pinned Node runtime and runs installation, backend setup, dependency audit, lint, tests and build verification. Requires `curl`, `tar`, `sha256sum` and `unzip`. It refuses checkout environment files and does not replace system Node or configure production services.
 
