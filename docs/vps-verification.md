@@ -21,3 +21,15 @@ The restore rehearsal verifies saved settings, product stock/prices, uploaded im
 The public server URL still serves the previous release. Test checkout is not a deployed production environment. `build:check` uses synthetic configuration; its output must not be promoted to a public release.
 
 Remaining deployment gates: isolated HTTPS staging origin, production service supervision and dedicated users, persistent data/secret provisioning, actual Redis connectivity/outage tests, Stripe sandbox and SMTP inbox checks, scheduled off-server backups and real deployment restore drill, mobile/accessibility acceptance, and owner-approved business/product/testimonial content. Redis was not present in the server command path or listening sockets during inspection.
+
+## 24 September 2026 — handover acceptance
+
+Release `9d77629` passed fresh Ubuntu verification with pinned Node 22.23.2 and PocketBase 0.31.0, plus [GitHub checks](https://github.com/oubayhamzaoui5/chia-charged/actions/runs/36030083309). Clean installation, audit (zero reported vulnerabilities), every default test suite, real Redis integration, lint regression gate (233 historical findings; zero new), and build/type checks passed. Private server evidence: `chia-verification/verification-9d77629.log`.
+
+Redis ran as a disposable loopback process from locally extracted Ubuntu packages, with password authentication. No system Redis installation or service change was made. Tests covered concurrent limits, expiration, missing-TTL repair, denial during outage and reconnection. The deployed Redis environment remains a hoster acceptance task.
+
+Actual PocketBase SMTP transport sent support messages, itemized guest receipts and account verification/reset emails to a local-only SMTP sink. Rejected recipients entered retry state. This caught and fixed native PocketBase JSON-field decoding in the notification worker and receipt renderer. Provider TLS/authentication, inbox delivery and live public links remain untested.
+
+Browser acceptance covered admin sign-in, saving/reloading an optional social URL (then clearing it), and disabled password reset with a missing token. Earlier local checks covered product/cart/US checkout totals, unavailable payment configuration, mobile checkout labels/width and support confirmation. These are representative checks, not exhaustive browser/accessibility certification.
+
+Code is suitable for technical handover with the explicit launch gates in [HANDOVER.md](../HANDOVER.md). Existing public VPS site remains on its previous release; no production data or services were replaced. Original blog/testimonial claims still require owner review before public sales.

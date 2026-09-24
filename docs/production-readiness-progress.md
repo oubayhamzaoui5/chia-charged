@@ -194,3 +194,8 @@ Remaining local gates: fresh-install rehearsal, backup/restore rehearsal, priori
 Published source, README, configuration template, migrations/hooks and runbooks to the existing GitHub repository. Removed diagnostic logs from tracked release files; runtime secrets and databases remain excluded. Repaired fresh-install peer dependency lockfile and Windows-specific lint diagnostic comparison discovered on Linux. Added reusable non-root verification script and synthetic offline backup/restore test.
 
 Release `e6fa5d1` passed clean install, dependency audit (zero reported vulnerabilities), lint regression gate (234 historical findings, zero new), full automated tests including restore, and production build/type checks on both GitHub and the owner's Ubuntu VPS. Read server Claude rules and verified existing Chia frontend/backend health and externally blocked backend admin UI. Existing frontend remains on `5e75b80`; no business database migrations, public deployment, firewall changes or provider actions performed. See [VPS evidence and remaining deployment gates](vps-verification.md). Fresh-install and synthetic restore rehearsals are complete; real deployed backup recovery remains open.
+
+## 24 September 2026 — handover verification
+
+Completed isolated Linux and GitHub checks, real Redis and local SMTP integration, notification JSON fix, contact confirmation fix, checkout labels, canonical cart links, English reset errors, and optional admin social links. See [dated evidence](vps-verification.md#24-september-2026--handover-acceptance) and [handover guide](../HANDOVER.md). Remaining work needs actual host/provider configuration and owner content approval; historical lint debt is documented, not erased.
+
