@@ -18,7 +18,7 @@ For failed/uncertain jobs, hoster must check provider logs against recipient, su
 
 ## Validation and remaining work
 
-Local tests use a disposable database and simulated mail client; no external messages sent. Before launch, run approved-inbox SMTP acceptance, temporary SMTP failure/recovery, verification/reset and purchase/shipment/refund checks. Confirm sent jobs and actual inbox contents.
+Automated tests use disposable databases, simulated mail-client cases and real PocketBase SMTP transport to a local-only mail catcher; no external messages are sent. Configure template links using the root README. Before launch, run approved-inbox SMTP acceptance, temporary SMTP failure/recovery, verification/reset and purchase/shipment/refund checks. Confirm sent jobs and actual inbox contents.
 
 Receipts now include per-item prices/totals, subtotal, discount, shipping, tax and amount paid from the saved order. Set CHIA_PUBLIC_APP_URL on PocketBase to the HTTPS storefront origin (no path, query or credentials). Receipt jobs remain blocked without this value. Guest receipts include a private seven-day order link; signed-in customers use account access. Public deployment and email activation remain pending.
 

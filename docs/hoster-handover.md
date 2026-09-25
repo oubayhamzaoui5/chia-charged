@@ -1,13 +1,8 @@
 # Hoster handover runbook
 
-## Agreed sequence
+## Installation entry point
 
-1. Finish local changes and acceptance tests.
-2. Deploy an isolated staging environment on the owner's VPS; use synthetic data, Stripe test mode, and approved email recipients.
-3. Demonstrate installation, payments, email, backups/restore and monitoring.
-4. Deliver a versioned release and evidence to the business hoster. Public launch is a separate approval.
-
-This document is a procedure, not evidence that deployment/restoration has passed.
+Follow the [root README](../README.md) for the complete independent installation sequence, first owner admin, environment files, services, ingress, Stripe webhook-secret import and email templates. This document is an additional operations checklist. Use a separate staging environment with Stripe sandbox and approved recipients before enabling public sales; retain dated acceptance evidence.
 
 ## Required services and ownership
 
@@ -21,7 +16,7 @@ This document is a procedure, not evidence that deployment/restoration has passe
 | Storage | Durable PocketBase data and encrypted credentials; encrypted off-server backups; encryption key backed up separately |
 | Monitoring | Process/HTTP health, failed webhooks, failed/uncertain email jobs, Redis failures, backup age and disk space |
 
-Domain/hosting values remain undecided. Do not copy example domains into a live release. Do not expose raw databases, Redis, secrets or PocketBase administrative access publicly without appropriate access controls. Public product images need the configured HTTPS backend file endpoint; do not assume all backend traffic can be denied indiscriminately.
+Use the domains/hosting supplied by the business, not the examples. Do not expose raw databases, Redis, secrets or privileged PocketBase APIs publicly. Public product images and native account-confirmation pages need the configured HTTPS backend endpoints; follow the README's ingress explanation rather than denying all backend traffic indiscriminately.
 
 ## First staging installation
 

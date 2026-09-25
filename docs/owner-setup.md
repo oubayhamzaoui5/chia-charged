@@ -14,7 +14,7 @@ The Settings checklist reports entered fields, including unsaved edits. It does 
 
 Configure hosting, canonical HTTPS domain, protected backend, persistent database/file/credential storage, encryption key, Stripe webhook secret, email transport, backups and monitoring. Stripe account tax settings/registrations are maintained in Stripe. Public dashboard text fields do not configure these services.
 
-Notification delivery worker and real provider testing remain unfinished. Do not enable the verified-account first-order offer before verification emails work. Run staging purchase/refund, email, permissions and restore checks before public launch.
+Notification delivery worker is implemented and tested with local SMTP. Configure the real provider using the root README. Do not enable the verified-account first-order offer before verification emails work. Run staging purchase/refund, email, permissions and restore checks before public launch.
 
 ## Product claims changed
 
